@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'core/routing/app_router.dart';
+import 'core/routing/routes.dart';
+import 'core/theming/app_theme.dart';
 
 class DawayApp extends StatelessWidget {
-  const DawayApp({super.key});
+  final AppRouter appRouter;
+
+  const DawayApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'دوائي',
-      debugShowCheckedModeBanner: false,
-      home: const Scaffold(
-        body: Center(child: Text('دَوائي')),
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Daway',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          onGenerateRoute: appRouter.generateRoute,
+          initialRoute: Routes.accountTypeScreen,
+        );
+      },
     );
   }
 }
