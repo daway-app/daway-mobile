@@ -1,31 +1,54 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:daway_app/app.dart';
+import 'package:daway_app/features/auth/domain/entities/account_type.dart';
+import 'package:daway_app/features/auth/presentation/cubit/account_type_cubit.dart';
+import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:daway_app/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const DawayApp());
+  Widget buildTestableScreen(AccountTypeCubit cubit) {
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (context, child) => MaterialApp(
+        home: BlocProvider.value(
+          value: cubit,
+          child: const AccountTypeScreen(),
+        ),
+      ),
+    );
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  Future<void> setPhoneViewport(WidgetTester tester) async {
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  }
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('shows both account type options', (tester) async {
+    await setPhoneViewport(tester);
+    final cubit = AccountTypeCubit();
+    addTearDown(cubit.close);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(buildTestableScreen(cubit));
+    await tester.pumpAndSettle();
+
+    expect(find.text('حساب مريض'), findsOneWidget);
+    expect(find.text('حساب صيدلية'), findsOneWidget);
+  });
+
+  testWidgets('tapping the pharmacy option updates the cubit state', (tester) async {
+    await setPhoneViewport(tester);
+    final cubit = AccountTypeCubit();
+    addTearDown(cubit.close);
+
+    await tester.pumpWidget(buildTestableScreen(cubit));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('حساب صيدلية'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state, AccountType.pharmacy);
   });
 }
