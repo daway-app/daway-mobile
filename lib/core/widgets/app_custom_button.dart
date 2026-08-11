@@ -10,6 +10,7 @@ class AppCustomButton extends StatelessWidget {
   final double? height;
   final Color? backgroundColor;
   final Color? textColor;
+  final IconData? trailingIcon;
 
   const AppCustomButton({
     super.key,
@@ -20,18 +21,20 @@ class AppCustomButton extends StatelessWidget {
     this.height,
     this.backgroundColor,
     this.textColor,
+    this.trailingIcon,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
-      height: height ?? 52.h,
+      height: height ?? 55.h,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.mainTeal,
           foregroundColor: textColor ?? Colors.white,
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
@@ -46,13 +49,26 @@ class AppCustomButton extends StatelessWidget {
             color: Colors.white,
           ),
         )
-            : Text(
-          text,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: textColor ?? Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16.sp,
-          ),
+            : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                text,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: textColor ?? Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (trailingIcon != null) ...[
+              SizedBox(width: 8.w),
+              Icon(trailingIcon, color: textColor ?? Colors.white, size: 20.sp),
+            ],
+          ],
         ),
       ),
     );
