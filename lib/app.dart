@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/routing/app_router.dart';
-import 'core/routing/routes.dart';
 import 'core/theming/app_theme.dart';
 
 class DawayApp extends StatelessWidget {
   final AppRouter appRouter;
+  final String initialRoute;
 
-  const DawayApp({super.key, required this.appRouter});
+  const DawayApp({
+    super.key,
+    required this.appRouter,
+    required this.initialRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,7 @@ class DawayApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           onGenerateRoute: appRouter.generateRoute,
-          initialRoute: Routes.accountTypeScreen,
+          initialRoute: initialRoute,
         );
       },
     );

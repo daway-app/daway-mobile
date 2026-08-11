@@ -27,4 +27,31 @@ abstract class AppTextStyles {
         fontSize: 14.sp,
         color: AppColors.greyText,
       );
+
+  static TextStyle get authTitle => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.bold,
+        color: AppColors.mainTeal,
+      );
+
+  static TextStyle get authSubtitle => TextStyle(
+        fontSize: 14.sp,
+        color: AppColors.greyText,
+      );
+
+  static TextStyle get inputLabel => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textDark,
+      );
+
+  static TextStyle get helperText => TextStyle(
+        fontSize: 12.sp,
+        color: AppColors.grey,
+      );
+
+  static TextStyle get errorText => TextStyle(
+        fontSize: 13.sp,
+        color: AppColors.error,
+      );
 }
