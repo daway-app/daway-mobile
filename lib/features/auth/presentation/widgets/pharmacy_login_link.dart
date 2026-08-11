@@ -12,7 +12,7 @@ class PharmacyLoginLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushReplacementNamed(Routes.accountTypeScreen),
+      onTap: () => Navigator.of(context).pushReplacementNamed(Routes.pharmacyAuthScreen),
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(

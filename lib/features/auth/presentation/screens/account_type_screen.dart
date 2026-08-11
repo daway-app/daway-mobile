@@ -99,7 +99,10 @@ class AccountTypeScreen extends StatelessWidget {
                               Routes.patientAuthScreen,
                             );
                           } else {
-                            // TODO: Navigator.pushNamed(context, Routes.pharmacyRegister);
+                            Navigator.pushNamed(
+                              context,
+                              Routes.pharmacyAuthScreen,
+                            );
                           }
                         },
                       ),

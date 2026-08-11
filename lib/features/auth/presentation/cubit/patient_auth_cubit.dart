@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
 import '../../../../core/helpers/validators.dart';
+import '../../domain/entities/account_type.dart';
+import '../../domain/usecases/save_session_usecase.dart';
 import '../../domain/usecases/send_otp_usecase.dart';
 import '../../domain/usecases/verify_otp_usecase.dart';
 import 'patient_auth_state.dart';
@@ -14,9 +16,13 @@ import 'patient_auth_state.dart';
 class PatientAuthCubit extends Cubit<PatientAuthState> {
   final SendOtpUseCase _sendOtpUseCase;
   final VerifyOtpUseCase _verifyOtpUseCase;
+  final SaveSessionUseCase _saveSessionUseCase;
 
-  PatientAuthCubit(this._sendOtpUseCase, this._verifyOtpUseCase)
-      : super(const PatientAuthState());
+  PatientAuthCubit(
+    this._sendOtpUseCase,
+    this._verifyOtpUseCase,
+    this._saveSessionUseCase,
+  ) : super(const PatientAuthState());
 
   void phoneChanged(String phone) {
     emit(state.copyWith(phone: phone, clearError: true));
@@ -67,6 +73,10 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
 
     switch (result) {
       case Success(:final data):
+        final token = data.token;
+        if (token != null) {
+          await _saveSessionUseCase(accountType: AccountType.patient, token: token);
+        }
         emit(state.copyWith(
           isVerifying: false,
           destination: data.isNewAccount ? AuthDestination.profile : AuthDestination.home,

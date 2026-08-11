@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../cubit/patient_auth_cubit.dart';
 import '../cubit/patient_auth_state.dart';
@@ -41,7 +42,7 @@ class OtpVerificationScreen extends StatelessWidget {
             listener: (context, state) {
               final route = state.destination == AuthDestination.profile
                   ? Routes.profileScreen
-                  : Routes.homeScreen;
+                  : Routes.patientHomeScreen;
               Navigator.of(context).pushNamedAndRemoveUntil(route, (route) => false);
             },
             child: SingleChildScrollView(
@@ -64,22 +65,7 @@ class OtpVerificationScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 24.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(24.r),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 12.r,
-                          offset: Offset(0, 4.h),
-                        ),
-                      ],
-                    ),
-                    child: const OtpVerificationForm(),
-                  ),
+                  const AppCard(child: OtpVerificationForm()),
                   SizedBox(height: 20.h),
                   const ResendOtpLink(),
                   SizedBox(height: 16.h),
