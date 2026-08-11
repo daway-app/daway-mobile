@@ -7,7 +7,7 @@ import 'package:daway_app/features/auth/domain/repositories/auth_repository.dart
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/logout_cubit.dart';
-import 'package:daway_app/features/pharmacy_home/presentation/screens/pharmacy_home_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
