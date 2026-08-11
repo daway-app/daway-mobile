@@ -20,4 +20,21 @@ class AuthRemoteDataSource {
       data: {'phone': phone, 'otp': otp},
     );
   }
+
+  Future<Response<dynamic>> pharmacyLogin({
+    required String pharmacyId,
+    required String password,
+  }) {
+    return _dio.post(
+      ApiConstants.pharmacyLogin,
+      data: {'pharmacy_id': pharmacyId, 'password': password},
+    );
+  }
+
+  Future<Response<dynamic>> logout({required String token}) {
+    return _dio.post(
+      ApiConstants.logout,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
 }

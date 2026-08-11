@@ -1,7 +1,11 @@
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/core/routing/routes.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
+import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
+import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
+import 'package:daway_app/features/auth/domain/usecases/save_session_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
@@ -24,6 +28,32 @@ class _FakeAuthRepository implements AuthRepository {
     required String phone,
     required String otp,
   }) async => verifyResult;
+
+  @override
+  Future<ApiResult<PharmacyAuthResult>> pharmacyLogin({
+    required String pharmacyId,
+    required String password,
+  }) async => const Success(PharmacyAuthResult(token: 'fake-token'));
+
+  @override
+  Future<ApiResult<void>> logout({required String token}) async => const Success(null);
+}
+
+class _FakeSessionRepository implements SessionRepository {
+  UserSession? savedSession;
+
+  @override
+  Future<void> saveSession(UserSession session) async {
+    savedSession = session;
+  }
+
+  @override
+  Future<UserSession?> getSession() async => savedSession;
+
+  @override
+  Future<void> clearSession() async {
+    savedSession = null;
+  }
 }
 
 void main() {
@@ -55,7 +85,11 @@ void main() {
   testWidgets('renders the 6-box OTP step without layout overflow', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository();
-    final cubit = PatientAuthCubit(SendOtpUseCase(repository), VerifyOtpUseCase(repository));
+    final cubit = PatientAuthCubit(
+      SendOtpUseCase(repository),
+      VerifyOtpUseCase(repository),
+      SaveSessionUseCase(_FakeSessionRepository()),
+    );
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));
@@ -70,7 +104,11 @@ void main() {
   testWidgets('resets otpSent when the back button is pressed', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository();
-    final cubit = PatientAuthCubit(SendOtpUseCase(repository), VerifyOtpUseCase(repository));
+    final cubit = PatientAuthCubit(
+      SendOtpUseCase(repository),
+      VerifyOtpUseCase(repository),
+      SaveSessionUseCase(_FakeSessionRepository()),
+    );
     addTearDown(cubit.close);
     cubit.termsToggled(true);
     cubit.phoneChanged('0599123456');
@@ -89,7 +127,11 @@ void main() {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository()
       ..verifyResult = const Success(PatientAuthResult(token: 'tok', isNewAccount: false));
-    final cubit = PatientAuthCubit(SendOtpUseCase(repository), VerifyOtpUseCase(repository));
+    final cubit = PatientAuthCubit(
+      SendOtpUseCase(repository),
+      VerifyOtpUseCase(repository),
+      SaveSessionUseCase(_FakeSessionRepository()),
+    );
     addTearDown(cubit.close);
     cubit.phoneChanged('0599123456');
 
@@ -100,14 +142,18 @@ void main() {
     await cubit.verifyOtp('123456');
     await tester.pumpAndSettle();
 
-    expect(visitedRoutes, contains(Routes.homeScreen));
+    expect(visitedRoutes, contains(Routes.patientHomeScreen));
   });
 
   testWidgets('navigates to the profile route when the account was just created', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository()
       ..verifyResult = const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
-    final cubit = PatientAuthCubit(SendOtpUseCase(repository), VerifyOtpUseCase(repository));
+    final cubit = PatientAuthCubit(
+      SendOtpUseCase(repository),
+      VerifyOtpUseCase(repository),
+      SaveSessionUseCase(_FakeSessionRepository()),
+    );
     addTearDown(cubit.close);
     cubit.phoneChanged('0599123456');
 

@@ -1,7 +1,12 @@
 import 'package:daway_app/core/erroring/failure.dart';
 import 'package:daway_app/core/helpers/api_result.dart';
+import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
+import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
+import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
+import 'package:daway_app/features/auth/domain/usecases/save_session_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
@@ -31,17 +36,46 @@ class _FakeAuthRepository implements AuthRepository {
     lastVerifyOtp = otp;
     return verifyResult;
   }
+
+  @override
+  Future<ApiResult<PharmacyAuthResult>> pharmacyLogin({
+    required String pharmacyId,
+    required String password,
+  }) async => const Success(PharmacyAuthResult(token: 'fake-token'));
+
+  @override
+  Future<ApiResult<void>> logout({required String token}) async => const Success(null);
+}
+
+class _FakeSessionRepository implements SessionRepository {
+  UserSession? savedSession;
+
+  @override
+  Future<void> saveSession(UserSession session) async {
+    savedSession = session;
+  }
+
+  @override
+  Future<UserSession?> getSession() async => savedSession;
+
+  @override
+  Future<void> clearSession() async {
+    savedSession = null;
+  }
 }
 
 void main() {
   late _FakeAuthRepository repository;
+  late _FakeSessionRepository sessionRepository;
   late PatientAuthCubit cubit;
 
   setUp(() {
     repository = _FakeAuthRepository();
+    sessionRepository = _FakeSessionRepository();
     cubit = PatientAuthCubit(
       SendOtpUseCase(repository),
       VerifyOtpUseCase(repository),
+      SaveSessionUseCase(sessionRepository),
     );
   });
 
@@ -141,6 +175,17 @@ void main() {
       await cubit.verifyOtp('123456');
 
       expect(cubit.state.destination, AuthDestination.home);
+    });
+
+    test('persists the session on success', () async {
+      repository.verifyResult =
+          const Success(PatientAuthResult(token: 'tok', isNewAccount: false));
+      cubit.phoneChanged('0599123456');
+
+      await cubit.verifyOtp('123456');
+
+      expect(sessionRepository.savedSession?.accountType, AccountType.patient);
+      expect(sessionRepository.savedSession?.token, 'tok');
     });
 
     test('surfaces the failure message on error', () async {
