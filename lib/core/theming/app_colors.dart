@@ -20,5 +20,9 @@ abstract class AppColors {
   static const Color pharmacyIconBackground = Color(0xFFB3EBFF);
   static const Color continueButtonBackground = Color(0xFF7BAFBB);
   static const Color cardChevron = Color(0xFFBDC8CD);
+
+  // Forms & Feedback
+  static const Color error = Color(0xFFD32F2F);
+  static const Color inputFill = Color(0xFFF5F5F5);
 }
 

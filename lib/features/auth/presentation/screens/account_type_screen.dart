@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
+import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/routing/routes.dart';
 import '../../domain/entities/account_type.dart';
 import '../cubit/account_type_cubit.dart';
 import '../widgets/account_option_card.dart';
@@ -27,26 +29,7 @@ class AccountTypeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(height: 64.h),
-                      Container(
-                        width: 130.w,
-                        height: 130.h,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 12.r,
-                              offset: Offset(0, 4.h),
-                            ),
-                          ],
-                        ),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                      const AppLogo(),
 
                       SizedBox(height: 32.h),
 
@@ -105,15 +88,21 @@ class AccountTypeScreen extends StatelessWidget {
                       SizedBox(height: 32.h),
 
                       AppCustomButton(
-                        backgroundColor: AppColors.continueButtonBackground,
+                        backgroundColor: AppColors.primaryTeal,
                         text: 'متابعة التسجيل',
                         onPressed: () {
                           final selectedType =
                               context.read<AccountTypeCubit>().state;
                           if (selectedType == AccountType.patient) {
-                            // TODO: Navigator.pushNamed(context, Routes.patientRegisterOtp);
+                            Navigator.pushNamed(
+                              context,
+                              Routes.patientAuthScreen,
+                            );
                           } else {
-                            // TODO: Navigator.pushNamed(context, Routes.pharmacyRegister);
+                            Navigator.pushNamed(
+                              context,
+                              Routes.pharmacyAuthScreen,
+                            );
                           }
                         },
                       ),
@@ -155,5 +144,5 @@ class AccountTypeScreen extends StatelessWidget {
       ),
     );
   }
-  
+
 }

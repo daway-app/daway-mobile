@@ -7,8 +7,8 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      textTheme: GoogleFonts.cairoTextTheme(),
-      fontFamily: GoogleFonts.cairo().fontFamily,
+      textTheme: GoogleFonts.almaraiTextTheme(),
+      fontFamily: GoogleFonts.almarai().fontFamily,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.mainTeal,
         primary: AppColors.mainTeal,
