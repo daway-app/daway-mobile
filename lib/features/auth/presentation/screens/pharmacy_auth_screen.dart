@@ -2,64 +2,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_logo.dart';
-import '../cubit/patient_auth_cubit.dart';
-import '../cubit/patient_auth_state.dart';
-import '../widgets/patient_phone_form.dart';
-import '../widgets/pharmacy_login_link.dart';
-import 'otp_verification_screen.dart';
+import '../cubit/pharmacy_auth_cubit.dart';
+import '../cubit/pharmacy_auth_state.dart';
+import '../widgets/pharmacy_login_form.dart';
+import '../widgets/pharmacy_support_card.dart';
 
-/// Merged screen for patient sign-in and sign-up: a single phone field and
-/// "send verification code" button. Whether the number is new or already
-/// registered is never revealed here — that only surfaces after the OTP is
-/// verified, on [OtpVerificationScreen].
-class PatientAuthScreen extends StatelessWidget {
-  const PatientAuthScreen({super.key});
+class PharmacyAuthScreen extends StatelessWidget {
+  const PharmacyAuthScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.textDark),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: SafeArea(
-        child: BlocListener<PatientAuthCubit, PatientAuthState>(
-          listenWhen: (previous, current) => !previous.otpSent && current.otpSent,
+        child: BlocListener<PharmacyAuthCubit, PharmacyAuthState>(
+          listenWhen: (previous, current) => previous.token == null && current.token != null,
           listener: (context, state) {
-            final cubit = context.read<PatientAuthCubit>();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: cubit,
-                  child: const OtpVerificationScreen(),
-                ),
-              ),
-            );
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(Routes.pharmacyHomeScreen, (route) => false);
           },
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 88.h),
+                SizedBox(height: 8.h),
                 const AppLogo(size: 96),
                 SizedBox(height: 16.h),
                 Text(
-                  'أهلاً بك في دوائي',
+                  'دخول الصيدلة',
                   style: AppTextStyles.authTitle,
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'أدخل رقم جوالك للمتابعة',
+                  'يرجى إدخال بيانات اعتماد الصيدلية للمتابعة',
                   style: AppTextStyles.authSubtitle,
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 24.h),
-                const AppCard(child: PatientPhoneForm()),
+                const AppCard(child: PharmacyLoginForm()),
                 SizedBox(height: 20.h),
-                const PharmacyLoginLink(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.w),
+                  child: const PharmacySupportCard(),
+                ),
                 SizedBox(height: 16.h),
               ],
             ),

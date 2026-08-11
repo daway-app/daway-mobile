@@ -45,6 +45,7 @@ dependencies:
   flutter_svg: ^2.3.0
   dio: ^5.11.0
   flutter_dotenv: ^6.0.1
+  flutter_secure_storage: ^11.0.0
 
 
 dev_dependencies:
