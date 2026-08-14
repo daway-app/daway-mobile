@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. إعداد بيئة Flutter بدلاً من Dart النقي
+      # 1. إعداد بيئة Flutter
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -28,10 +28,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # 3. التحقق من جودة وتنسيق الكود (اختياري لكن مفيد)
+      # 3. إنشاء ملف .env وهمي لمنع خطأ flutter analyze
+      - name: Create dummy .env file
+        run: touch .env
+
+      # 4. التحقق من جودة وتنسيق الكود
       - name: Analyze project source
         run: flutter analyze
 
-      # 4. تشغيل اختبارات Flutter
+      # 5. تشغيل اختبارات Flutter
       - name: Run tests
         run: flutter test
