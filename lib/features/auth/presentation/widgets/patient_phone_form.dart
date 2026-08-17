@@ -53,8 +53,7 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
             controller: _phoneController,
             hintText: '05xxxxxxxx',
             keyboardType: TextInputType.phone,
-            icon: Icon(Icons.phone_android_outlined, color: AppColors.grey, size: 20.sp),
-            textAlign: TextAlign.left,
+            prefixIcon: Icon(Icons.phone_android_outlined, color: AppColors.grey, size: 20.sp),
             onChanged: (value) => context.read<PatientAuthCubit>().phoneChanged(value),
           ),
         ),
@@ -125,7 +124,7 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
           builder: (context, state) {
             return AppCustomButton(
               text: 'إرسال رمز التحقق',
-              trailingIcon: Icons.arrow_forward,
+              trailingIcon: Icons.arrow_back,
               height: 48.h,
               isLoading: state.isSendingOtp,
               onPressed: () => context.read<PatientAuthCubit>().sendOtp(),
