@@ -129,6 +129,7 @@ class _PharmacyProfileScreenState extends State<PharmacyProfileScreen> {
           SizedBox(height: 8.h),
           AppTextField(
             controller: _phoneController,
+            textAlign: TextAlign.left,
             prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
             readOnly: true,
           ),
