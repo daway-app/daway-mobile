@@ -20,6 +20,11 @@ class _FakePatientProfileRepository implements PatientProfileRepository {
   ApiResult<void> result = const Success(null);
 
   @override
+  Future<ApiResult<PatientProfile>> getProfile({required String token}) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<ApiResult<void>> updateProfile({
     required String token,
     required PatientProfile profile,

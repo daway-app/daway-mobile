@@ -7,6 +7,13 @@ class PatientProfileRemoteDataSource {
 
   const PatientProfileRemoteDataSource(this._dio);
 
+  Future<Response<dynamic>> getProfile({required String token}) {
+    return _dio.get(
+      ApiConstants.patientProfile,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
+
   Future<Response<dynamic>> updateProfile({
     required String token,
     required Map<String, dynamic> body,
