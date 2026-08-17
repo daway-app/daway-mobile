@@ -48,7 +48,7 @@ class _PharmacyLoginFormState extends State<PharmacyLoginForm> {
           child: AppTextField(
             controller: _idController,
             hintText: 'أدخل رقم المعرف الخاص بك',
-            icon: Icon(Icons.badge_outlined, color: AppColors.grey, size: 20.sp),
+            prefixIcon: Icon(Icons.badge_outlined, color: AppColors.grey, size: 20.sp),
           ),
         ),
         SizedBox(height: 16.h),
@@ -60,8 +60,8 @@ class _PharmacyLoginFormState extends State<PharmacyLoginForm> {
             controller: _passwordController,
             hintText: 'أدخل كلمة المرور',
             obscureText: _obscurePassword,
-            icon: Icon(Icons.lock_outline, color: AppColors.grey, size: 20.sp),
-            prefixIcon: IconButton(
+            prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 20.sp),
+            icon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                 color: AppColors.grey,
