@@ -5,17 +5,19 @@ import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/patient/domain/entities/patient_profile.dart';
 import 'package:daway_app/features/patient/domain/repositories/patient_profile_repository.dart';
-import 'package:daway_app/features/patient/domain/usecases/update_patient_profile_usecase.dart';
+import 'package:daway_app/features/patient/domain/usecases/get_patient_profile_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakePatientProfileRepository implements PatientProfileRepository {
   String? lastToken;
-  PatientProfile? lastProfile;
-  ApiResult<void> result = const Success(null);
+  ApiResult<PatientProfile> result = const Success(
+    PatientProfile(name: 'أحمد محمد', phone: '0599123456'),
+  );
 
   @override
-  Future<ApiResult<PatientProfile>> getProfile({required String token}) {
-    throw UnimplementedError();
+  Future<ApiResult<PatientProfile>> getProfile({required String token}) async {
+    lastToken = token;
+    return result;
   }
 
   @override
@@ -23,9 +25,7 @@ class _FakePatientProfileRepository implements PatientProfileRepository {
     required String token,
     required PatientProfile profile,
   }) async {
-    lastToken = token;
-    lastProfile = profile;
-    return result;
+    throw UnimplementedError();
   }
 }
 
@@ -49,39 +49,29 @@ class _FakeSessionRepository implements SessionRepository {
 void main() {
   late _FakePatientProfileRepository repository;
   late _FakeSessionRepository sessionRepository;
-  late UpdatePatientProfileUseCase useCase;
-
-  const profile = PatientProfile(
-    name: 'أحمد محمد',
-    phone: '0599123456',
-    latitude: 31.5017,
-    longitude: 34.4668,
-    address: 'غزة - الرمال',
-  );
+  late GetPatientProfileUseCase useCase;
 
   setUp(() {
     repository = _FakePatientProfileRepository();
     sessionRepository = _FakeSessionRepository();
-    useCase = UpdatePatientProfileUseCase(repository, sessionRepository);
+    useCase = GetPatientProfileUseCase(repository, sessionRepository);
   });
 
   test('fails without hitting the repository when there is no saved session', () async {
-    final result = await useCase(profile);
+    final result = await useCase();
 
-    expect(result, isA<ApiError<void>>());
-    expect(repository.lastProfile, isNull);
+    expect(result, isA<ApiError<PatientProfile>>());
+    expect(repository.lastToken, isNull);
   });
 
-  test('sends the session token and profile to the repository', () async {
+  test('fetches the profile using the saved session token', () async {
     sessionRepository.savedSession =
         const UserSession(accountType: AccountType.patient, token: 'tok-789');
 
-    final result = await useCase(profile);
+    final result = await useCase();
 
-    expect(result, isA<Success<void>>());
+    expect(result, isA<Success<PatientProfile>>());
     expect(repository.lastToken, 'tok-789');
-    expect(repository.lastProfile?.name, profile.name);
-    expect(repository.lastProfile?.address, profile.address);
   });
 
   test('surfaces a repository failure', () async {
@@ -89,8 +79,8 @@ void main() {
         const UserSession(accountType: AccountType.patient, token: 'tok-789');
     repository.result = const ApiError(NetworkFailure('لا يوجد اتصال بالإنترنت'));
 
-    final result = await useCase(profile);
+    final result = await useCase();
 
-    expect(result, isA<ApiError<void>>());
+    expect(result, isA<ApiError<PatientProfile>>());
   });
 }

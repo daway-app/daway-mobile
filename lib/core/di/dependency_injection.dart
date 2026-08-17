@@ -26,12 +26,14 @@ import '../../features/patient/domain/repositories/avatar_repository.dart';
 import '../../features/patient/domain/repositories/location_repository.dart';
 import '../../features/patient/domain/repositories/patient_profile_repository.dart';
 import '../../features/patient/domain/usecases/get_current_location_usecase.dart';
+import '../../features/patient/domain/usecases/get_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/reverse_geocode_usecase.dart';
 import '../../features/patient/domain/usecases/search_address_usecase.dart';
 import '../../features/patient/domain/usecases/update_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
 import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
+import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
 import '../local_storage/secure_storage_service.dart';
 import '../networking/dio_factory.dart';
 
@@ -79,6 +81,7 @@ Future<void> setupGetIt() async {
     () => PatientProfileRepositoryImpl(getIt()),
   );
   getIt.registerLazySingleton(() => UpdatePatientProfileUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => GetPatientProfileUseCase(getIt(), getIt()));
 
   // ---------------- Location ----------------
   getIt.registerLazySingleton<LocationRepository>(() => LocationRepositoryImpl());
@@ -114,6 +117,11 @@ Future<void> setupGetIt() async {
     ),
   );
   getIt.registerLazySingleton(() => UploadAvatarUseCase(getIt()));
+
+  // ---------------- Patient Dashboard ----------------
+  getIt.registerFactory(
+    () => PatientProfileCubit(getIt(), getIt(), getIt()),
+  );
 
   // ---------------- Complete Profile ----------------
   getIt.registerFactoryParam<CompleteProfileCubit, String, void>(

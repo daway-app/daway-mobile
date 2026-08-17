@@ -3,7 +3,7 @@ import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/complete_profile_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/location_picker_screen.dart';
-import 'package:daway_app/features/patient/presentation/screens/patient_home_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +50,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => getIt<LogoutCubit>(),
-            child: const PatientHomeScreen(),
+            child: const PatientDashboardShellScreen(),
           ),
         );
 

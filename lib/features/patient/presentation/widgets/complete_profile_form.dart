@@ -8,8 +8,8 @@ import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../cubit/complete_profile_cubit.dart';
 import '../cubit/complete_profile_state.dart';
-import 'complete_profile_location_field.dart';
 import 'profile_avatar_picker.dart';
+import 'profile_location_field.dart';
 
 class CompleteProfileForm extends StatefulWidget {
   const CompleteProfileForm({super.key});
@@ -43,7 +43,21 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        const Center(child: ProfileAvatarPicker()),
+        Center(
+          child: BlocBuilder<CompleteProfileCubit, CompleteProfileState>(
+            buildWhen: (previous, current) =>
+                previous.formData.avatarLocalPath != current.formData.avatarLocalPath ||
+                previous.formData.isUploadingAvatar != current.formData.isUploadingAvatar ||
+                previous.formData.avatarError != current.formData.avatarError,
+            builder: (context, state) => ProfileAvatarPicker(
+              avatarLocalPath: state.formData.avatarLocalPath,
+              isUploading: state.formData.isUploadingAvatar,
+              errorMessage: state.formData.avatarError,
+              onImagePicked: (file) =>
+                  context.read<CompleteProfileCubit>().avatarSelected(file),
+            ),
+          ),
+        ),
         SizedBox(height: 24.h),
         Text('الاسم الكامل', style: AppTextStyles.inputLabel),
         SizedBox(height: 8.h),
@@ -65,7 +79,19 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         SizedBox(height: 16.h),
         Text('الموقع', style: AppTextStyles.inputLabel),
         SizedBox(height: 8.h),
-        const CompleteProfileLocationField(),
+        BlocBuilder<CompleteProfileCubit, CompleteProfileState>(
+          buildWhen: (previous, current) =>
+              previous.formData.address != current.formData.address ||
+              previous.formData.hasLocation != current.formData.hasLocation,
+          builder: (context, state) => ProfileLocationField(
+            hasLocation: state.formData.hasLocation,
+            latitude: state.formData.latitude,
+            longitude: state.formData.longitude,
+            address: state.formData.address,
+            onLocationPicked: (location) =>
+                context.read<CompleteProfileCubit>().locationSelected(location),
+          ),
+        ),
         SizedBox(height: 24.h),
         BlocBuilder<CompleteProfileCubit, CompleteProfileState>(
           builder: (context, state) {

@@ -8,12 +8,25 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/logout_confirmation_dialog.dart';
 import '../../../auth/presentation/cubit/logout_cubit.dart';
+import 'patient_dashboard_tab_scope.dart';
 
-/// Drawer shown from [PatientHomeScreen] and the other main patient tabs.
-/// Items with no screen yet just close the drawer with a "coming soon" cue
-/// instead of silently doing nothing.
+/// Drawer shown from every tab inside [PatientDashboardShellScreen] — each
+/// tab owns its own instance rather than the shell owning one shared Drawer,
+/// so tapping a tab item here switches the shell's selected tab via
+/// [PatientDashboardTabScope] instead of pushing a new route. Items with no
+/// screen at all yet just close the drawer with a "coming soon" cue.
 class PatientSideMenu extends StatelessWidget {
   const PatientSideMenu({super.key});
+
+  void _switchToTab(BuildContext context, PatientDashboardTab tab) {
+    Navigator.of(context).pop();
+    final scope = PatientDashboardTabScope.maybeOf(context);
+    if (scope != null) {
+      scope.switchToTab(tab);
+    } else {
+      AppSnackbar.show(context, 'قريباً');
+    }
+  }
 
   void _handleComingSoon(BuildContext context) {
     Navigator.of(context).pop();
@@ -34,22 +47,22 @@ class PatientSideMenu extends StatelessWidget {
             _MenuItem(
               icon: Icons.home_outlined,
               label: 'الرئيسية',
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () => _switchToTab(context, PatientDashboardTab.home),
             ),
             _MenuItem(
               icon: Icons.person_outline,
               label: 'حسابي',
-              onTap: () => _handleComingSoon(context),
+              onTap: () => _switchToTab(context, PatientDashboardTab.profile),
             ),
             _MenuItem(
               icon: Icons.calendar_month_outlined,
               label: 'مواعيدي',
-              onTap: () => _handleComingSoon(context),
+              onTap: () => _switchToTab(context, PatientDashboardTab.appointments),
             ),
             _MenuItem(
               icon: Icons.medication_outlined,
               label: 'أدويتي',
-              onTap: () => _handleComingSoon(context),
+              onTap: () => _switchToTab(context, PatientDashboardTab.medications),
             ),
             _MenuItem(
               icon: Icons.settings_outlined,
