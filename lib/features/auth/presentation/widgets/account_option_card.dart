@@ -55,12 +55,18 @@ class AccountOptionCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.chevron_left,
-                  color: AppColors.cardChevron,
-                  size: 24.sp,
+                Container(
+                  width: 56.w,
+                  height: 56.h,
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: iconWidget,
+                  ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -78,17 +84,11 @@ class AccountOptionCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 16.w),
-                Container(
-                  width: 56.w,
-                  height: 56.h,
-                  decoration: BoxDecoration(
-                    color: iconBgColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: iconWidget,
-                  ),
+                SizedBox(width: 12.w),
+                Icon(
+                  Icons.chevron_left,
+                  color: AppColors.cardChevron,
+                  size: 24.sp,
                 ),
               ],
             ),

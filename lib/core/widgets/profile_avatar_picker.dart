@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
+import '../theming/app_colors.dart';
+import '../theming/app_text_styles.dart';
 
-/// Avatar circle with an edit pencil badge. Picking a source (camera/gallery)
-/// is a plain UI interaction handled here; the resulting file is handed back
-/// via [onImagePicked] — the caller's cubit owns the upload business logic,
-/// so this widget stays reusable across any screen that edits an avatar.
+/// Avatar/logo circle with an edit pencil badge. Picking a source
+/// (camera/gallery) is a plain UI interaction handled here; the resulting
+/// file is handed back via [onImagePicked] — the caller's cubit owns the
+/// upload business logic, so this widget stays reusable across any screen
+/// that edits a profile picture (patient profile, pharmacy profile, ...).
 class ProfileAvatarPicker extends StatelessWidget {
   final String? avatarLocalPath;
   final String? avatarUrl;

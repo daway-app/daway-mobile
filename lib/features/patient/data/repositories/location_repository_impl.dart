@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../../../core/erroring/error_handler.dart';
 import '../../../../core/erroring/failure.dart';
 import '../../../../core/helpers/api_result.dart';
-import '../../domain/entities/picked_location.dart';
+import '../../../../core/models/picked_location.dart';
 import '../../domain/repositories/location_repository.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
