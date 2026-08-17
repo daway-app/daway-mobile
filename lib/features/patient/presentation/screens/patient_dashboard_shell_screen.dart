@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
+import '../../../../core/widgets/coming_soon_tab_screen.dart';
 import '../cubit/patient_profile_cubit.dart';
 import '../widgets/patient_dashboard_tab_scope.dart';
-import 'coming_soon_tab_screen.dart';
+import '../widgets/patient_side_menu.dart';
 import 'patient_home_screen.dart';
 import 'patient_profile_screen.dart';
 
@@ -31,8 +32,16 @@ class _PatientDashboardShellScreenState extends State<PatientDashboardShellScree
         create: (_) => getIt<PatientProfileCubit>(),
         child: const PatientProfileScreen(),
       ),
-      const ComingSoonTabScreen(title: 'مواعيدي', icon: Icons.calendar_month_outlined),
-      const ComingSoonTabScreen(title: 'أدويتي', icon: Icons.medication_outlined),
+      const ComingSoonTabScreen(
+        title: 'مواعيدي',
+        icon: Icons.calendar_month_outlined,
+        drawer: PatientSideMenu(),
+      ),
+      const ComingSoonTabScreen(
+        title: 'أدويتي',
+        icon: Icons.medication_outlined,
+        drawer: PatientSideMenu(),
+      ),
     ];
 
     return PatientDashboardTabScope(

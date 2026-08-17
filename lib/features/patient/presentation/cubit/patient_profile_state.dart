@@ -20,6 +20,7 @@ class PatientProfileLoaded extends PatientProfileState {
   final PatientProfile profile;
   final bool isEditing;
   final String name;
+  final String? birthDate;
   final String? avatarLocalPath;
   final String? avatarUrl;
   final bool isUploadingAvatar;
@@ -34,6 +35,7 @@ class PatientProfileLoaded extends PatientProfileState {
     required this.profile,
     this.isEditing = false,
     required this.name,
+    this.birthDate,
     this.avatarLocalPath,
     this.avatarUrl,
     this.isUploadingAvatar = false,
@@ -49,6 +51,7 @@ class PatientProfileLoaded extends PatientProfileState {
     return PatientProfileLoaded(
       profile: profile,
       name: profile.name,
+      birthDate: profile.birthDate,
       avatarUrl: profile.avatarUrl,
       latitude: profile.latitude,
       longitude: profile.longitude,
@@ -67,6 +70,7 @@ class PatientProfileLoaded extends PatientProfileState {
   PatientProfileLoaded copyWith({
     bool? isEditing,
     String? name,
+    String? birthDate,
     String? avatarLocalPath,
     String? avatarUrl,
     bool? isUploadingAvatar,
@@ -83,6 +87,7 @@ class PatientProfileLoaded extends PatientProfileState {
       profile: profile,
       isEditing: isEditing ?? this.isEditing,
       name: name ?? this.name,
+      birthDate: birthDate ?? this.birthDate,
       avatarLocalPath: avatarLocalPath ?? this.avatarLocalPath,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       isUploadingAvatar: isUploadingAvatar ?? this.isUploadingAvatar,

@@ -6,7 +6,7 @@ import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/patient/domain/entities/patient_profile.dart';
-import 'package:daway_app/features/patient/domain/entities/picked_location.dart';
+import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/patient/domain/repositories/avatar_repository.dart';
 import 'package:daway_app/features/patient/domain/repositories/patient_profile_repository.dart';
 import 'package:daway_app/features/patient/domain/usecases/update_patient_profile_usecase.dart';

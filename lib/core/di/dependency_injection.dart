@@ -34,6 +34,12 @@ import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
 import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
+import '../../features/pharmacy/data/datasources/pharmacy_profile_remote_data_source.dart';
+import '../../features/pharmacy/data/repositories/pharmacy_profile_repository_impl.dart';
+import '../../features/pharmacy/domain/repositories/pharmacy_profile_repository.dart';
+import '../../features/pharmacy/domain/usecases/get_pharmacy_profile_usecase.dart';
+import '../../features/pharmacy/domain/usecases/update_pharmacy_profile_usecase.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
 import '../local_storage/secure_storage_service.dart';
 import '../networking/dio_factory.dart';
 
@@ -121,6 +127,17 @@ Future<void> setupGetIt() async {
   // ---------------- Patient Dashboard ----------------
   getIt.registerFactory(
     () => PatientProfileCubit(getIt(), getIt(), getIt()),
+  );
+
+  // ---------------- Pharmacy Profile ----------------
+  getIt.registerLazySingleton(() => PharmacyProfileRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PharmacyProfileRepository>(
+    () => PharmacyProfileRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetPharmacyProfileUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => UpdatePharmacyProfileUseCase(getIt(), getIt()));
+  getIt.registerFactory(
+    () => PharmacyProfileCubit(getIt(), getIt(), getIt()),
   );
 
   // ---------------- Complete Profile ----------------

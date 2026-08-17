@@ -3,44 +3,55 @@ import 'dart:io';
 
 import 'package:daway_app/core/erroring/failure.dart';
 import 'package:daway_app/core/helpers/api_result.dart';
+import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
-import 'package:daway_app/features/patient/domain/entities/patient_profile.dart';
-import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/patient/domain/repositories/avatar_repository.dart';
-import 'package:daway_app/features/patient/domain/repositories/patient_profile_repository.dart';
-import 'package:daway_app/features/patient/domain/usecases/get_patient_profile_usecase.dart';
-import 'package:daway_app/features/patient/domain/usecases/update_patient_profile_usecase.dart';
 import 'package:daway_app/features/patient/domain/usecases/upload_avatar_usecase.dart';
-import 'package:daway_app/features/patient/presentation/cubit/patient_profile_cubit.dart';
-import 'package:daway_app/features/patient/presentation/cubit/patient_profile_state.dart';
+import 'package:daway_app/features/pharmacy/domain/entities/pharmacy_profile.dart';
+import 'package:daway_app/features/pharmacy/domain/entities/working_hours_entry.dart';
+import 'package:daway_app/features/pharmacy/domain/repositories/pharmacy_profile_repository.dart';
+import 'package:daway_app/features/pharmacy/domain/usecases/get_pharmacy_profile_usecase.dart';
+import 'package:daway_app/features/pharmacy/domain/usecases/update_pharmacy_profile_usecase.dart';
+import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
+import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_profile_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _savedProfile = PatientProfile(
-  name: 'أحمد محمد',
-  phone: '0599123456',
-  latitude: 31.5017,
+const _savedProfile = PharmacyProfile(
+  pharmacyId: 'PH-1234',
+  name: 'صيدلية الأمل',
+  phone: '+970591234567',
+  latitude: 31.5016,
   longitude: 34.4668,
-  address: 'غزة - الرمال',
+  address: 'غزة - شارع الوحدة',
+  workingHours: [
+    WorkingHoursEntry(day: WeekDay.sat, open: '09:00', close: '22:00'),
+    WorkingHoursEntry(day: WeekDay.sun, open: '09:00', close: '22:00'),
+    WorkingHoursEntry(day: WeekDay.mon, open: '09:00', close: '22:00'),
+    WorkingHoursEntry(day: WeekDay.tue),
+    WorkingHoursEntry(day: WeekDay.wed),
+    WorkingHoursEntry(day: WeekDay.thu),
+    WorkingHoursEntry(day: WeekDay.fri),
+  ],
 );
 
-class _FakePatientProfileRepository implements PatientProfileRepository {
-  ApiResult<PatientProfile> getResult = const Success(_savedProfile);
+class _FakePharmacyProfileRepository implements PharmacyProfileRepository {
+  ApiResult<PharmacyProfile> getResult = const Success(_savedProfile);
   ApiResult<void> updateResult = const Success(null);
-  PatientProfile? lastUpdatedProfile;
+  PharmacyProfile? lastUpdatedProfile;
 
   /// When set, updateProfile() waits for this to complete instead of
   /// resolving immediately — lets a test pause mid-save to exercise races.
   Completer<void>? updateGate;
 
   @override
-  Future<ApiResult<PatientProfile>> getProfile({required String token}) async => getResult;
+  Future<ApiResult<PharmacyProfile>> getProfile({required String token}) async => getResult;
 
   @override
   Future<ApiResult<void>> updateProfile({
     required String token,
-    required PatientProfile profile,
+    required PharmacyProfile profile,
   }) async {
     lastUpdatedProfile = profile;
     if (updateGate != null) await updateGate!.future;
@@ -50,7 +61,7 @@ class _FakePatientProfileRepository implements PatientProfileRepository {
 
 class _FakeSessionRepository implements SessionRepository {
   UserSession? savedSession =
-      const UserSession(accountType: AccountType.patient, token: 'tok-1');
+      const UserSession(accountType: AccountType.pharmacy, token: 'tok-1');
 
   @override
   Future<void> saveSession(UserSession session) async {
@@ -67,7 +78,7 @@ class _FakeSessionRepository implements SessionRepository {
 }
 
 class _FakeAvatarRepository implements AvatarRepository {
-  ApiResult<String> result = const Success('https://example.com/avatar.jpg');
+  ApiResult<String> result = const Success('https://example.com/logo.jpg');
 
   /// When set, uploadAvatar() waits for this to complete instead of
   /// resolving immediately — lets a test pause mid-upload to exercise races.
@@ -81,18 +92,18 @@ class _FakeAvatarRepository implements AvatarRepository {
 }
 
 void main() {
-  late _FakePatientProfileRepository profileRepository;
-  late _FakeAvatarRepository avatarRepository;
-  late PatientProfileCubit cubit;
+  late _FakePharmacyProfileRepository profileRepository;
+  late _FakeAvatarRepository logoRepository;
+  late PharmacyProfileCubit cubit;
 
   setUp(() async {
-    profileRepository = _FakePatientProfileRepository();
-    avatarRepository = _FakeAvatarRepository();
+    profileRepository = _FakePharmacyProfileRepository();
+    logoRepository = _FakeAvatarRepository();
     final sessionRepository = _FakeSessionRepository();
-    cubit = PatientProfileCubit(
-      GetPatientProfileUseCase(profileRepository, sessionRepository),
-      UpdatePatientProfileUseCase(profileRepository, sessionRepository),
-      UploadAvatarUseCase(avatarRepository),
+    cubit = PharmacyProfileCubit(
+      GetPharmacyProfileUseCase(profileRepository, sessionRepository),
+      UpdatePharmacyProfileUseCase(profileRepository, sessionRepository),
+      UploadAvatarUseCase(logoRepository),
     );
     await cubit.load();
   });
@@ -100,11 +111,12 @@ void main() {
   tearDown(() => cubit.close());
 
   test('loads the profile in read-only mode', () {
-    final state = cubit.state as PatientProfileLoaded;
-    expect(state.name, 'أحمد محمد');
+    final state = cubit.state as PharmacyProfileLoaded;
+    expect(state.name, 'صيدلية الأمل');
     expect(state.isEditing, isFalse);
     expect(state.hasLocation, isTrue);
     expect(state.isIncomplete, isFalse);
+    expect(state.workingHours.length, 7);
   });
 
   test('surfaces a load failure', () async {
@@ -112,57 +124,58 @@ void main() {
 
     await cubit.load();
 
-    expect(cubit.state, isA<PatientProfileLoadFailure>());
+    expect(cubit.state, isA<PharmacyProfileLoadFailure>());
   });
 
   test('a profile with no location yet is flagged incomplete', () async {
     profileRepository.getResult = const Success(
-      PatientProfile(name: 'New User', phone: '0599123456'),
+      PharmacyProfile(pharmacyId: 'PH-1', name: 'صيدلية جديدة', phone: '+970591234567'),
     );
 
     await cubit.load();
 
-    expect((cubit.state as PatientProfileLoaded).isIncomplete, isTrue);
+    expect((cubit.state as PharmacyProfileLoaded).isIncomplete, isTrue);
   });
 
   test('toggleEdit enters edit mode, then discards edits on cancel', () {
     cubit.toggleEdit();
-    expect((cubit.state as PatientProfileLoaded).isEditing, isTrue);
+    expect((cubit.state as PharmacyProfileLoaded).isEditing, isTrue);
 
     cubit.nameChanged('اسم مختلف');
-    expect((cubit.state as PatientProfileLoaded).name, 'اسم مختلف');
+    expect((cubit.state as PharmacyProfileLoaded).name, 'اسم مختلف');
 
     cubit.toggleEdit();
-    final state = cubit.state as PatientProfileLoaded;
+    final state = cubit.state as PharmacyProfileLoaded;
     expect(state.isEditing, isFalse);
-    expect(state.name, 'أحمد محمد');
+    expect(state.name, 'صيدلية الأمل');
   });
 
-  test('locationSelected updates coordinates and address while editing', () {
+  test('workingHoursChanged updates only the targeted day', () {
     cubit.toggleEdit();
-    cubit.locationSelected(
-      const PickedLocation(latitude: 31.9, longitude: 35.2, address: 'رام الله'),
-    );
+    cubit.workingHoursChanged(WeekDay.tue, open: '10:00', close: '20:00');
 
-    final state = cubit.state as PatientProfileLoaded;
-    expect(state.latitude, 31.9);
-    expect(state.address, 'رام الله');
+    final state = cubit.state as PharmacyProfileLoaded;
+    final tue = state.workingHours.firstWhere((e) => e.day == WeekDay.tue);
+    expect(tue.open, '10:00');
+    expect(tue.close, '20:00');
+    final sat = state.workingHours.firstWhere((e) => e.day == WeekDay.sat);
+    expect(sat.open, '09:00');
   });
 
-  test('canSave requires a location, matching the onboarding flow', () async {
+  test('canSave requires a location', () async {
     profileRepository.getResult = const Success(
-      PatientProfile(name: 'New User', phone: '0599123456'),
+      PharmacyProfile(pharmacyId: 'PH-1', name: 'صيدلية جديدة', phone: '+970591234567'),
     );
     await cubit.load();
 
     cubit.toggleEdit();
     cubit.nameChanged('اسم جديد');
-    expect((cubit.state as PatientProfileLoaded).canSave, isFalse);
+    expect((cubit.state as PharmacyProfileLoaded).canSave, isFalse);
 
     cubit.locationSelected(
       const PickedLocation(latitude: 31.9, longitude: 35.2, address: 'رام الله'),
     );
-    expect((cubit.state as PatientProfileLoaded).canSave, isTrue);
+    expect((cubit.state as PharmacyProfileLoaded).canSave, isTrue);
   });
 
   test('a save error is cleared as soon as the user edits again', () async {
@@ -171,11 +184,11 @@ void main() {
     profileRepository.updateResult =
         const ApiError(ApiFailure(message: 'فشل الحفظ', code: 'VALIDATION_ERROR'));
     await cubit.save();
-    expect((cubit.state as PatientProfileLoaded).saveError, 'فشل الحفظ');
+    expect((cubit.state as PharmacyProfileLoaded).saveError, 'فشل الحفظ');
 
     cubit.nameChanged('محاولة تانية');
 
-    expect((cubit.state as PatientProfileLoaded).saveError, isNull);
+    expect((cubit.state as PharmacyProfileLoaded).saveError, isNull);
   });
 
   test('cancelling while a save is in flight is not undone when it resolves', () async {
@@ -189,24 +202,24 @@ void main() {
     gate.complete();
     await saveFuture;
 
-    final state = cubit.state as PatientProfileLoaded;
+    final state = cubit.state as PharmacyProfileLoaded;
     expect(state.isEditing, isFalse);
-    expect(state.name, 'أحمد محمد');
+    expect(state.name, 'صيدلية الأمل');
   });
 
-  test('cancelling while an avatar upload is in flight is not undone when it resolves', () async {
+  test('cancelling while a logo upload is in flight is not undone when it resolves', () async {
     final gate = Completer<void>();
-    avatarRepository.uploadGate = gate;
+    logoRepository.uploadGate = gate;
     cubit.toggleEdit();
 
-    final uploadFuture = cubit.avatarSelected(File('avatar.jpg'));
+    final uploadFuture = cubit.logoSelected(File('logo.jpg'));
     cubit.toggleEdit(); // cancel before the upload resolves
     gate.complete();
     await uploadFuture;
 
-    final state = cubit.state as PatientProfileLoaded;
+    final state = cubit.state as PharmacyProfileLoaded;
     expect(state.isEditing, isFalse);
-    expect(state.avatarUrl, isNull);
+    expect(state.logoUrl, isNull);
   });
 
   group('save', () {
@@ -225,10 +238,11 @@ void main() {
 
       await cubit.save();
 
-      final state = cubit.state as PatientProfileLoaded;
+      final state = cubit.state as PharmacyProfileLoaded;
       expect(state.isEditing, isFalse);
       expect(state.name, 'اسم جديد');
       expect(profileRepository.lastUpdatedProfile?.name, 'اسم جديد');
+      expect(profileRepository.lastUpdatedProfile?.pharmacyId, 'PH-1234');
     });
 
     test('surfaces a failure and stays in edit mode', () async {
@@ -239,7 +253,7 @@ void main() {
 
       await cubit.save();
 
-      final state = cubit.state as PatientProfileLoaded;
+      final state = cubit.state as PharmacyProfileLoaded;
       expect(state.isEditing, isTrue);
       expect(state.saveError, 'فشل الحفظ');
     });

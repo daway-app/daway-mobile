@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/routing/routes.dart';
-import '../../../../core/theming/app_colors.dart';
-import '../../domain/entities/picked_location.dart';
+import '../models/picked_location.dart';
+import '../routing/routes.dart';
+import '../theming/app_colors.dart';
 
 /// Tap-to-open field: opening the map picker is a navigation/UI concern, so
 /// it lives here rather than in a cubit; only the picked result is handed
 /// back via [onLocationPicked]. Goes through the named route (rather than
-/// constructing [LocationPickerScreen] inline) so there's a single place
-/// that wires up its Cubit. Pure display + callback so it's reusable across
-/// any screen that edits a location (profile completion, profile editing).
+/// constructing the picker screen inline) so there's a single place that
+/// wires up its Cubit. Pure display + callback so it's reusable across any
+/// screen that edits a location (patient profile, pharmacy profile, ...).
 class ProfileLocationField extends StatelessWidget {
   final bool hasLocation;
   final double? latitude;

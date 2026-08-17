@@ -1,6 +1,6 @@
 import 'package:daway_app/core/erroring/failure.dart';
 import 'package:daway_app/core/helpers/api_result.dart';
-import 'package:daway_app/features/patient/domain/entities/picked_location.dart';
+import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/patient/domain/repositories/location_repository.dart';
 import 'package:daway_app/features/patient/domain/usecases/get_current_location_usecase.dart';
 import 'package:daway_app/features/patient/domain/usecases/reverse_geocode_usecase.dart';

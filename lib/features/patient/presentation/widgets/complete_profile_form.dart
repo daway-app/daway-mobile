@@ -6,10 +6,10 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/profile_avatar_picker.dart';
+import '../../../../core/widgets/profile_location_field.dart';
 import '../cubit/complete_profile_cubit.dart';
 import '../cubit/complete_profile_state.dart';
-import 'profile_avatar_picker.dart';
-import 'profile_location_field.dart';
 
 class CompleteProfileForm extends StatefulWidget {
   const CompleteProfileForm({super.key});
@@ -64,7 +64,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         AppTextField(
           controller: _nameController,
           hintText: 'أدخل اسمك الكامل',
-          icon: Icon(Icons.person_outline, color: AppColors.grey, size: 20.sp),
+          prefixIcon: Icon(Icons.person_outline, color: AppColors.grey, size: 20.sp),
           onChanged: (value) => context.read<CompleteProfileCubit>().nameChanged(value),
         ),
         SizedBox(height: 16.h),
@@ -72,8 +72,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         SizedBox(height: 8.h),
         AppTextField(
           controller: _phoneController,
-          textAlign: TextAlign.left,
-          icon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
+          prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
           readOnly: true,
         ),
         SizedBox(height: 16.h),

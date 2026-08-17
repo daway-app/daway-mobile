@@ -7,7 +7,7 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
-import '../../domain/entities/picked_location.dart';
+import '../../../../core/models/picked_location.dart';
 import '../cubit/location_picker_cubit.dart';
 import '../cubit/location_picker_state.dart';
 import '../widgets/location_search_bar.dart';

@@ -1,5 +1,5 @@
 import '../../../../core/helpers/api_result.dart';
-import '../entities/picked_location.dart';
+import '../../../../core/models/picked_location.dart';
 import '../repositories/location_repository.dart';
 
 class GetCurrentLocationUseCase {

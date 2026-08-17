@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
 import '../../domain/entities/patient_profile.dart';
-import '../../domain/entities/picked_location.dart';
+import '../../../../core/models/picked_location.dart';
 import '../../domain/usecases/get_patient_profile_usecase.dart';
 import '../../domain/usecases/update_patient_profile_usecase.dart';
 import '../../domain/usecases/upload_avatar_usecase.dart';
@@ -59,6 +59,12 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
     emit(current.copyWith(name: value, clearSaveError: true));
   }
 
+  void birthDateChanged(String value) {
+    final current = state;
+    if (current is! PatientProfileLoaded) return;
+    emit(current.copyWith(birthDate: value, clearSaveError: true));
+  }
+
   void locationSelected(PickedLocation location) {
     final current = state;
     if (current is! PatientProfileLoaded) return;
@@ -106,7 +112,7 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
       name: current.name.trim(),
       phone: current.profile.phone,
       avatarUrl: current.avatarUrl,
-      birthDate: current.profile.birthDate,
+      birthDate: current.birthDate,
       latitude: current.latitude,
       longitude: current.longitude,
       address: current.address,

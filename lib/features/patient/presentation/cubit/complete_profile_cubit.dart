@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
 import '../../domain/entities/patient_profile.dart';
-import '../../domain/entities/picked_location.dart';
+import '../../../../core/models/picked_location.dart';
 import '../../domain/usecases/update_patient_profile_usecase.dart';
 import '../../domain/usecases/upload_avatar_usecase.dart';
 import 'complete_profile_state.dart';
