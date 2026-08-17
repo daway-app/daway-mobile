@@ -12,6 +12,9 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final TextAlign textAlign;
   final bool obscureText;
+  final bool readOnly;
+  final ValueChanged<String>? onSubmitted;
+  final TextInputAction? textInputAction;
 
   const AppTextField({
     super.key,
@@ -23,6 +26,9 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
     this.textAlign = TextAlign.right,
     this.obscureText = false,
+    this.readOnly = false,
+    this.onSubmitted,
+    this.textInputAction,
   });
 
   @override
@@ -31,8 +37,11 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      textInputAction: textInputAction,
       textAlign: textAlign,
       obscureText: obscureText,
+      readOnly: readOnly,
       style: TextStyle(fontSize: 16.sp, color: AppColors.textDark),
       decoration: InputDecoration(
         hintText: hintText,
