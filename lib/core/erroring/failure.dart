@@ -22,3 +22,9 @@ class UnknownFailure extends Failure {
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message);
 }
+
+/// Device-level permission was denied or the underlying service (e.g. GPS)
+/// is turned off — distinct from [ApiFailure] since there's no server involved.
+class PermissionFailure extends Failure {
+  const PermissionFailure(super.message);
+}

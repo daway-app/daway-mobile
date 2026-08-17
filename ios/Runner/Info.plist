@@ -47,5 +47,13 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>نحتاج الوصول لموقعك لتحديد عنوانك بدقة على الخريطة</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>نحتاج الوصول لمعرض الصور لاختيار صورة البروفايل</string>
+		<key>NSCameraUsageDescription</key>
+		<string>نحتاج الوصول للكاميرا لالتقاط صورة البروفايل</string>
+		<key>GMSApiKey</key>
+		<string>$(GOOGLE_MAPS_API_KEY)</string>
 	</dict>
 </plist>

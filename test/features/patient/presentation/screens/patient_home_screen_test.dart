@@ -84,6 +84,8 @@ void main() {
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.logout));
     await tester.pumpAndSettle();
 
@@ -99,6 +101,8 @@ void main() {
     await tester.pumpWidget(buildTestableScreen(cubit, visitedRoutes: visitedRoutes));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.logout));
     await tester.pumpAndSettle();
     await tester.tap(find.text('تأكيد'));

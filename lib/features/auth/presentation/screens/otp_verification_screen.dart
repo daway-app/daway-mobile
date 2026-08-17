@@ -43,7 +43,11 @@ class OtpVerificationScreen extends StatelessWidget {
               final route = state.destination == AuthDestination.profile
                   ? Routes.profileScreen
                   : Routes.patientHomeScreen;
-              Navigator.of(context).pushNamedAndRemoveUntil(route, (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                route,
+                (route) => false,
+                arguments: state.destination == AuthDestination.profile ? state.phone : null,
+              );
             },
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
