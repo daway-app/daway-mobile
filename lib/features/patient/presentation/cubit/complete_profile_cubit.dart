@@ -26,6 +26,10 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
     emit(CompleteProfileInitial(state.formData.copyWith(name: value)));
   }
 
+  void birthDateChanged(String value) {
+    emit(CompleteProfileInitial(state.formData.copyWith(birthDate: value)));
+  }
+
   void locationSelected(PickedLocation location) {
     emit(CompleteProfileInitial(state.formData.copyWith(
       latitude: location.latitude,
@@ -66,6 +70,7 @@ class CompleteProfileCubit extends Cubit<CompleteProfileState> {
       name: formData.name.trim(),
       phone: formData.phone,
       avatarUrl: formData.avatarUrl ?? _defaultAvatarUrl,
+      birthDate: formData.birthDate,
       latitude: formData.latitude!,
       longitude: formData.longitude!,
       address: formData.address ?? '',
