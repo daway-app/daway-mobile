@@ -39,10 +39,10 @@ class _PharmacyLoginFormState extends State<PharmacyLoginForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('معرف الصيدلية', style: AppTextStyles.inputLabel),
-        SizedBox(height: 8.h),
+        SizedBox(height: 16.h),
         SizedBox(
           height: 48.h,
           child: AppTextField(
@@ -53,7 +53,7 @@ class _PharmacyLoginFormState extends State<PharmacyLoginForm> {
         ),
         SizedBox(height: 16.h),
         Text('كلمة المرور', style: AppTextStyles.inputLabel),
-        SizedBox(height: 8.h),
+        SizedBox(height: 16.h),
         SizedBox(
           height: 48.h,
           child: AppTextField(
