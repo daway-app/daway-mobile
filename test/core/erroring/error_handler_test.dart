@@ -18,17 +18,50 @@ DioException _badResponse({int? statusCode, Map<String, dynamic>? data}) {
 
 void main() {
   group('mapExceptionToFailure', () {
-    test('prefers the server-provided message over the code map', () {
+    test('prefers the known Arabic code map over a raw server message', () {
       final failure = mapExceptionToFailure(
         _badResponse(
           statusCode: 400,
-          data: {'code': 'OTP_INVALID', 'message': 'رسالة مخصصة من الخادم'},
+          data: {'code': 'OTP_INVALID', 'message': 'Invalid OTP code'},
         ),
       );
 
       expect(failure, isA<ApiFailure>());
-      expect(failure.message, 'رسالة مخصصة من الخادم');
+      expect(failure.message, 'رمز التحقق غير صحيح');
       expect((failure as ApiFailure).code, 'OTP_INVALID');
+    });
+
+    test('falls back to the server-provided message when the code is unrecognized', () {
+      final failure = mapExceptionToFailure(
+        _badResponse(
+          statusCode: 400,
+          data: {'code': 'SOME_UNKNOWN_CODE', 'message': 'رسالة مخصصة من الخادم'},
+        ),
+      );
+
+      expect(failure.message, 'رسالة مخصصة من الخادم');
+    });
+
+    test('translates a known English server message when no code is given', () {
+      final failure = mapExceptionToFailure(
+        _badResponse(
+          statusCode: 400,
+          data: {'message': 'Invalid or expired OTP'},
+        ),
+      );
+
+      expect(failure.message, 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+    });
+
+    test('falls back to a status-code based message for an unrecognized English server message', () {
+      final failure = mapExceptionToFailure(
+        _badResponse(
+          statusCode: 400,
+          data: {'message': 'Something went wrong'},
+        ),
+      );
+
+      expect(failure.message, 'يرجى التحقق من البيانات المدخلة');
     });
 
     test('falls back to the known error-code message when no server message is given', () {

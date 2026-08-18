@@ -22,7 +22,7 @@ class _OtpVerificationFormState extends State<OtpVerificationForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('رمز التحقق', style: AppTextStyles.inputLabel),
         SizedBox(height: 12.h),

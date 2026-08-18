@@ -37,8 +37,12 @@ Failure _mapBadResponse(DioException error) {
       ? ApiErrorModel.fromJson(responseData)
       : null;
 
-  final message = apiError?.message ??
-      arabicMessageForErrorCode(apiError?.code, statusCode) ??
+  final serverMessage = apiError?.message;
+  final message = _arabicMessageForCode(apiError?.code) ??
+      _arabicMessageForServerText(serverMessage) ??
+      (serverMessage != null && _looksArabic(serverMessage) ? serverMessage : null) ??
+      _arabicMessageForStatusCode(statusCode) ??
+      serverMessage ??
       _genericErrorMessage;
 
   return ApiFailure(
@@ -48,10 +52,10 @@ Failure _mapBadResponse(DioException error) {
   );
 }
 
-/// Maps a backend error code (or, as a fallback, an HTTP status code) to a
-/// user-friendly Arabic message. Returns null when neither is recognized,
-/// so callers can fall back to the server-provided message or a generic one.
-String? arabicMessageForErrorCode(String? code, int? statusCode) {
+/// Maps a known backend error [code] to a user-friendly Arabic message.
+/// Returns null when the code is unrecognized (or absent), so callers can
+/// fall back to the server-provided message or a status-code based one.
+String? _arabicMessageForCode(String? code) {
   switch (code) {
     case 'VALIDATION_ERROR':
       return 'يرجى التحقق من البيانات المدخلة';
@@ -72,7 +76,39 @@ String? arabicMessageForErrorCode(String? code, int? statusCode) {
     case 'ACCOUNT_INACTIVE':
       return 'حسابك غير مفعّل، يرجى التواصل مع الدعم';
   }
+  return null;
+}
 
+final RegExp _arabicScript = RegExp(r'[؀-ۿ]');
+
+/// Whether [text] contains Arabic script, used to decide whether a raw
+/// server message is safe to show as-is instead of an English leak.
+bool _looksArabic(String text) => _arabicScript.hasMatch(text);
+
+/// Maps known raw (usually English) server messages to a precise Arabic
+/// message, for backends that don't send an error [code] at all. Returns
+/// null when the text doesn't match a known phrase.
+String? _arabicMessageForServerText(String? message) {
+  if (message == null) return null;
+  final normalized = message.toLowerCase();
+
+  if (normalized.contains('otp')) {
+    if (normalized.contains('expired')) {
+      return normalized.contains('invalid')
+          ? 'رمز التحقق غير صحيح أو منتهي الصلاحية'
+          : 'انتهت صلاحية رمز التحقق، يرجى طلب رمز جديد';
+    }
+    if (normalized.contains('invalid') || normalized.contains('incorrect')) {
+      return 'رمز التحقق غير صحيح';
+    }
+  }
+
+  return null;
+}
+
+/// Maps an HTTP status code to a generic Arabic message, used only when
+/// neither a known error code nor a server message is available.
+String? _arabicMessageForStatusCode(int? statusCode) {
   switch (statusCode) {
     case 400:
     case 422:
@@ -90,6 +126,5 @@ String? arabicMessageForErrorCode(String? code, int? statusCode) {
     case 503:
       return 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
   }
-
   return null;
 }
