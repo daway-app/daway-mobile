@@ -10,6 +10,7 @@ class CompleteProfileFormData {
   final double? latitude;
   final double? longitude;
   final String? address;
+  final String? birthDate;
 
   const CompleteProfileFormData({
     required this.phone,
@@ -21,6 +22,7 @@ class CompleteProfileFormData {
     this.latitude,
     this.longitude,
     this.address,
+    this.birthDate,
   });
 
   bool get hasLocation => latitude != null && longitude != null;
@@ -37,6 +39,7 @@ class CompleteProfileFormData {
     double? latitude,
     double? longitude,
     String? address,
+    String? birthDate,
   }) {
     return CompleteProfileFormData(
       phone: phone,
@@ -48,6 +51,7 @@ class CompleteProfileFormData {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       address: address ?? this.address,
+      birthDate: birthDate ?? this.birthDate,
     );
   }
 }

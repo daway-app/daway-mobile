@@ -6,6 +6,7 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/birth_date_field.dart';
 import '../../../../core/widgets/profile_avatar_picker.dart';
 import '../../../../core/widgets/profile_location_field.dart';
 import '../cubit/complete_profile_cubit.dart';
@@ -75,6 +76,19 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           textAlign: TextAlign.left,
           prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
           readOnly: true,
+        ),
+        SizedBox(height: 16.h),
+        Text('تاريخ الميلاد', style: AppTextStyles.inputLabel),
+        SizedBox(height: 8.h),
+        BlocBuilder<CompleteProfileCubit, CompleteProfileState>(
+          buildWhen: (previous, current) =>
+              previous.formData.birthDate != current.formData.birthDate,
+          builder: (context, state) => BirthDateField(
+            birthDate: state.formData.birthDate,
+            enabled: true,
+            onChanged: (value) =>
+                context.read<CompleteProfileCubit>().birthDateChanged(value),
+          ),
         ),
         SizedBox(height: 16.h),
         Text('الموقع', style: AppTextStyles.inputLabel),
