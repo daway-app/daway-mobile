@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../helpers/digits_only_formatter.dart';
 import '../theming/app_colors.dart';
 
 class OtpInputField extends StatefulWidget {
@@ -64,7 +64,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
             keyboardType: TextInputType.number,
             maxLength: 1,
             inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
+              DigitsOnlyFormatter(),
             ],
             style: TextStyle(
               fontSize: 20.sp,
