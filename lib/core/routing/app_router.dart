@@ -1,4 +1,5 @@
 import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
+import 'package:daway_app/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/complete_profile_screen.dart';
@@ -22,6 +23,9 @@ import 'routes.dart';
 class AppRouter {
   Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case Routes.onboardingScreen:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+
       case Routes.accountTypeScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
