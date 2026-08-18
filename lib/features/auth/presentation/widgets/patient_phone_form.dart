@@ -43,10 +43,10 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('رقم الجوال', style: AppTextStyles.inputLabel),
-        SizedBox(height: 8.h),
+        SizedBox(height: 16.h),
         SizedBox(
           height: 48.h,
           child: AppTextField(
@@ -63,15 +63,8 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
           buildWhen: (previous, current) => previous.agreedToTerms != current.agreedToTerms,
           builder: (context, state) {
             return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Checkbox(
-                  value: state.agreedToTerms,
-                  activeColor: AppColors.primaryTeal,
-                  onChanged: (value) =>
-                      context.read<PatientAuthCubit>().termsToggled(value ?? false),
-                ),
-                SizedBox(width: 8.w),
                 Expanded(
                   child: RichText(
                     textAlign: TextAlign.right,
@@ -100,6 +93,13 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
                       ],
                     ),
                   ),
+                ),
+                SizedBox(width: 8.w),
+                Checkbox(
+                  value: state.agreedToTerms,
+                  activeColor: AppColors.primaryTeal,
+                  onChanged: (value) =>
+                      context.read<PatientAuthCubit>().termsToggled(value ?? false),
                 ),
               ],
             );
