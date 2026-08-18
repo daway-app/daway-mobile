@@ -51,10 +51,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   @override
   Widget build(BuildContext context) {
-    // Digits are always read/typed left-to-right even in an RTL app, so the
-    // row is pinned to LTR — otherwise box order (and therefore the OTP
-    // string built from it) would be reversed relative to what's displayed.
-    return Directionality(
+   return Directionality(
       textDirection: TextDirection.ltr,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
