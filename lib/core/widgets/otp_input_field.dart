@@ -51,51 +51,54 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(widget.length, (index) {
-        return SizedBox(
-          width: 42.w,
-          height: 60.h,
-          child: TextField(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            inputFormatters: [
-              DigitsOnlyFormatter(),
-            ],
-            style: TextStyle(
-              fontSize: 20.sp,
-              height: 2.h,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textDark,
-            ),
-            decoration: InputDecoration(
-              counterText: '',
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-              filled: true,
-              fillColor: AppColors.inputFill,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: BorderSide(
-                  color: AppColors.borderGrey,
+   return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(widget.length, (index) {
+          return SizedBox(
+            width: 42.w,
+            height: 60.h,
+            child: TextField(
+              controller: _controllers[index],
+              focusNode: _focusNodes[index],
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: 1,
+              inputFormatters: [
+                DigitsOnlyFormatter(),
+              ],
+              style: TextStyle(
+                fontSize: 20.sp,
+                height: 2.h,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+              decoration: InputDecoration(
+                counterText: '',
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+                filled: true,
+                fillColor: AppColors.inputFill,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide(
+                    color: AppColors.borderGrey,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: const BorderSide(
+                    color: AppColors.primaryTeal,
+                    width: 1.5,
+                  ),
                 ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
-                borderSide: const BorderSide(
-                  color: AppColors.primaryTeal,
-                  width: 1.5,
-                ),
-              ),
+              onChanged: (value) => _handleChanged(index, value),
             ),
-            onChanged: (value) => _handleChanged(index, value),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

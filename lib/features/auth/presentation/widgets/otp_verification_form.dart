@@ -22,16 +22,20 @@ class _OtpVerificationFormState extends State<OtpVerificationForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+
       children: [
-        Text('رمز التحقق', style: AppTextStyles.inputLabel),
+        Text('رمز التحقق',
+            textAlign: TextAlign.end,
+            style: AppTextStyles.inputLabel),
         SizedBox(height: 12.h),
         OtpInputField(length: 6, onChanged: (value) => setState(() => _otp = value)),
         SizedBox(height: 6.h),
         Text(
           'تم إرسال الرمز المكوّن من 6 أرقام إلى جوالك',
           style: AppTextStyles.helperText,
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.end,
         ),
         BlocBuilder<PatientAuthCubit, PatientAuthState>(
           buildWhen: (previous, current) => previous.errorMessage != current.errorMessage,
