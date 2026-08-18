@@ -18,6 +18,10 @@ import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
+import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
+import '../../features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
+import '../../features/onboarding/domain/usecases/set_onboarding_seen_usecase.dart';
 import '../../features/patient/data/datasources/patient_profile_remote_data_source.dart';
 import '../../features/patient/data/repositories/cloudinary_avatar_repository_impl.dart';
 import '../../features/patient/data/repositories/location_repository_impl.dart';
@@ -71,6 +75,13 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => SaveSessionUseCase(getIt()));
   getIt.registerLazySingleton(() => GetSessionUseCase(getIt()));
   getIt.registerLazySingleton(() => LogoutUseCase(getIt(), getIt()));
+
+  // ---------------- Onboarding ----------------
+  getIt.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetOnboardingSeenUseCase(getIt()));
+  getIt.registerLazySingleton(() => SetOnboardingSeenUseCase(getIt()));
   getIt.registerFactory(
     () => PatientAuthCubit(getIt(), getIt(), getIt()),
   );
