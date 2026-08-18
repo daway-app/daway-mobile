@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../theming/app_colors.dart';
@@ -15,6 +16,7 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField({
     super.key,
@@ -29,6 +31,7 @@ class AppTextField extends StatelessWidget {
     this.readOnly = false,
     this.onSubmitted,
     this.textInputAction,
+    this.inputFormatters,
   });
 
   @override
@@ -39,6 +42,7 @@ class AppTextField extends StatelessWidget {
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
       textAlign: textAlign,
       obscureText: obscureText,
       readOnly: readOnly,

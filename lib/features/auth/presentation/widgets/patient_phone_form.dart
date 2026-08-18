@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/helpers/digits_only_formatter.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
@@ -52,8 +53,9 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
           child: AppTextField(
             controller: _phoneController,
             hintText: '05xxxxxxxx',
-            keyboardType: TextInputType.phone,
+            keyboardType: TextInputType.number,
             textAlign: TextAlign.left,
+            inputFormatters: [DigitsOnlyFormatter()],
             prefixIcon: Icon(Icons.phone_android_outlined, color: AppColors.grey, size: 20.sp),
             onChanged: (value) => context.read<PatientAuthCubit>().phoneChanged(value),
           ),
