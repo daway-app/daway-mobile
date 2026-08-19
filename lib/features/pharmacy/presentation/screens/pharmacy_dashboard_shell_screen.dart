@@ -53,6 +53,7 @@ class _PharmacyDashboardShellScreenState extends State<PharmacyDashboardShellScr
       child: Scaffold(
         body: IndexedStack(index: _selectedTab.index, children: tabs),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: AppColors.background,
           currentIndex: _selectedTab.index,
           onTap: (index) => setState(() => _selectedTab = PharmacyDashboardTab.values[index]),
           type: BottomNavigationBarType.fixed,
