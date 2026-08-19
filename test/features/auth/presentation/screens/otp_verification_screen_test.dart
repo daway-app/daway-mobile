@@ -1,5 +1,6 @@
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/core/routing/routes.dart';
+import 'package:daway_app/core/widgets/otp_input_field.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
@@ -98,7 +99,11 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('ادخل رمز التحقق'), findsOneWidget);
     expect(find.text('تحقق'), findsOneWidget);
-    expect(find.byType(TextField), findsNWidgets(6));
+    expect(find.byType(OtpInputField), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(OtpInputField), matching: find.byType(Container)),
+      findsNWidgets(6),
+    );
   });
 
   testWidgets('resets otpSent when the back button is pressed', (tester) async {

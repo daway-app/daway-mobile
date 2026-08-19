@@ -40,9 +40,9 @@ abstract class AppTextStyles {
       );
 
   static TextStyle get inputLabel => TextStyle(
-        fontSize: 14.sp,
+        fontSize: 13.sp,
         fontWeight: FontWeight.w600,
-        color: AppColors.textDark,
+        color: AppColors.mainTeal,
       );
 
   static TextStyle get helperText => TextStyle(
