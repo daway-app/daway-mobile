@@ -32,9 +32,6 @@ String _formatTime(TimeOfDay time) {
   return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 }
 
-/// One day's row in the working-hours editor: a toggle for open/closed, and
-/// — while open — two tappable time chips that launch the native time
-/// picker. Read-only (chips/toggle disabled) whenever [isEditing] is false.
 class WorkingHoursRow extends StatelessWidget {
   final WorkingHoursEntry entry;
   final bool isEditing;
@@ -81,7 +78,7 @@ class WorkingHoursRow extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      Icon(Icons.arrow_back, size: 14.sp, color: AppColors.grey),
+                      Icon(Icons.arrow_right_alt_outlined, size: 14.sp, color: AppColors.grey),
                       SizedBox(width: 8.w),
                       Expanded(
                         child: _TimeChip(

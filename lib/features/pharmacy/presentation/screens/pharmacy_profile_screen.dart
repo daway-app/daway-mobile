@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -16,9 +17,6 @@ import '../cubit/pharmacy_profile_state.dart';
 import '../widgets/pharmacy_side_menu.dart';
 import '../widgets/working_hours_row.dart';
 
-/// The "حسابي" tab: view/edit a pharmacy's own profile. Loads it from the
-/// server on open, starts in read-only mode, and switches to editable
-/// fields only after "تعديل" is tapped.
 class PharmacyProfileScreen extends StatefulWidget {
   const PharmacyProfileScreen({super.key});
 
@@ -56,7 +54,13 @@ class _PharmacyProfileScreenState extends State<PharmacyProfileScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text('حسابي', style: AppTextStyles.screenTitle),
+        title: Text(
+          'حسابي',
+          style: AppTextStyles.screenTitle.copyWith(
+            color: AppColors.mainTeal,
+            fontSize: 20.sp,
+          ),
+        ),
       ),
       drawer: const PharmacySideMenu(),
       body: SafeArea(
@@ -66,9 +70,7 @@ class _PharmacyProfileScreenState extends State<PharmacyProfileScreen> {
               AppSnackbar.show(context, state.saveError!);
             }
             if (state is PharmacyProfileLoaded && !state.isEditing) {
-              // Keep the field in sync whenever we're not actively typing
-              // (initial load, entering edit mode, cancel, or a fresh save).
-              if (_controllerBoundTo != state.name) {
+           if (_controllerBoundTo != state.name) {
                 _nameController.text = state.name;
                 _controllerBoundTo = state.name;
               }
@@ -116,57 +118,66 @@ class _PharmacyProfileScreenState extends State<PharmacyProfileScreen> {
             ),
           ),
           SizedBox(height: 24.h),
-          Text('اسم الصيدلية', style: AppTextStyles.inputLabel),
-          SizedBox(height: 8.h),
-          AppTextField(
-            controller: _nameController,
-            readOnly: !state.isEditing,
-            prefixIcon: Icon(Icons.storefront_outlined, color: AppColors.grey, size: 20.sp),
-            onChanged: (value) => context.read<PharmacyProfileCubit>().nameChanged(value),
-          ),
-          SizedBox(height: 16.h),
-          Text('رقم الهاتف', style: AppTextStyles.inputLabel),
-          SizedBox(height: 8.h),
-          AppTextField(
-            controller: _phoneController,
-            textAlign: TextAlign.left,
-            prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
-            readOnly: true,
-          ),
-          SizedBox(height: 16.h),
-          Text('رقم الصيدلية', style: AppTextStyles.inputLabel),
-          SizedBox(height: 8.h),
-          AppTextField(
-            controller: _pharmacyIdController,
-            prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
-            readOnly: true,
-          ),
-          SizedBox(height: 16.h),
-          Text('الموقع', style: AppTextStyles.inputLabel),
-          SizedBox(height: 8.h),
-          IgnorePointer(
-            ignoring: !state.isEditing,
-            child: ProfileLocationField(
-              hasLocation: state.hasLocation,
-              latitude: state.latitude,
-              longitude: state.longitude,
-              address: state.address,
-              onLocationPicked: (location) =>
-                  context.read<PharmacyProfileCubit>().locationSelected(location),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('اسم الصيدلية', style: AppTextStyles.inputLabel),
+                SizedBox(height: 12.h),
+                AppTextField(
+                  controller: _nameController,
+                  readOnly: !state.isEditing,
+                  prefixIcon:
+                      Icon(Icons.storefront_outlined, color: AppColors.grey, size: 20.sp),
+                  onChanged: (value) =>
+                      context.read<PharmacyProfileCubit>().nameChanged(value),
+                ),
+                SizedBox(height: 16.h),
+                Text('رقم الهاتف', style: AppTextStyles.inputLabel),
+                SizedBox(height: 12.h),
+                AppTextField(
+                  controller: _phoneController,
+                  textAlign: TextAlign.left,
+                  prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
+                  readOnly: true,
+                ),
+                SizedBox(height: 16.h),
+                Text('رقم الصيدلية', style: AppTextStyles.inputLabel),
+                SizedBox(height: 12.h),
+                AppTextField(
+                  controller: _pharmacyIdController,
+                  prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
+                  readOnly: true,
+                ),
+                SizedBox(height: 16.h),
+                Text('الموقع', style: AppTextStyles.inputLabel),
+                SizedBox(height: 12.h),
+                IgnorePointer(
+                  ignoring: !state.isEditing,
+                  child: ProfileLocationField(
+                    hasLocation: state.hasLocation,
+                    latitude: state.latitude,
+                    longitude: state.longitude,
+                    address: state.address,
+                    onLocationPicked: (location) =>
+                        context.read<PharmacyProfileCubit>().locationSelected(location),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Text('ساعات العمل', style: AppTextStyles.inputLabel),
+                SizedBox(height: 12.h),
+                for (final entry in state.workingHours)
+                  WorkingHoursRow(
+                    key: ValueKey(entry.day),
+                    entry: entry,
+                    isEditing: state.isEditing,
+                    onChanged: (open, close) => context
+                        .read<PharmacyProfileCubit>()
+                        .workingHoursChanged(entry.day, open: open, close: close),
+                  ),
+              ],
             ),
           ),
-          SizedBox(height: 16.h),
-          Text('ساعات العمل', style: AppTextStyles.inputLabel),
-          SizedBox(height: 4.h),
-          for (final entry in state.workingHours)
-            WorkingHoursRow(
-              key: ValueKey(entry.day),
-              entry: entry,
-              isEditing: state.isEditing,
-              onChanged: (open, close) => context
-                  .read<PharmacyProfileCubit>()
-                  .workingHoursChanged(entry.day, open: open, close: close),
-            ),
           SizedBox(height: 24.h),
           Row(
             children: [

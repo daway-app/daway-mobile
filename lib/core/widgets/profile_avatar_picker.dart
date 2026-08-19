@@ -56,10 +56,17 @@ class ProfileAvatarPicker extends StatelessWidget {
     );
     if (source == null || !context.mounted) return;
 
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
-    if (picked == null || !context.mounted) return;
+    try {
+      final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
+      if (picked == null || !context.mounted) return;
 
-    onImagePicked(File(picked.path));
+      onImagePicked(File(picked.path));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذر فتح الكاميرا، تحقق من صلاحيات التطبيق')),
+      );
+    }
   }
 
   Widget _buildImage() {
