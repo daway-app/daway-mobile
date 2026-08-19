@@ -17,9 +17,7 @@ import '../cubit/patient_profile_cubit.dart';
 import '../cubit/patient_profile_state.dart';
 import '../widgets/patient_side_menu.dart';
 
-/// The "حسابي" tab: view/edit a patient's own profile. Loads it from the
-/// server on open, starts in read-only mode, and switches to editable
-/// fields only after "تعديل" is tapped.
+
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({super.key});
 
@@ -54,7 +52,13 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text('حسابي', style: AppTextStyles.screenTitle),
+        title: Text(
+          'حسابي',
+          style: AppTextStyles.screenTitle.copyWith(
+            color: AppColors.mainTeal,
+            fontSize: 20.sp,
+          ),
+        ),
       ),
       drawer: const PatientSideMenu(),
       body: SafeArea(
@@ -64,8 +68,6 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               AppSnackbar.show(context, state.saveError!);
             }
             if (state is PatientProfileLoaded && !state.isEditing) {
-              // Keep the field in sync whenever we're not actively typing
-              // (initial load, entering edit mode, cancel, or a fresh save).
               if (_controllerBoundTo != state.name) {
                 _nameController.text = state.name;
                 _controllerBoundTo = state.name;
@@ -116,7 +118,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text('الاسم الكامل', style: AppTextStyles.inputLabel),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 AppTextField(
                   controller: _nameController,
                   readOnly: !state.isEditing,
@@ -125,7 +127,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text('رقم الهاتف', style: AppTextStyles.inputLabel),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 AppTextField(
                   controller: _phoneController,
                   textAlign: TextAlign.left,
@@ -134,7 +136,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text('تاريخ الميلاد', style: AppTextStyles.inputLabel),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 BirthDateField(
                   birthDate: state.birthDate,
                   enabled: state.isEditing,
@@ -143,7 +145,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text('الموقع', style: AppTextStyles.inputLabel),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 IgnorePointer(
                   ignoring: !state.isEditing,
                   child: ProfileLocationField(

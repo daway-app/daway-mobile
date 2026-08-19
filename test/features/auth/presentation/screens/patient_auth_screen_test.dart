@@ -7,6 +7,7 @@ import 'package:daway_app/features/auth/domain/repositories/session_repository.d
 import 'package:daway_app/features/auth/domain/usecases/save_session_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart';
+import 'package:daway_app/core/widgets/otp_input_field.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
 import 'package:flutter/material.dart';
@@ -146,6 +147,10 @@ void main() {
     expect(find.text('أهلاً بك في دوائي'), findsNothing);
     expect(find.text('ادخل رمز التحقق'), findsOneWidget);
     expect(find.text('تحقق'), findsOneWidget);
-    expect(find.byType(TextField), findsNWidgets(6));
+    expect(find.byType(OtpInputField), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(OtpInputField), matching: find.byType(Container)),
+      findsNWidgets(6),
+    );
   });
 }
