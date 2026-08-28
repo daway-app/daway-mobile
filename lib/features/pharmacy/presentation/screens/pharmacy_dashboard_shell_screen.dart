@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/widgets/coming_soon_tab_screen.dart';
+import '../cubit/pharmacy_dashboard_cubit.dart';
 import '../cubit/pharmacy_inventory_cubit.dart';
 import '../cubit/pharmacy_medicines_cubit.dart';
 import '../cubit/pharmacy_profile_cubit.dart';
@@ -35,7 +36,10 @@ class _PharmacyDashboardShellScreenState extends State<PharmacyDashboardShellScr
   Widget build(BuildContext context) {
     // Order must match PharmacyDashboardTab's declaration order.
     final tabs = [
-      const PharmacyHomeScreen(),
+      BlocProvider(
+        create: (_) => getIt<PharmacyDashboardCubit>(),
+        child: const PharmacyHomeScreen(),
+      ),
       BlocProvider(
         create: (_) => getIt<PharmacyMedicinesCubit>(),
         child: const PharmacyMedicinesScreen(),
