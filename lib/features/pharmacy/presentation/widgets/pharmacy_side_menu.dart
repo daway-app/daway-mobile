@@ -20,12 +20,7 @@ class PharmacySideMenu extends StatelessWidget {
 
   void _switchToTab(BuildContext context, PharmacyDashboardTab tab) {
     Navigator.of(context).pop();
-    final scope = PharmacyDashboardTabScope.maybeOf(context);
-    if (scope != null) {
-      scope.switchToTab(tab);
-    } else {
-      AppSnackbar.show(context, 'قريباً');
-    }
+    PharmacyDashboardTabScope.switchToTabOrShowComingSoon(context, tab);
   }
 
   void _handleComingSoon(BuildContext context) {
@@ -52,17 +47,20 @@ class PharmacySideMenu extends StatelessWidget {
             _MenuItem(
               icon: Icons.medication_outlined,
               label: 'الأدوية',
-              onTap: () => _switchToTab(context, PharmacyDashboardTab.medicines),
+              onTap: () =>
+                  _switchToTab(context, PharmacyDashboardTab.medicines),
             ),
             _MenuItem(
               icon: Icons.inventory_2_outlined,
               label: 'المخزون',
-              onTap: () => _switchToTab(context, PharmacyDashboardTab.inventory),
+              onTap: () =>
+                  _switchToTab(context, PharmacyDashboardTab.inventory),
             ),
             _MenuItem(
               icon: Icons.chat_bubble_outline,
               label: 'الاستفسارات',
-              onTap: () => _switchToTab(context, PharmacyDashboardTab.inquiries),
+              onTap: () =>
+                  _switchToTab(context, PharmacyDashboardTab.inquiries),
             ),
             _MenuItem(
               icon: Icons.storefront_outlined,
