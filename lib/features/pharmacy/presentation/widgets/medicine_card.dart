@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../domain/entities/medicine.dart';
+import '../helpers/medicine_text_display.dart';
 import 'medicine_status_badge.dart';
 
 class MedicineCard extends StatelessWidget {
@@ -17,34 +18,15 @@ class MedicineCard extends StatelessWidget {
     required this.onDelete,
   });
 
-  /// Prefer the Arabic trade name when the catalog has one — only falls
-  /// back to the (often English) catalog [Medicine.name] when it doesn't.
-  String get _displayName {
-    final nameAr = medicine.nameAr;
-    return (nameAr != null && nameAr.trim().isNotEmpty) ? nameAr : medicine.name;
+  TextStyle get _nameStyle {
+    final shouty = isShoutyLatinName(medicine.displayName);
+    return TextStyle(
+      fontSize: shouty ? 13.sp : 15.sp,
+      fontWeight: shouty ? FontWeight.w600 : FontWeight.bold,
+      height: 1.3,
+      color: AppColors.mainTeal,
+    );
   }
-
-  /// Catalog trade names imported as all-caps Latin text (e.g. "KAARAL
-  /// BLONDE ELEVATION...") read as shouting and wrap awkwardly at the
-  /// normal title size, so they're rendered smaller. Arabic names have no
-  /// letter case, so this only ever fires for Latin script.
-  bool get _isShoutyName {
-    final letters = _displayName.replaceAll(RegExp(r'[^A-Za-z]'), '');
-    return letters.isNotEmpty && letters == letters.toUpperCase();
-  }
-
-  /// Latin text (trade names imported from an English catalog) needs its
-  /// own ltr run so truncation ellipsizes on its natural trailing edge
-  /// instead of the leading edge the surrounding rtl layout would put it on.
-  TextDirection _textDirectionFor(String text) =>
-      RegExp(r'[A-Za-z]').hasMatch(text) ? TextDirection.ltr : TextDirection.rtl;
-
-  TextStyle get _nameStyle => TextStyle(
-        fontSize: _isShoutyName ? 13.sp : 15.sp,
-        fontWeight: _isShoutyName ? FontWeight.w600 : FontWeight.bold,
-        height: 1.3,
-        color: AppColors.mainTeal,
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +66,10 @@ class MedicineCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _displayName,
+                      medicine.displayName,
                       style: _nameStyle,
                       textAlign: TextAlign.right,
-                      textDirection: _textDirectionFor(_displayName),
+                      textDirection: textDirectionFor(medicine.displayName),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -106,7 +88,7 @@ class MedicineCard extends StatelessWidget {
                                 color: AppColors.grey,
                               ),
                               textAlign: TextAlign.right,
-                              textDirection: _textDirectionFor(medicine.activeIngredient!),
+                              textDirection: textDirectionFor(medicine.activeIngredient!),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
