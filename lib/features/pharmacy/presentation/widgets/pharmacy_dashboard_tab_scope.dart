@@ -5,8 +5,7 @@ import 'package:flutter/widgets.dart';
 /// index around, which would silently drift out of sync with the shell's
 /// list if either side were reordered.
 ///
-/// Placeholder names ("المخزون"/"الاستفسارات") for the two tabs with no real
-/// screen yet — rename freely once those features land.
+/// "الاستفسارات" has no real screen yet — rename freely once it lands.
 enum PharmacyDashboardTab { home, medicines, inventory, inquiries, profile }
 
 /// Lets a widget nested anywhere inside a dashboard tab (e.g. the side menu,

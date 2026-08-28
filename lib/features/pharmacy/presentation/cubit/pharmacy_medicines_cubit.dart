@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
+import '../../domain/entities/medicine.dart';
 import '../../domain/usecases/delete_pharmacy_medicine_usecase.dart';
 import '../../domain/usecases/get_pharmacy_medicines_usecase.dart';
 import 'pharmacy_medicines_state.dart';
