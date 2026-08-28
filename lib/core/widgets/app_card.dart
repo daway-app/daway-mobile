@@ -3,14 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
+  final EdgeInsetsGeometry? padding;
 
-  const AppCard({super.key, required this.child});
+  const AppCard({super.key, required this.child, this.padding});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.r),
+      padding: padding ?? EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
