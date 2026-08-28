@@ -50,19 +50,24 @@ class PharmacySideMenu extends StatelessWidget {
               onTap: () => _switchToTab(context, PharmacyDashboardTab.home),
             ),
             _MenuItem(
-              icon: Icons.storefront_outlined,
-              label: 'حسابي',
-              onTap: () => _switchToTab(context, PharmacyDashboardTab.profile),
-            ),
-            _MenuItem(
-              icon: Icons.receipt_long_outlined,
-              label: 'الطلبات',
-              onTap: () => _switchToTab(context, PharmacyDashboardTab.orders),
+              icon: Icons.medication_outlined,
+              label: 'الأدوية',
+              onTap: () => _switchToTab(context, PharmacyDashboardTab.medicines),
             ),
             _MenuItem(
               icon: Icons.inventory_2_outlined,
               label: 'المخزون',
               onTap: () => _switchToTab(context, PharmacyDashboardTab.inventory),
+            ),
+            _MenuItem(
+              icon: Icons.chat_bubble_outline,
+              label: 'الاستفسارات',
+              onTap: () => _switchToTab(context, PharmacyDashboardTab.inquiries),
+            ),
+            _MenuItem(
+              icon: Icons.storefront_outlined,
+              label: 'حسابي',
+              onTap: () => _switchToTab(context, PharmacyDashboardTab.profile),
             ),
             _MenuItem(
               icon: Icons.settings_outlined,

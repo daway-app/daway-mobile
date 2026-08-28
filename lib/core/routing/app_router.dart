@@ -5,6 +5,8 @@ import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_scree
 import 'package:daway_app/features/patient/presentation/screens/complete_profile_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/location_picker_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/add_medicine_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/edit_medicine_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_dashboard_shell_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +18,9 @@ import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
 import '../models/picked_location.dart';
 import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
+import '../../features/pharmacy/domain/entities/medicine.dart';
+import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/edit_medicine_cubit.dart';
 import '../constants/app_constants.dart';
 import '../di/dependency_injection.dart';
 import 'routes.dart';
@@ -72,6 +77,23 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<CompleteProfileCubit>(param1: phone),
             child: const CompleteProfileScreen(),
+          ),
+        );
+
+      case Routes.addPharmacyMedicineScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<AddMedicineCubit>(),
+            child: const AddMedicineScreen(),
+          ),
+        );
+
+      case Routes.editPharmacyMedicineScreen:
+        final medicine = settings.arguments as Medicine;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<EditMedicineCubit>(param1: medicine),
+            child: EditMedicineScreen(medicine: medicine),
           ),
         );
 

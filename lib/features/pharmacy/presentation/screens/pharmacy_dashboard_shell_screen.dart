@@ -4,10 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/widgets/coming_soon_tab_screen.dart';
+import '../cubit/pharmacy_inventory_cubit.dart';
+import '../cubit/pharmacy_medicines_cubit.dart';
 import '../cubit/pharmacy_profile_cubit.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
 import '../widgets/pharmacy_side_menu.dart';
 import 'pharmacy_home_screen.dart';
+import 'pharmacy_inventory_screen.dart';
+import 'pharmacy_medicines_screen.dart';
 import 'pharmacy_profile_screen.dart';
 
 /// Bottom-nav shell for the logged-in pharmacy area. Each tab keeps its own
@@ -33,18 +37,21 @@ class _PharmacyDashboardShellScreenState extends State<PharmacyDashboardShellScr
     final tabs = [
       const PharmacyHomeScreen(),
       BlocProvider(
+        create: (_) => getIt<PharmacyMedicinesCubit>(),
+        child: const PharmacyMedicinesScreen(),
+      ),
+      BlocProvider(
+        create: (_) => getIt<PharmacyInventoryCubit>(),
+        child: const PharmacyInventoryScreen(),
+      ),
+      const ComingSoonTabScreen(
+        title: 'الاستفسارات',
+        icon: Icons.chat_bubble_outline,
+        drawer: PharmacySideMenu(),
+      ),
+      BlocProvider(
         create: (_) => getIt<PharmacyProfileCubit>(),
         child: const PharmacyProfileScreen(),
-      ),
-      const ComingSoonTabScreen(
-        title: 'الطلبات',
-        icon: Icons.receipt_long_outlined,
-        drawer: PharmacySideMenu(),
-      ),
-      const ComingSoonTabScreen(
-        title: 'المخزون',
-        icon: Icons.inventory_2_outlined,
-        drawer: PharmacySideMenu(),
       ),
     ];
 
@@ -61,9 +68,10 @@ class _PharmacyDashboardShellScreenState extends State<PharmacyDashboardShellScr
           unselectedItemColor: AppColors.grey,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'الرئيسية'),
-            BottomNavigationBarItem(icon: Icon(Icons.storefront_outlined), label: 'حسابي'),
-            BottomNavigationBarItem(icon: Icon(Icons.receipt_long_outlined), label: 'الطلبات'),
+            BottomNavigationBarItem(icon: Icon(Icons.medication_outlined), label: 'الأدوية'),
             BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), label: 'المخزون'),
+            BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: 'الاستفسارات'),
+            BottomNavigationBarItem(icon: Icon(Icons.storefront_outlined), label: 'حسابي'),
           ],
         ),
       ),
