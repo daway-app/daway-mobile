@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 
+import '../helpers/image_source_picker.dart';
 import '../theming/app_colors.dart';
 import '../theming/app_text_styles.dart';
 
@@ -29,44 +29,8 @@ class ProfileAvatarPicker extends StatelessWidget {
   });
 
   Future<void> _pickImage(BuildContext context) async {
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 8.h),
-            ListTile(
-              leading: Icon(Icons.photo_camera_outlined, color: AppColors.mainTeal),
-              title: const Text('التقاط صورة'),
-              onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library_outlined, color: AppColors.mainTeal),
-              title: const Text('اختيار من المعرض'),
-              onTap: () => Navigator.of(sheetContext).pop(ImageSource.gallery),
-            ),
-            SizedBox(height: 8.h),
-          ],
-        ),
-      ),
-    );
-    if (source == null || !context.mounted) return;
-
-    try {
-      final picked = await ImagePicker().pickImage(source: source, imageQuality: 80);
-      if (picked == null || !context.mounted) return;
-
-      onImagePicked(File(picked.path));
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذر فتح الكاميرا، تحقق من صلاحيات التطبيق')),
-      );
-    }
+    final file = await pickImageFromSourceSheet(context);
+    if (file != null) onImagePicked(file);
   }
 
   Widget _buildImage() {
