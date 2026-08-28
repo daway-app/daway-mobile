@@ -38,11 +38,24 @@ import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
 import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
+import '../../features/pharmacy/data/datasources/pharmacy_medicine_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_profile_remote_data_source.dart';
+import '../../features/pharmacy/data/repositories/pharmacy_medicine_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_profile_repository_impl.dart';
+import '../../features/pharmacy/domain/repositories/pharmacy_medicine_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_profile_repository.dart';
+import '../../features/pharmacy/domain/usecases/add_pharmacy_medicine_by_name_usecase.dart';
+import '../../features/pharmacy/domain/usecases/add_pharmacy_medicine_usecase.dart';
+import '../../features/pharmacy/domain/usecases/delete_pharmacy_medicine_usecase.dart';
+import '../../features/pharmacy/domain/usecases/get_pharmacy_medicines_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_profile_usecase.dart';
+import '../../features/pharmacy/domain/usecases/search_medicine_catalog_usecase.dart';
+import '../../features/pharmacy/domain/usecases/update_pharmacy_medicine_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_pharmacy_profile_usecase.dart';
+import '../../features/pharmacy/domain/entities/medicine.dart';
+import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/edit_medicine_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_medicines_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
 import '../local_storage/secure_storage_service.dart';
 import '../networking/dio_factory.dart';
@@ -149,6 +162,23 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => UpdatePharmacyProfileUseCase(getIt(), getIt()));
   getIt.registerFactory(
     () => PharmacyProfileCubit(getIt(), getIt(), getIt()),
+  );
+
+  // ---------------- Pharmacy Medicines ----------------
+  getIt.registerLazySingleton(() => PharmacyMedicineRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PharmacyMedicineRepository>(
+    () => PharmacyMedicineRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetPharmacyMedicinesUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => SearchMedicineCatalogUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AddPharmacyMedicineUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AddPharmacyMedicineByNameUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => DeletePharmacyMedicineUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => UpdatePharmacyMedicineUseCase(getIt(), getIt()));
+  getIt.registerFactory(() => PharmacyMedicinesCubit(getIt(), getIt()));
+  getIt.registerFactory(() => AddMedicineCubit(getIt(), getIt(), getIt(), getIt()));
+  getIt.registerFactoryParam<EditMedicineCubit, Medicine, void>(
+    (medicine, _) => EditMedicineCubit(getIt(), medicine),
   );
 
   // ---------------- Complete Profile ----------------

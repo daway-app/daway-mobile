@@ -9,4 +9,7 @@ abstract class ApiConstants {
   static const String logout = '/logout';
   static const String patientProfile = '/profile/patient';
   static const String pharmacyProfile = '/profile/pharmacy';
+  static const String pharmacyMedicines = '/pharmacy/medicines';
+  static const String pharmacyMedicinesSearch = '/pharmacy/medicines/search';
+  static const String pharmacyMedicinesByName = '/pharmacy/medicines/by-name';
 }

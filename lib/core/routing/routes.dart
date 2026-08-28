@@ -8,4 +8,6 @@ class Routes {
   static const String pharmacyHomeScreen = '/pharmacyHomeScreen';
   static const String profileScreen = '/profileScreen';
   static const String locationPickerScreen = '/locationPickerScreen';
+  static const String addPharmacyMedicineScreen = '/addPharmacyMedicineScreen';
+  static const String editPharmacyMedicineScreen = '/editPharmacyMedicineScreen';
 }
