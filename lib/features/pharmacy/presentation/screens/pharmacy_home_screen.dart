@@ -30,7 +30,7 @@ class PharmacyHomeScreen extends StatelessWidget {
         },
         child: Center(
           child: Text(
-            'أهلاً بك، قريباً إدارة الأدوية والمخزون',
+            'أهلاً بك',
             style: AppTextStyles.authSubtitle,
             textAlign: TextAlign.center,
           ),
