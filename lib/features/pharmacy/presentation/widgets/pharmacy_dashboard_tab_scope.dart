@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../../core/widgets/app_snackbar.dart';
+
 /// The shell's tabs, in the order [PharmacyDashboardShellScreen] builds
 /// them — named so call sites (e.g. the side menu) never hand a raw tab
 /// index around, which would silently drift out of sync with the shell's
@@ -21,7 +23,24 @@ class PharmacyDashboardTabScope extends InheritedWidget {
   });
 
   static PharmacyDashboardTabScope? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<PharmacyDashboardTabScope>();
+    return context
+        .dependOnInheritedWidgetOfExactType<PharmacyDashboardTabScope>();
+  }
+
+  /// Switches to [tab] from anywhere inside the shell, or shows a "قريباً"
+  /// snackbar if this widget somehow isn't inside one — shared by every tab
+  /// entry point (the side menu, the home screen's stat cards/quick
+  /// actions) so that fallback isn't hand-copied at each call site.
+  static void switchToTabOrShowComingSoon(
+    BuildContext context,
+    PharmacyDashboardTab tab,
+  ) {
+    final scope = maybeOf(context);
+    if (scope != null) {
+      scope.switchToTab(tab);
+    } else {
+      AppSnackbar.show(context, 'قريباً');
+    }
   }
 
   @override
