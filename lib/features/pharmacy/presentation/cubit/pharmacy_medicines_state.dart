@@ -1,7 +1,5 @@
 import '../../domain/entities/medicine.dart';
 
-enum MedicineStatusFilter { all, available, low, outOfStock }
-
 sealed class PharmacyMedicinesState {
   const PharmacyMedicinesState();
 }
@@ -39,6 +37,7 @@ class PharmacyMedicinesLoaded extends PharmacyMedicinesState {
       if (!matchesFilter) return false;
       if (normalizedQuery.isEmpty) return true;
       return medicine.name.toLowerCase().contains(normalizedQuery) ||
+          medicine.displayName.toLowerCase().contains(normalizedQuery) ||
           (medicine.activeIngredient?.toLowerCase().contains(normalizedQuery) ?? false);
     }).toList();
   }

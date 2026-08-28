@@ -1,5 +1,6 @@
 import '../../../../core/erroring/error_handler.dart';
 import '../../../../core/helpers/api_result.dart';
+import '../../../../core/helpers/json_list_extractor.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_catalog_item.dart';
 import '../../domain/repositories/pharmacy_medicine_repository.dart';
@@ -12,28 +13,12 @@ class PharmacyMedicineRepositoryImpl implements PharmacyMedicineRepository {
 
   const PharmacyMedicineRepositoryImpl(this._remoteDataSource);
 
-  /// The exact response envelope for `getMedicines` hasn't been confirmed
-  /// against a live server, so this tolerates the shapes a Laravel API
-  /// commonly returns — a bare array, `{data: [...]}`, or a paginated
-  /// `{data: {data: [...]}}` — instead of assuming one and silently
-  /// discarding results (as `ApiError`) if it's wrong.
-  List<dynamic> _extractList(Object? data) {
-    if (data is List) return data;
-    if (data is Map<String, dynamic>) {
-      final payload = data['data'];
-      if (payload is List) return payload;
-      if (payload is Map<String, dynamic> && payload['data'] is List) {
-        return payload['data'] as List;
-      }
-    }
-    throw FormatException('Unexpected medicines list response shape: $data');
-  }
-
   /// `GET /pharmacy/medicines/search` splits its results across two arrays
   /// (confirmed against a live response) instead of the generic
-  /// `data`/`data.data` shapes [_extractList] handles: `data.medicines` is
-  /// the pharmacy's own general catalog, `data.moh_catalog` is the Ministry
-  /// of Health database — both are shown together as one suggestion list.
+  /// `data`/`data.data` shapes [extractJsonList] handles: `data.medicines`
+  /// is the pharmacy's own general catalog, `data.moh_catalog` is the
+  /// Ministry of Health database — both are shown together as one
+  /// suggestion list.
   List<dynamic> _extractSearchResults(Object? data) {
     if (data is Map<String, dynamic>) {
       final payload = data['data'];
@@ -45,14 +30,14 @@ class PharmacyMedicineRepositoryImpl implements PharmacyMedicineRepository {
         ];
       }
     }
-    return _extractList(data);
+    return extractJsonList(data);
   }
 
   @override
   Future<ApiResult<List<Medicine>>> getMedicines({required String token}) async {
     try {
       final response = await _remoteDataSource.getMedicines(token: token);
-      final medicines = _extractList(response.data)
+      final medicines = extractJsonList(response.data, source: 'GET /pharmacy/medicines')
           .map((json) => MedicineModel.fromJson(json as Map<String, dynamic>).toEntity())
           .toList();
       return Success(medicines);

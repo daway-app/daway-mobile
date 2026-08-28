@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/app_filter_chip.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/profile_load_error.dart';
@@ -137,7 +138,7 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _FilterChip(
+                    AppFilterChip(
                       label: 'الكل',
                       selected: state.filter == MedicineStatusFilter.all,
                       onTap: () => context
@@ -145,7 +146,7 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
                           .filterChanged(MedicineStatusFilter.all),
                     ),
                     SizedBox(width: 8.w),
-                    _FilterChip(
+                    AppFilterChip(
                       label: 'متوفر',
                       color: AppColors.success,
                       selected: state.filter == MedicineStatusFilter.available,
@@ -154,7 +155,7 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
                           .filterChanged(MedicineStatusFilter.available),
                     ),
                     SizedBox(width: 8.w),
-                    _FilterChip(
+                    AppFilterChip(
                       label: 'منخفض',
                       color: AppColors.warning,
                       selected: state.filter == MedicineStatusFilter.low,
@@ -163,7 +164,7 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
                           .filterChanged(MedicineStatusFilter.low),
                     ),
                     SizedBox(width: 8.w),
-                    _FilterChip(
+                    AppFilterChip(
                       label: 'نافد',
                       color: AppColors.error,
                       selected: state.filter == MedicineStatusFilter.outOfStock,
@@ -197,39 +198,6 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
                 ),
         ),
       ],
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final Color? color;
-
-  const _FilterChip({required this.label, required this.selected, required this.onTap, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    final chipColor = color ?? AppColors.mainTeal;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: selected ? chipColor : Colors.white,
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: chipColor),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : chipColor,
-          ),
-        ),
-      ),
     );
   }
 }

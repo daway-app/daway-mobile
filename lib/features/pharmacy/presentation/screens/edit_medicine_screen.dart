@@ -50,11 +50,6 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
     controller.selection = TextSelection.collapsed(offset: value.length);
   }
 
-  String get _displayName {
-    final nameAr = widget.medicine.nameAr;
-    return (nameAr != null && nameAr.trim().isNotEmpty) ? nameAr : widget.medicine.name;
-  }
-
   @override
   Widget build(BuildContext context) {
     final activeIngredient = widget.medicine.activeIngredient;
@@ -96,7 +91,10 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
                 children: [
                   Text('الاسم التجاري', style: AppTextStyles.inputLabel),
                   SizedBox(height: 8.h),
-                  _ReadOnlyInfoField(icon: Icons.medication_outlined, value: _displayName),
+                  _ReadOnlyInfoField(
+                    icon: Icons.medication_outlined,
+                    value: widget.medicine.displayName,
+                  ),
                   if (activeIngredient != null && activeIngredient.isNotEmpty) ...[
                     SizedBox(height: 16.h),
                     Text('المادة الفعالة', style: AppTextStyles.inputLabel),
