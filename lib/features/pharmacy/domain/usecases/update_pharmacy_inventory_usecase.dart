@@ -1,0 +1,22 @@
+import '../../../../core/erroring/failure.dart';
+import '../../../../core/helpers/api_result.dart';
+import '../../../auth/domain/repositories/session_repository.dart';
+import '../entities/inventory_item_update.dart';
+import '../repositories/pharmacy_inventory_repository.dart';
+
+class UpdatePharmacyInventoryUseCase {
+  final PharmacyInventoryRepository _repository;
+  final SessionRepository _sessionRepository;
+
+  const UpdatePharmacyInventoryUseCase(this._repository, this._sessionRepository);
+
+  Future<ApiResult<void>> call(List<InventoryItemUpdate> items) async {
+    final session = await _sessionRepository.getSession();
+    if (session == null) {
+      return const ApiError(
+        ApiFailure(message: 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى'),
+      );
+    }
+    return _repository.updateInventory(token: session.token, items: items);
+  }
+}

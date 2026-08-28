@@ -16,6 +16,10 @@ MedicineStatus medicineStatusFor(int quantity) {
   return MedicineStatus.available;
 }
 
+/// Shared by every screen that lets a pharmacist narrow a medicine list down
+/// to one [MedicineStatus] (or show all of them).
+enum MedicineStatusFilter { all, available, low, outOfStock }
+
 /// A medicine as stocked by the current pharmacy (a `pharmacy_medicine`
 /// record), combining the pharmacy's stock fields with the underlying
 /// catalog medicine's descriptive fields.
@@ -56,5 +60,12 @@ class Medicine {
       return MedicineStatus.available;
     }
     return medicineStatusFor(quantity);
+  }
+
+  /// Prefers the Arabic trade name when the catalog has one — only falls
+  /// back to [name] (often the English catalog name) when it doesn't.
+  String get displayName {
+    final ar = nameAr;
+    return (ar != null && ar.trim().isNotEmpty) ? ar : name;
   }
 }
