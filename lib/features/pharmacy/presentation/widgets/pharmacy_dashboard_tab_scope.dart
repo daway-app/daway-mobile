@@ -6,8 +6,6 @@ import '../../../../core/widgets/app_snackbar.dart';
 /// them — named so call sites (e.g. the side menu) never hand a raw tab
 /// index around, which would silently drift out of sync with the shell's
 /// list if either side were reordered.
-///
-/// "الاستفسارات" has no real screen yet — rename freely once it lands.
 enum PharmacyDashboardTab { home, medicines, inventory, inquiries, profile }
 
 /// Lets a widget nested anywhere inside a dashboard tab (e.g. the side menu,
