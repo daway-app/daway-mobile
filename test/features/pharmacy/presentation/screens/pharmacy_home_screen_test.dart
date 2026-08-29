@@ -8,6 +8,7 @@ import 'package:daway_app/features/auth/domain/repositories/auth_repository.dart
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/logout_cubit.dart';
+import 'package:daway_app/features/pharmacy/domain/entities/inquiry.dart';
 import 'package:daway_app/features/pharmacy/domain/entities/pharmacy_dashboard_stats.dart';
 import 'package:daway_app/features/pharmacy/domain/repositories/pharmacy_dashboard_repository.dart';
 import 'package:daway_app/features/pharmacy/domain/usecases/get_pharmacy_dashboard_stats_usecase.dart';
@@ -59,7 +60,7 @@ class _FakeSessionRepository implements SessionRepository {
 }
 
 class _FakePharmacyDashboardRepository implements PharmacyDashboardRepository {
-  final List<PharmacyDashboardInquiry> recentInquiries;
+  final List<Inquiry> recentInquiries;
 
   const _FakePharmacyDashboardRepository({this.recentInquiries = const []});
 
@@ -94,7 +95,7 @@ void main() {
   Widget buildTestableScreen(
     LogoutCubit cubit, {
     List<String>? visitedRoutes,
-    List<PharmacyDashboardInquiry> recentInquiries = const [],
+    List<Inquiry> recentInquiries = const [],
   }) {
     final dashboardCubit = PharmacyDashboardCubit(
       GetPharmacyDashboardStatsUseCase(
@@ -220,10 +221,10 @@ void main() {
         buildTestableScreen(
           cubit,
           recentInquiries: [
-            PharmacyDashboardInquiry(
+            Inquiry(
               id: 1,
               message: 'هل يتوفر دواء الضغط؟',
-              status: PharmacyInquiryStatus.newInquiry,
+              status: InquiryStatus.newInquiry,
               createdAt: DateTime.now().subtract(const Duration(hours: 2)),
               patientName: 'أحمد محمد',
               medicineName: 'بانادول',

@@ -1,9 +1,11 @@
 import '../../../../core/erroring/error_handler.dart';
 import '../../../../core/helpers/api_result.dart';
 import '../../../../core/helpers/json_list_extractor.dart';
+import '../../domain/entities/inquiry.dart';
 import '../../domain/entities/pharmacy_dashboard_stats.dart';
 import '../../domain/repositories/pharmacy_dashboard_repository.dart';
 import '../datasources/pharmacy_dashboard_remote_data_source.dart';
+import '../models/inquiry_model.dart';
 import '../models/pharmacy_dashboard_stats_model.dart';
 
 class PharmacyDashboardRepositoryImpl implements PharmacyDashboardRepository {
@@ -70,19 +72,19 @@ class PharmacyDashboardRepositoryImpl implements PharmacyDashboardRepository {
   /// though, each inquiry record has several fields that can independently
   /// fail to cast — so parsing is per-record here too: one malformed record
   /// is skipped instead of discarding every other, well-formed one.
-  Future<List<PharmacyDashboardInquiry>> _recentInquiries({
-    required String token,
-  }) async {
+  Future<List<Inquiry>> _recentInquiries({required String token}) async {
     try {
       final response = await _remoteDataSource.getRecentInquiries(token: token);
       final inquiriesJson = extractJsonList(
         response.data,
         source: 'GET /pharmacy/inquiries',
       );
-      final inquiries = <PharmacyDashboardInquiry>[];
+      final inquiries = <Inquiry>[];
       for (final json in inquiriesJson) {
         try {
-          inquiries.add(_parseInquiry(json as Map<String, dynamic>));
+          inquiries.add(
+            InquiryModel.fromJson(json as Map<String, dynamic>).toEntity(),
+          );
         } catch (_) {
           // Skip just this record.
         }
@@ -91,21 +93,6 @@ class PharmacyDashboardRepositoryImpl implements PharmacyDashboardRepository {
     } catch (_) {
       return const [];
     }
-  }
-
-  PharmacyDashboardInquiry _parseInquiry(Map<String, dynamic> map) {
-    final medicine = map['medicine'] as Map<String, dynamic>?;
-    final user = map['user'] as Map<String, dynamic>?;
-    return PharmacyDashboardInquiry(
-      id: (map['id'] as num?)?.toInt() ?? 0,
-      message: map['message'] as String? ?? '',
-      status: pharmacyInquiryStatusFrom(map['status'] as String?),
-      createdAt:
-          DateTime.tryParse(map['created_at'] as String? ?? '') ??
-          DateTime.now(),
-      patientName: user?['name'] as String? ?? '',
-      medicineName: medicine?['trade_name'] as String?,
-    );
   }
 
   Future<(double?, int)> _averageRating({required String token}) async {
