@@ -1,7 +1,7 @@
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/features/pharmacy/data/datasources/pharmacy_dashboard_remote_data_source.dart';
 import 'package:daway_app/features/pharmacy/data/repositories/pharmacy_dashboard_repository_impl.dart';
-import 'package:daway_app/features/pharmacy/domain/entities/pharmacy_dashboard_stats.dart';
+import 'package:daway_app/features/pharmacy/domain/entities/inquiry.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -219,7 +219,7 @@ void main() {
       expect(stats.recentInquiries, hasLength(1));
       final inquiry = stats.recentInquiries.single;
       expect(inquiry.message, 'هل يتوفر هذا الدواء؟');
-      expect(inquiry.status, PharmacyInquiryStatus.answered);
+      expect(inquiry.status, InquiryStatus.answered);
       expect(inquiry.patientName, 'أحمد محمد');
       expect(inquiry.medicineName, 'sgd');
       expect(inquiry.createdAt, DateTime(2026, 8, 22, 16, 32, 25));

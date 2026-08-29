@@ -7,9 +7,12 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_snackbar.dart';
+import '../../../../core/widgets/icon_badge.dart';
 import '../../../../core/widgets/profile_load_error.dart';
+import '../../../../core/widgets/stat_card.dart';
 import '../../../auth/presentation/cubit/logout_cubit.dart';
 import '../../../auth/presentation/cubit/logout_state.dart';
+import '../../domain/entities/inquiry.dart';
 import '../../domain/entities/pharmacy_dashboard_stats.dart';
 import '../cubit/pharmacy_dashboard_cubit.dart';
 import '../cubit/pharmacy_dashboard_state.dart';
@@ -95,27 +98,27 @@ class PharmacyHomeScreen extends StatelessWidget {
           textAlign: TextAlign.right,
         ),
         SizedBox(height: 16.h),
-        _StatsRow(
+        StatCardRow(
           cards: [
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.medication_outlined,
               color: AppColors.mainTeal,
               value: '${stats.totalMedicines}',
               label: 'إجمالي الأدوية',
             ),
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.check_circle_outline,
               color: AppColors.success,
               value: '${stats.availableCount}',
               label: 'متوفر',
             ),
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.trending_down,
               color: AppColors.warning,
               value: '${stats.lowStockCount}',
               label: 'مخزون منخفض',
             ),
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.remove_circle_outline,
               color: AppColors.error,
               value: '${stats.outOfStockCount}',
@@ -169,9 +172,9 @@ class PharmacyHomeScreen extends StatelessWidget {
           ),
         ],
         SizedBox(height: 16.h),
-        _StatsRow(
+        StatCardRow(
           cards: [
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.chat_bubble_outline,
               color: AppColors.primaryTeal,
               value: '${stats.newInquiriesCount}',
@@ -182,7 +185,7 @@ class PharmacyHomeScreen extends StatelessWidget {
                     PharmacyDashboardTab.inquiries,
                   ),
             ),
-            _DashboardStatCard(
+            StatCard(
               icon: Icons.star_rounded,
               color: AppColors.warning,
               value: stats.averageRating?.toStringAsFixed(1) ?? '—',
@@ -251,98 +254,6 @@ class PharmacyHomeScreen extends StatelessWidget {
   }
 }
 
-class _StatsRow extends StatelessWidget {
-  final List<Widget> cards;
-
-  const _StatsRow({required this.cards});
-
-  @override
-  Widget build(BuildContext context) {
-    // IntrinsicHeight first measures a bounded height from the tallest card
-    // (one row has a taller card with a sublabel) so `stretch` below has
-    // something finite to stretch the shorter siblings to — inside the
-    // ListView's unbounded-height context, `stretch` alone would otherwise
-    // try to fill infinite height and crash layout.
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0; i < cards.length; i++) ...[
-            if (i > 0) SizedBox(width: 10.w),
-            Expanded(child: cards[i]),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _DashboardStatCard extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String value;
-  final String label;
-  final String? sublabel;
-  final VoidCallback? onTap;
-
-  const _DashboardStatCard({
-    required this.icon,
-    required this.color,
-    required this.value,
-    required this.label,
-    this.sublabel,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16.r),
-      child: AppCard(
-        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 6.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _IconBadge(icon: icon, color: color),
-            SizedBox(height: 8.h),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 19.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.grey,
-              ),
-            ),
-            if (sublabel != null) ...[
-              SizedBox(height: 1.h),
-              Text(
-                sublabel!,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 9.5.sp, color: AppColors.grey),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -367,7 +278,7 @@ class _QuickActionCard extends StatelessWidget {
         padding: EdgeInsets.all(12.r),
         child: Row(
           children: [
-            _IconBadge(icon: icon, color: iconColor),
+            IconBadge(icon: icon, color: iconColor),
             SizedBox(width: 8.w),
             Expanded(
               child: Column(
@@ -440,7 +351,7 @@ class _LowStockBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _IconBadge(
+          const IconBadge(
             icon: Icons.trending_down,
             color: AppColors.error,
             size: 40,
@@ -494,39 +405,15 @@ class _LowStockBanner extends StatelessWidget {
   }
 }
 
-/// The small colored circle + icon reused by every card on this screen —
-/// [size] matches the visual weight of the surrounding card (the low-stock
-/// banner's icon is slightly larger than the compact stat/action cards').
-class _IconBadge extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final double size;
-
-  const _IconBadge({required this.icon, required this.color, this.size = 36});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size.w,
-      height: size.w,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: (size / 2).sp),
-    );
-  }
-}
-
 class _RecentInquiryTile extends StatelessWidget {
-  final PharmacyDashboardInquiry inquiry;
+  final Inquiry inquiry;
 
   const _RecentInquiryTile({required this.inquiry});
 
   Color get _statusColor => switch (inquiry.status) {
-    PharmacyInquiryStatus.newInquiry => AppColors.primaryTeal,
-    PharmacyInquiryStatus.answered => AppColors.success,
-    PharmacyInquiryStatus.closed => AppColors.grey,
+    InquiryStatus.newInquiry => AppColors.primaryTeal,
+    InquiryStatus.answered => AppColors.success,
+    InquiryStatus.closed => AppColors.grey,
   };
 
   @override
