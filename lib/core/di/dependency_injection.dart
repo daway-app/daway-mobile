@@ -38,16 +38,19 @@ import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
 import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
+import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_dashboard_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_inquiries_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_inventory_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_medicine_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_profile_remote_data_source.dart';
+import '../../features/pharmacy/data/repositories/pharmacy_alternatives_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_dashboard_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_inquiries_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_inventory_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_medicine_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_profile_repository_impl.dart';
+import '../../features/pharmacy/domain/repositories/pharmacy_alternatives_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_dashboard_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_inquiries_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_inventory_repository.dart';
@@ -56,10 +59,15 @@ import '../../features/pharmacy/domain/repositories/pharmacy_profile_repository.
 import '../../features/pharmacy/domain/usecases/add_pharmacy_medicine_by_name_usecase.dart';
 import '../../features/pharmacy/domain/usecases/add_pharmacy_medicine_usecase.dart';
 import '../../features/pharmacy/domain/usecases/delete_pharmacy_medicine_usecase.dart';
+import '../../features/pharmacy/domain/usecases/get_alternatives_overview_usecase.dart';
+import '../../features/pharmacy/domain/usecases/get_medicine_ids_with_alternative_usecase.dart';
+import '../../features/pharmacy/domain/usecases/get_medicines_with_alternative_status_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_dashboard_stats_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_inquiries_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_inventory_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_medicines_usecase.dart';
+import '../../features/pharmacy/domain/usecases/remove_alternative_usecase.dart';
+import '../../features/pharmacy/domain/usecases/select_alternative_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_inquiry_status_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_pharmacy_inventory_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_profile_usecase.dart';
@@ -69,9 +77,11 @@ import '../../features/pharmacy/domain/usecases/update_pharmacy_profile_usecase.
 import '../../features/pharmacy/domain/entities/medicine.dart';
 import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/edit_medicine_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_dashboard_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_inquiries_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_inventory_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_medicines_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_medicines_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
 import '../local_storage/secure_storage_service.dart';
@@ -247,6 +257,30 @@ Future<void> setupGetIt() async {
     () => UpdateInquiryStatusUseCase(getIt(), getIt()),
   );
   getIt.registerFactory(() => PharmacyInquiriesCubit(getIt(), getIt()));
+
+  // ---------------- Pharmacy Alternatives ----------------
+  getIt.registerLazySingleton(
+    () => PharmacyAlternativesRemoteDataSource(getIt()),
+  );
+  getIt.registerLazySingleton<PharmacyAlternativesRepository>(
+    () => PharmacyAlternativesRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => GetAlternativesOverviewUseCase(getIt(), getIt(), getIt()),
+  );
+  getIt.registerLazySingleton(() => SelectAlternativeUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => RemoveAlternativeUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(
+    () => GetMedicineIdsWithAlternativeUseCase(getIt(), getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => GetMedicinesWithAlternativeStatusUseCase(getIt(), getIt()),
+  );
+  getIt.registerFactoryParam<PharmacyAlternativesCubit, Medicine, void>(
+    (medicine, _) =>
+        PharmacyAlternativesCubit(medicine, getIt(), getIt(), getIt()),
+  );
+  getIt.registerFactory(() => PharmacyAlternativesMedicinesCubit(getIt()));
 
   // ---------------- Complete Profile ----------------
   getIt.registerFactoryParam<CompleteProfileCubit, String, void>(
