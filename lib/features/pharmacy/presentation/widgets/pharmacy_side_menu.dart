@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_logo.dart';
@@ -26,6 +27,11 @@ class PharmacySideMenu extends StatelessWidget {
   void _handleComingSoon(BuildContext context) {
     Navigator.of(context).pop();
     AppSnackbar.show(context, 'قريباً');
+  }
+
+  void _openAlternatives(BuildContext context) {
+    Navigator.of(context).pop();
+    Navigator.of(context).pushNamed(Routes.pharmacyAlternativesEntryScreen);
   }
 
   @override
@@ -66,6 +72,11 @@ class PharmacySideMenu extends StatelessWidget {
               icon: Icons.storefront_outlined,
               label: 'حسابي',
               onTap: () => _switchToTab(context, PharmacyDashboardTab.profile),
+            ),
+            _MenuItem(
+              icon: Icons.sync_alt,
+              label: 'البدائل',
+              onTap: () => _openAlternatives(context),
             ),
             _MenuItem(
               icon: Icons.settings_outlined,
