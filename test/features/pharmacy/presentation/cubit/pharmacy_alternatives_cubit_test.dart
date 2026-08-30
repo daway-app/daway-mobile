@@ -133,9 +133,6 @@ class _FakeMedicineRepository implements PharmacyMedicineRepository {
     required double price,
     required int quantity,
     required bool isAvailable,
-    required String tradeName,
-    String? tradeNameAr,
-    String? activeIngredient,
   }) async => throw UnimplementedError();
 
   @override
