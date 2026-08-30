@@ -17,4 +17,5 @@ abstract class ApiConstants {
   static const String pharmacyDashboardStats = '/pharmacy/dashboard/stats';
   static const String pharmacyRatings = '/pharmacy/ratings';
   static const String pharmacyInquiries = '/pharmacy/inquiries';
+  static const String pharmacyAlternatives = '/pharmacy/alternatives';
 }

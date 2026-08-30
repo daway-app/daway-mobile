@@ -9,5 +9,10 @@ class Routes {
   static const String profileScreen = '/profileScreen';
   static const String locationPickerScreen = '/locationPickerScreen';
   static const String addPharmacyMedicineScreen = '/addPharmacyMedicineScreen';
-  static const String editPharmacyMedicineScreen = '/editPharmacyMedicineScreen';
+  static const String editPharmacyMedicineScreen =
+      '/editPharmacyMedicineScreen';
+  static const String pharmacyAlternativesEntryScreen =
+      '/pharmacyAlternativesEntryScreen';
+  static const String pharmacyAlternativesScreen =
+      '/pharmacyAlternativesScreen';
 }

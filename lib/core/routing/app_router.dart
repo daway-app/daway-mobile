@@ -7,6 +7,8 @@ import 'package:daway_app/features/patient/presentation/screens/location_picker_
 import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/add_medicine_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/edit_medicine_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_alternatives_entry_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_alternatives_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_dashboard_shell_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +23,8 @@ import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/pharmacy/domain/entities/medicine.dart';
 import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/edit_medicine_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_medicines_cubit.dart';
 import '../constants/app_constants.dart';
 import '../di/dependency_injection.dart';
 import 'routes.dart';
@@ -97,6 +101,24 @@ class AppRouter {
           ),
         );
 
+      case Routes.pharmacyAlternativesEntryScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<PharmacyAlternativesMedicinesCubit>(),
+            child: const PharmacyAlternativesEntryScreen(),
+          ),
+        );
+
+      case Routes.pharmacyAlternativesScreen:
+        final medicine = settings.arguments as Medicine;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) =>
+                getIt<PharmacyAlternativesCubit>(param1: medicine),
+            child: const PharmacyAlternativesScreen(),
+          ),
+        );
+
       case Routes.locationPickerScreen:
         final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute<PickedLocation?>(
@@ -104,9 +126,11 @@ class AppRouter {
             create: (context) => getIt<LocationPickerCubit>(
               param1: LocationPickerParams(
                 initialLatitude:
-                    args?['latitude'] as double? ?? AppConstants.defaultMapLatitude,
+                    args?['latitude'] as double? ??
+                    AppConstants.defaultMapLatitude,
                 initialLongitude:
-                    args?['longitude'] as double? ?? AppConstants.defaultMapLongitude,
+                    args?['longitude'] as double? ??
+                    AppConstants.defaultMapLongitude,
                 initialAddress: args?['address'] as String?,
               ),
             ),
@@ -117,9 +141,7 @@ class AppRouter {
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings.name}'),
-            ),
+            body: Center(child: Text('No route defined for ${settings.name}')),
           ),
         );
     }
