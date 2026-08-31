@@ -54,4 +54,11 @@ abstract class AppTextStyles {
         fontSize: 13.sp,
         color: AppColors.error,
       );
+
+  /// The bold name header on a person's card (patient inquiries, ratings, ...).
+  static TextStyle get personName => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textDark,
+      );
 }

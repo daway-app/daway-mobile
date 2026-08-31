@@ -193,6 +193,8 @@ class PharmacyHomeScreen extends StatelessWidget {
               sublabel: stats.ratingsCount > 0
                   ? '${stats.ratingsCount} تقييم'
                   : 'لا توجد تقييمات بعد',
+              onTap: () =>
+                  Navigator.of(context).pushNamed(Routes.pharmacyRatingsScreen),
             ),
           ],
         ),
