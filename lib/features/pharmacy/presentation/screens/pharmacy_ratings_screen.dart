@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/profile_load_error.dart';
 import '../cubit/pharmacy_ratings_cubit.dart';
 import '../cubit/pharmacy_ratings_state.dart';
+import '../helpers/notifications_navigation.dart';
 import '../widgets/pharmacy_side_menu.dart';
 import '../widgets/rating_card.dart';
 import '../widgets/ratings_summary_card.dart';
@@ -34,7 +34,7 @@ class PharmacyRatingsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: AppColors.mainTeal),
-            onPressed: () => AppSnackbar.show(context, 'قريباً'),
+            onPressed: () => openNotifications(context),
           ),
         ],
       ),
