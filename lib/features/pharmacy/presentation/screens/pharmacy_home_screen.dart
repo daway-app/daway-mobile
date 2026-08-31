@@ -6,7 +6,6 @@ import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_card.dart';
-import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/icon_badge.dart';
 import '../../../../core/widgets/profile_load_error.dart';
 import '../../../../core/widgets/stat_card.dart';
@@ -16,6 +15,7 @@ import '../../domain/entities/inquiry.dart';
 import '../../domain/entities/pharmacy_dashboard_stats.dart';
 import '../cubit/pharmacy_dashboard_cubit.dart';
 import '../cubit/pharmacy_dashboard_state.dart';
+import '../helpers/notifications_navigation.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
 import '../widgets/pharmacy_side_menu.dart';
 
@@ -51,7 +51,7 @@ class PharmacyHomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: AppColors.mainTeal),
-            onPressed: () => AppSnackbar.show(context, 'قريباً'),
+            onPressed: () => openNotifications(context),
           ),
         ],
       ),
