@@ -34,6 +34,11 @@ class PharmacySideMenu extends StatelessWidget {
     Navigator.of(context).pushNamed(Routes.pharmacyAlternativesEntryScreen);
   }
 
+  void _openRatings(BuildContext context) {
+    Navigator.of(context).pop();
+    Navigator.of(context).pushNamed(Routes.pharmacyRatingsScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -77,6 +82,11 @@ class PharmacySideMenu extends StatelessWidget {
               icon: Icons.sync_alt,
               label: 'البدائل',
               onTap: () => _openAlternatives(context),
+            ),
+            _MenuItem(
+              icon: Icons.star_outline_rounded,
+              label: 'التقييمات والمراجعات',
+              onTap: () => _openRatings(context),
             ),
             _MenuItem(
               icon: Icons.settings_outlined,
