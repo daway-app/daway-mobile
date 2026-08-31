@@ -1,6 +1,7 @@
 import '../../../../core/erroring/error_handler.dart';
 import '../../../../core/helpers/api_result.dart';
 import '../../../../core/helpers/json_list_extractor.dart';
+import '../../../../core/helpers/sort_by_date.dart';
 import '../../domain/entities/rating.dart';
 import '../../domain/repositories/pharmacy_ratings_repository.dart';
 import '../datasources/pharmacy_ratings_remote_data_source.dart';
@@ -37,7 +38,7 @@ class PharmacyRatingsRepositoryImpl implements PharmacyRatingsRepository {
           // Skip just this record.
         }
       }
-      ratings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      sortByDateDescending(ratings, (r) => r.createdAt);
 
       final starCounts = {for (final s in [5, 4, 3, 2, 1]) s: 0};
       var starsSum = 0;

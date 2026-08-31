@@ -10,6 +10,7 @@ import 'package:daway_app/features/pharmacy/presentation/screens/edit_medicine_s
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_alternatives_entry_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_alternatives_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_dashboard_shell_screen.dart';
+import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_notifications_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_ratings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/edit_medicine_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_medicines_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/notifications_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_ratings_cubit.dart';
 import '../constants/app_constants.dart';
 import '../di/dependency_injection.dart';
@@ -126,6 +128,14 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<PharmacyRatingsCubit>(),
             child: const PharmacyRatingsScreen(),
+          ),
+        );
+
+      case Routes.pharmacyNotificationsScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<NotificationsCubit>(),
+            child: const PharmacyNotificationsScreen(),
           ),
         );
 

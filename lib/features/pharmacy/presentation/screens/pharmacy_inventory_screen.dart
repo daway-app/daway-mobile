@@ -12,6 +12,7 @@ import '../../domain/entities/medicine.dart';
 import '../cubit/pharmacy_inventory_cubit.dart';
 import '../cubit/pharmacy_inventory_state.dart';
 import '../helpers/medicine_text_display.dart';
+import '../helpers/notifications_navigation.dart';
 import '../widgets/medicine_status_badge.dart';
 import '../widgets/pharmacy_side_menu.dart';
 
@@ -59,7 +60,7 @@ class _PharmacyInventoryScreenState extends State<PharmacyInventoryScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: AppColors.mainTeal),
-            onPressed: () => AppSnackbar.show(context, 'قريباً'),
+            onPressed: () => openNotifications(context),
           ),
         ],
       ),

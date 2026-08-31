@@ -42,9 +42,11 @@ import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_da
 import '../../features/pharmacy/data/datasources/pharmacy_dashboard_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_inquiries_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_inventory_remote_data_source.dart';
+import '../../features/pharmacy/data/datasources/notifications_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_medicine_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_profile_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_ratings_remote_data_source.dart';
+import '../../features/pharmacy/data/repositories/notifications_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_alternatives_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_dashboard_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_inquiries_repository_impl.dart';
@@ -52,6 +54,7 @@ import '../../features/pharmacy/data/repositories/pharmacy_inventory_repository_
 import '../../features/pharmacy/data/repositories/pharmacy_medicine_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_profile_repository_impl.dart';
 import '../../features/pharmacy/data/repositories/pharmacy_ratings_repository_impl.dart';
+import '../../features/pharmacy/domain/repositories/notifications_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_alternatives_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_dashboard_repository.dart';
 import '../../features/pharmacy/domain/repositories/pharmacy_inquiries_repository.dart';
@@ -73,8 +76,11 @@ import '../../features/pharmacy/domain/usecases/remove_alternative_usecase.dart'
 import '../../features/pharmacy/domain/usecases/select_alternative_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_inquiry_status_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_pharmacy_inventory_usecase.dart';
+import '../../features/pharmacy/domain/usecases/get_notifications_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_profile_usecase.dart';
 import '../../features/pharmacy/domain/usecases/get_pharmacy_ratings_usecase.dart';
+import '../../features/pharmacy/domain/usecases/mark_all_notifications_read_usecase.dart';
+import '../../features/pharmacy/domain/usecases/mark_notification_read_usecase.dart';
 import '../../features/pharmacy/domain/usecases/search_medicine_catalog_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_pharmacy_medicine_usecase.dart';
 import '../../features/pharmacy/domain/usecases/update_pharmacy_profile_usecase.dart';
@@ -86,6 +92,7 @@ import '../../features/pharmacy/presentation/cubit/pharmacy_dashboard_cubit.dart
 import '../../features/pharmacy/presentation/cubit/pharmacy_inquiries_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_inventory_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_alternatives_medicines_cubit.dart';
+import '../../features/pharmacy/presentation/cubit/notifications_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_medicines_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
 import '../../features/pharmacy/presentation/cubit/pharmacy_ratings_cubit.dart';
@@ -294,6 +301,22 @@ Future<void> setupGetIt() async {
   );
   getIt.registerLazySingleton(() => GetPharmacyRatingsUseCase(getIt(), getIt()));
   getIt.registerFactory(() => PharmacyRatingsCubit(getIt()));
+
+  // ---------------- Notifications ----------------
+  getIt.registerLazySingleton(() => NotificationsRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<NotificationsRepository>(
+    () => NotificationsRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetNotificationsUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(
+    () => MarkAllNotificationsReadUseCase(getIt(), getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => MarkNotificationReadUseCase(getIt(), getIt()),
+  );
+  getIt.registerFactory(
+    () => NotificationsCubit(getIt(), getIt(), getIt()),
+  );
 
   // ---------------- Complete Profile ----------------
   getIt.registerFactoryParam<CompleteProfileCubit, String, void>(
