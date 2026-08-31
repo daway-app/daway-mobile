@@ -12,6 +12,7 @@ import '../../../../core/widgets/profile_load_error.dart';
 import '../../domain/entities/medicine.dart';
 import '../cubit/pharmacy_medicines_cubit.dart';
 import '../cubit/pharmacy_medicines_state.dart';
+import '../helpers/notifications_navigation.dart';
 import '../widgets/delete_medicine_confirmation_dialog.dart';
 import '../widgets/medicine_card.dart';
 import '../widgets/pharmacy_side_menu.dart';
@@ -83,7 +84,7 @@ class _PharmacyMedicinesScreenState extends State<PharmacyMedicinesScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: AppColors.mainTeal),
-            onPressed: () => AppSnackbar.show(context, 'قريباً'),
+            onPressed: () => openNotifications(context),
           ),
         ],
       ),

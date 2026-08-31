@@ -11,6 +11,7 @@ import '../../../../core/widgets/stat_card.dart';
 import '../../domain/entities/inquiry.dart';
 import '../cubit/pharmacy_inquiries_cubit.dart';
 import '../cubit/pharmacy_inquiries_state.dart';
+import '../helpers/notifications_navigation.dart';
 import '../widgets/inquiry_card.dart';
 import '../widgets/pharmacy_side_menu.dart';
 
@@ -50,7 +51,7 @@ class PharmacyInquiriesScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: AppColors.mainTeal),
-            onPressed: () => AppSnackbar.show(context, 'قريباً'),
+            onPressed: () => openNotifications(context),
           ),
         ],
       ),

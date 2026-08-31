@@ -16,4 +16,6 @@ class Routes {
   static const String pharmacyAlternativesScreen =
       '/pharmacyAlternativesScreen';
   static const String pharmacyRatingsScreen = '/pharmacyRatingsScreen';
+  static const String pharmacyNotificationsScreen =
+      '/pharmacyNotificationsScreen';
 }
