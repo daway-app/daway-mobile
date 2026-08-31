@@ -15,4 +15,5 @@ class Routes {
       '/pharmacyAlternativesEntryScreen';
   static const String pharmacyAlternativesScreen =
       '/pharmacyAlternativesScreen';
+  static const String pharmacyRatingsScreen = '/pharmacyRatingsScreen';
 }
