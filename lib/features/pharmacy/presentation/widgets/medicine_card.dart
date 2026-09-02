@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../domain/entities/medicine.dart';
 import '../helpers/medicine_text_display.dart';
@@ -18,8 +19,22 @@ class MedicineCard extends StatelessWidget {
     required this.onDelete,
   });
 
-  TextStyle get _nameStyle {
-    final shouty = isShoutyLatinName(medicine.displayName);
+  bool get _hasArabicName =>
+      medicine.nameAr != null && medicine.nameAr!.trim().isNotEmpty;
+
+  /// The English catalog name — the app's only shouty-import risk (Arabic
+  /// has no letter case) — shrinks when it's an all-caps import artifact,
+  /// and drops to a secondary style once the Arabic name above it is
+  /// already carrying the primary "this is the name" weight.
+  TextStyle get _englishNameStyle {
+    if (_hasArabicName) {
+      return TextStyle(
+        fontSize: 12.5.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.grey,
+      );
+    }
+    final shouty = isShoutyLatinName(medicine.name);
     return TextStyle(
       fontSize: shouty ? 13.sp : 15.sp,
       fontWeight: shouty ? FontWeight.w600 : FontWeight.bold,
@@ -65,12 +80,27 @@ class MedicineCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (_hasArabicName) ...[
+                      Text(
+                        medicine.nameAr!,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                          height: 1.3,
+                          color: AppColors.mainTeal,
+                        ),
+                        textAlign: TextAlign.right,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 2.h),
+                    ],
                     Text(
-                      medicine.displayName,
-                      style: _nameStyle,
+                      medicine.name,
+                      style: _englishNameStyle,
                       textAlign: TextAlign.right,
-                      textDirection: textDirectionFor(medicine.displayName),
-                      maxLines: 2,
+                      textDirection: textDirectionFor(medicine.name),
+                      maxLines: _hasArabicName ? 1 : 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (medicine.activeIngredient != null && medicine.activeIngredient!.isNotEmpty) ...[
@@ -81,7 +111,14 @@ class MedicineCard extends StatelessWidget {
                           SizedBox(width: 4.w),
                           Expanded(
                             child: Text(
-                              medicine.activeIngredient!,
+                              // Catalog active ingredients often arrive
+                              // all-caps from an import; Arabic has no
+                              // letter case, so this only ever fires for
+                              // Latin script (a real mixed-case name like
+                              // "Paracetamol" is untouched).
+                              isShoutyLatinName(medicine.activeIngredient!)
+                                  ? medicine.activeIngredient!.toLowerCase()
+                                  : medicine.activeIngredient!,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w400,
@@ -98,7 +135,7 @@ class MedicineCard extends StatelessWidget {
                     ],
                     SizedBox(height: 10.h),
                     Text(
-                      '${medicine.price.toStringAsFixed(2)} ر.س',
+                      '${medicine.price.toStringAsFixed(2)} ${AppConstants.currencySuffix}',
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.bold,

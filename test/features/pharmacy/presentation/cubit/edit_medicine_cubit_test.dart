@@ -15,6 +15,7 @@ const _medicine = Medicine(
   id: 7,
   medicineId: 3,
   name: 'Panadol',
+  nameAr: 'بانادول',
   activeIngredient: 'Paracetamol 500mg',
   price: 12.5,
   quantity: 40,
@@ -24,6 +25,9 @@ const _medicine = Medicine(
 class _FakePharmacyMedicineRepository implements PharmacyMedicineRepository {
   int? lastPharmacyMedicineId;
   int? lastMedicineId;
+  String? lastTradeName;
+  String? lastTradeNameAr;
+  String? lastActiveIngredient;
   double? lastPrice;
   int? lastQuantity;
   bool? lastIsAvailable;
@@ -82,12 +86,18 @@ class _FakePharmacyMedicineRepository implements PharmacyMedicineRepository {
     required String token,
     required int pharmacyMedicineId,
     required int medicineId,
+    required String tradeName,
+    String? tradeNameAr,
+    String? activeIngredient,
     required double price,
     required int quantity,
     required bool isAvailable,
   }) async {
     lastPharmacyMedicineId = pharmacyMedicineId;
     lastMedicineId = medicineId;
+    lastTradeName = tradeName;
+    lastTradeNameAr = tradeNameAr;
+    lastActiveIngredient = activeIngredient;
     lastPrice = price;
     lastQuantity = quantity;
     lastIsAvailable = isAvailable;
@@ -130,6 +140,9 @@ void main() {
 
   test('starts pre-filled from the given medicine', () {
     final formData = cubit.state.formData;
+    expect(formData.tradeName, 'Panadol');
+    expect(formData.nameAr, 'بانادول');
+    expect(formData.activeIngredient, 'Paracetamol 500mg');
     expect(formData.price, '12.50');
     expect(formData.quantity, '40');
     expect(formData.isAvailable, isTrue);
@@ -142,7 +155,39 @@ void main() {
     expect(cubit.state.formData.canSubmit, isFalse);
   });
 
+  test('an empty trade name is not submittable', () {
+    cubit.tradeNameChanged('');
+
+    expect(cubit.state.formData.canSubmit, isFalse);
+  });
+
+  test('an Arabic trade name is not submittable (backend requires English)', () {
+    cubit.tradeNameChanged('بانادول');
+
+    expect(cubit.state.formData.tradeNameHasArabicChars, isTrue);
+    expect(cubit.state.formData.canSubmit, isFalse);
+  });
+
+  test('nameAr starts pre-filled and is editable', () async {
+    expect(cubit.state.formData.nameAr, 'بانادول');
+
+    cubit.nameArChanged('بانادول اكسترا');
+    await cubit.save();
+
+    expect(repository.lastTradeNameAr, 'بانادول اكسترا');
+  });
+
+  test('clearing nameAr sends null instead of an empty string', () async {
+    cubit.nameArChanged('');
+
+    await cubit.save();
+
+    expect(repository.lastTradeNameAr, isNull);
+  });
+
   test('save sends the edited fields for the original medicine id', () async {
+    cubit.tradeNameChanged('Panadol Extra');
+    cubit.activeIngredientChanged('Paracetamol');
     cubit.priceChanged('18');
     cubit.quantityChanged('25');
     cubit.isAvailableChanged(false);
@@ -152,6 +197,8 @@ void main() {
     expect(cubit.state, isA<EditMedicineSuccess>());
     expect(repository.lastPharmacyMedicineId, 7);
     expect(repository.lastMedicineId, 3);
+    expect(repository.lastTradeName, 'Panadol Extra');
+    expect(repository.lastActiveIngredient, 'Paracetamol');
     expect(repository.lastPrice, 18);
     expect(repository.lastQuantity, 25);
     expect(repository.lastIsAvailable, false);

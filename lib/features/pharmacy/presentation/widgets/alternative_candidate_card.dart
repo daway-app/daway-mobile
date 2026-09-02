@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../domain/entities/medicine.dart';
@@ -91,7 +92,7 @@ class AlternativeCandidateCard extends StatelessWidget {
                         SizedBox(width: 4.w),
                         Flexible(
                           child: Text(
-                            'السعر ${candidate.price.toStringAsFixed(2)} ر.س',
+                            'السعر ${candidate.price.toStringAsFixed(2)} ${AppConstants.currencySuffix}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
