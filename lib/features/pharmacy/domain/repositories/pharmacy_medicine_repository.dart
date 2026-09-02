@@ -45,18 +45,23 @@ abstract class PharmacyMedicineRepository {
     required int pharmacyMedicineId,
   });
 
-  /// Updates the pharmacy's own stock fields for an existing
-  /// `pharmacy_medicine` record — not the shared catalog fields (trade
-  /// name, active ingredient), which the backend attributes to the
-  /// `medicine` catalog entry rather than to this pharmacy's listing.
-  /// [medicineId] is the catalog medicine's id (`Medicine.medicineId`,
-  /// distinct from [pharmacyMedicineId]) — the backend requires it in the
-  /// body even though the record being updated is already identified by
-  /// the path.
+  /// Updates an existing `pharmacy_medicine` record's stock fields plus the
+  /// shared catalog entry's trade name / active ingredient (confirmed
+  /// against a live `PUT /pharmacy/medicines/{id}` response — the catalog
+  /// fields are included in the same request). [medicineId] is the catalog
+  /// medicine's id (`Medicine.medicineId`, distinct from
+  /// [pharmacyMedicineId]) — the backend requires it in the body even
+  /// though the record being updated is already identified by the path.
+  /// [tradeName] must be English only, same as `addMedicineByName`.
+  /// [tradeNameAr] isn't user-editable here — pass the medicine's existing
+  /// value through unchanged so the update doesn't clear it.
   Future<ApiResult<void>> updateMedicine({
     required String token,
     required int pharmacyMedicineId,
     required int medicineId,
+    required String tradeName,
+    String? tradeNameAr,
+    String? activeIngredient,
     required double price,
     required int quantity,
     required bool isAvailable,
