@@ -13,9 +13,8 @@ import '../../domain/entities/medicine.dart';
 import '../cubit/edit_medicine_cubit.dart';
 import '../cubit/edit_medicine_state.dart';
 
-/// Only the pharmacy's own stock fields (price, quantity, availability) are
-/// editable here — the trade name and active ingredient belong to the
-/// shared catalog entry, so they're shown for context only.
+/// Price, quantity, availability, trade name, Arabic trade name, and active
+/// ingredient are all editable here.
 class EditMedicineScreen extends StatefulWidget {
   final Medicine medicine;
 
@@ -26,6 +25,9 @@ class EditMedicineScreen extends StatefulWidget {
 }
 
 class _EditMedicineScreenState extends State<EditMedicineScreen> {
+  late final TextEditingController _tradeNameController;
+  late final TextEditingController _nameArController;
+  late final TextEditingController _activeIngredientController;
   late final TextEditingController _priceController;
   late final TextEditingController _quantityController;
   bool _attemptedSave = false;
@@ -33,12 +35,19 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
   @override
   void initState() {
     super.initState();
+    _tradeNameController = TextEditingController(text: widget.medicine.name);
+    _nameArController = TextEditingController(text: widget.medicine.nameAr ?? '');
+    _activeIngredientController =
+        TextEditingController(text: widget.medicine.activeIngredient ?? '');
     _priceController = TextEditingController(text: widget.medicine.price.toStringAsFixed(2));
     _quantityController = TextEditingController(text: widget.medicine.quantity.toString());
   }
 
   @override
   void dispose() {
+    _tradeNameController.dispose();
+    _nameArController.dispose();
+    _activeIngredientController.dispose();
     _priceController.dispose();
     _quantityController.dispose();
     super.dispose();
@@ -52,8 +61,6 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final activeIngredient = widget.medicine.activeIngredient;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -81,6 +88,9 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
           },
           builder: (context, state) {
             final formData = state.formData;
+            _syncController(_tradeNameController, formData.tradeName);
+            _syncController(_nameArController, formData.nameAr);
+            _syncController(_activeIngredientController, formData.activeIngredient);
             _syncController(_priceController, formData.price);
             _syncController(_quantityController, formData.quantity);
 
@@ -89,18 +99,43 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('الاسم التجاري', style: AppTextStyles.inputLabel),
+                  Text('الاسم بالعربي (اختياري)', style: AppTextStyles.inputLabel),
                   SizedBox(height: 8.h),
-                  _ReadOnlyInfoField(
-                    icon: Icons.medication_outlined,
-                    value: widget.medicine.displayName,
+                  AppTextField(
+                    controller: _nameArController,
+                    hintText: 'مثال: بانادول',
+                    prefixIcon: Icon(Icons.medication_outlined, color: AppColors.grey, size: 20.sp),
+                    onChanged: (value) => context.read<EditMedicineCubit>().nameArChanged(value),
                   ),
-                  if (activeIngredient != null && activeIngredient.isNotEmpty) ...[
-                    SizedBox(height: 16.h),
-                    Text('المادة الفعالة', style: AppTextStyles.inputLabel),
-                    SizedBox(height: 8.h),
-                    _ReadOnlyInfoField(icon: Icons.science_outlined, value: activeIngredient),
+                  SizedBox(height: 16.h),
+                  Text('الاسم التجاري (بالإنجليزي) *', style: AppTextStyles.inputLabel),
+                  SizedBox(height: 8.h),
+                  AppTextField(
+                    controller: _tradeNameController,
+                    hintText: 'مثال: Panadol',
+                    prefixIcon: Icon(Icons.medication_outlined, color: AppColors.grey, size: 20.sp),
+                    onChanged: (value) => context.read<EditMedicineCubit>().tradeNameChanged(value),
+                  ),
+                  if (formData.tradeNameHasArabicChars) ...[
+                    SizedBox(height: 6.h),
+                    Text('يجب أن يكون الاسم التجاري بالإنجليزي فقط', style: AppTextStyles.errorText),
                   ],
+                  if (_attemptedSave &&
+                      !formData.tradeNameHasArabicChars &&
+                      formData.tradeName.trim().isEmpty) ...[
+                    SizedBox(height: 6.h),
+                    Text('هذا الحقل مطلوب', style: AppTextStyles.errorText),
+                  ],
+                  SizedBox(height: 16.h),
+                  Text('المادة الفعالة', style: AppTextStyles.inputLabel),
+                  SizedBox(height: 8.h),
+                  AppTextField(
+                    controller: _activeIngredientController,
+                    hintText: 'أدخل المادة الفعالة',
+                    prefixIcon: Icon(Icons.science_outlined, color: AppColors.grey, size: 20.sp),
+                    onChanged: (value) =>
+                        context.read<EditMedicineCubit>().activeIngredientChanged(value),
+                  ),
                   SizedBox(height: 16.h),
                   Text('السعر *', style: AppTextStyles.inputLabel),
                   SizedBox(height: 8.h),
@@ -179,41 +214,6 @@ class _EditMedicineScreenState extends State<EditMedicineScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-class _ReadOnlyInfoField extends StatelessWidget {
-  final IconData icon;
-  final String value;
-
-  const _ReadOnlyInfoField({required this.icon, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderGrey),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.grey, size: 20.sp),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: 16.sp, color: AppColors.textDark),
-              textAlign: TextAlign.right,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
       ),
     );
   }

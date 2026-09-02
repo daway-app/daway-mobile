@@ -3,4 +3,8 @@ abstract class AppConstants {
   /// point — Gaza City, matching the sample address in the API docs.
   static const double defaultMapLatitude = 31.5017;
   static const double defaultMapLongitude = 34.4668;
+
+  /// Palestinian/Israeli new shekel — this app's only market (see the map
+  /// center above), so every displayed price uses this, not a Gulf riyal.
+  static const String currencySuffix = '₪';
 }

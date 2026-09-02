@@ -266,6 +266,9 @@ void main() {
       token: 'tok-1',
       pharmacyMedicineId: 9,
       medicineId: 16,
+      tradeName: 'Adol 4',
+      tradeNameAr: 'ادول 4',
+      activeIngredient: '44',
       price: 18,
       quantity: 25,
       isAvailable: false,
@@ -274,6 +277,9 @@ void main() {
     expect(remoteDataSource.lastPharmacyMedicineId, 9);
     final body = remoteDataSource.lastBody!;
     expect(body['medicine_id'], 16);
+    expect(body['trade_name'], 'Adol 4');
+    expect(body['trade_name_ar'], 'ادول 4');
+    expect(body['active_ingredient'], '44');
     expect(body['price'], 18);
     expect(body['quantity'], 25);
     expect(body['is_available'], isFalse);

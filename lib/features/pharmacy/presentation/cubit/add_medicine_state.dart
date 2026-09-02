@@ -1,6 +1,5 @@
+import '../../../../core/helpers/arabic_text.dart';
 import '../../domain/entities/medicine_catalog_item.dart';
-
-final RegExp _arabicCharPattern = RegExp(r'[؀-ۿ]');
 
 /// Form data carried across every state so the screen never loses what the
 /// user has already entered while a search, image upload, or submission is
@@ -55,7 +54,7 @@ class AddMedicineFormData {
   int? get quantityValue => int.tryParse(quantity);
 
   /// The backend rejects `trade_name` if it contains Arabic characters.
-  bool get nameHasArabicChars => _arabicCharPattern.hasMatch(nameQuery);
+  bool get nameHasArabicChars => containsArabicChars(nameQuery);
 
   bool get canSubmit =>
       (isManualEntry
