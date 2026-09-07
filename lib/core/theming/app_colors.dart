@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract class AppColors {
 // Brand Logo & UI Palette
-  static const Color mainTeal = Color(0xFF00657A);
+  static const Color mainTeal = Color(0xFF1C72A6);
   static const Color primaryTeal = Color(0xFF0B8FAC);
   static const Color lightTeal = Color(0xFF7BC1B7);
 
