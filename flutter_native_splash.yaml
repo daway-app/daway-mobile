@@ -1,9 +1,18 @@
 flutter_native_splash:
-  # ios & android below 12
+  # ios & android below 12: the full DAWAK lockup (icon + wordmark), matching
+  # the settled state of the in-app splash animation.
   color: "#ffffff"
-  image: assets/images/splash.png
+  image: assets/images/splash_screen.png
   android_12:
-    image: assets/images/splash_android12_logo.png
+    # Android 12+'s SplashScreen API forces the icon into a small, circularly
+    # masked container with its own system reveal animation — a tall image
+    # like the full lockup gets cropped and clipped inside that circle rather
+    # than fitting nicely (confirmed on-device: only part of the icon showed,
+    # wordmark cut off). A transparent icon avoids that broken look, leaving
+    # a clean white background — the closest thing to "no native splash" that
+    # this OS constraint allows.
+    image: assets/images/splash_android12.png
+    icon_background_color: "#ffffff"
     color: "#ffffff"
   android: true
   ios: true
