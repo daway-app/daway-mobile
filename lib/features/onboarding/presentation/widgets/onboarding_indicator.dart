@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/theming/app_colors.dart';
+
 class OnboardingIndicator extends StatelessWidget {
   final int count;
   final int currentIndex;
@@ -20,11 +22,11 @@ class OnboardingIndicator extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           margin: EdgeInsets.symmetric(horizontal: 3.w),
-          width: isActive ? 20.w : 6.w,
-          height: 6.h,
+          width: isActive ? 24.w : 8.w,
+          height: 8.h,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: isActive ? 1 : 0.5),
-            borderRadius: BorderRadius.circular(3.r),
+            color: isActive ? AppColors.mainTeal : AppColors.borderGrey,
+            borderRadius: BorderRadius.circular(8.r),
           ),
         );
       }),
