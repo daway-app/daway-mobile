@@ -61,4 +61,28 @@ abstract class AppTextStyles {
         fontWeight: FontWeight.bold,
         color: AppColors.textDark,
       );
+
+  static TextStyle get onboardingTitle => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+        letterSpacing: 0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get onboardingSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        height: 1.0,
+        letterSpacing: 0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get onboardingSkip => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        letterSpacing: 0,
+        color: AppColors.onboardingText,
+      );
 }
