@@ -15,6 +15,9 @@ abstract class AppColors {
   static const Color borderGrey = Color(0xFFE0E0E0);
   static const Color background = Color(0xFFF6FAFC);
 
+  // Onboarding Screen
+  static const Color onboardingText = Color(0xFF0D2538);
+
   // Account Type Screen
   static const Color patientIconBackground = Color(0xFFA6EDE2);
   static const Color pharmacyIconBackground = Color(0xFFB3EBFF);

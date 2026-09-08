@@ -11,6 +11,7 @@ class AppCustomButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final IconData? trailingIcon;
+  final FontWeight? fontWeight;
 
   const AppCustomButton({
     super.key,
@@ -22,6 +23,7 @@ class AppCustomButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.trailingIcon,
+    this.fontWeight,
   });
 
   @override
@@ -57,7 +59,7 @@ class AppCustomButton extends StatelessWidget {
                 text,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: textColor ?? Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: fontWeight ?? FontWeight.bold,
                   fontSize: 16.sp,
                 ),
                 maxLines: 1,
