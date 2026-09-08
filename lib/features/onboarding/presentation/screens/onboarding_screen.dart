@@ -26,14 +26,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _handleActionPressed() {
     final isLast = _currentIndex == onboardingPages.length - 1;
     if (isLast) {
-      getIt<SetOnboardingSeenUseCase>()();
-      Navigator.of(context).pushReplacementNamed(Routes.accountTypeScreen);
+      _finishOnboarding();
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  void _finishOnboarding() {
+    getIt<SetOnboardingSeenUseCase>()();
+    Navigator.of(context).pushReplacementNamed(Routes.accountTypeScreen);
   }
 
   @override
@@ -53,6 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               currentIndex: _currentIndex,
               isLast: index == onboardingPages.length - 1,
               onActionPressed: _handleActionPressed,
+              onSkipPressed: _finishOnboarding,
             );
           },
         ),
