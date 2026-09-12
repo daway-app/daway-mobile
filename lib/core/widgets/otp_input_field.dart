@@ -13,11 +13,13 @@ import '../theming/app_colors.dart';
 class OtpInputField extends StatefulWidget {
   final int length;
   final ValueChanged<String> onChanged;
+  final bool hasError;
 
   const OtpInputField({
     super.key,
     this.length = 6,
     required this.onChanged,
+    this.hasError = false,
   });
 
   @override
@@ -52,15 +54,18 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   Widget _buildBox(int index, String text, bool isFocused) {
     return Container(
-      width: 42.w,
-      height: 50.h,
+      height: 56.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(12.r),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4.r),
         border: Border.all(
-          color: isFocused ? AppColors.primaryTeal : AppColors.borderGrey,
-          width: isFocused ? 1.5 : 1,
+          color: widget.hasError
+              ? AppColors.authError
+              : isFocused
+                  ? AppColors.primaryTeal
+                  : AppColors.authInputBorder,
+          width: isFocused && !widget.hasError ? 1.5 : 1,
         ),
       ),
       child: Text(
@@ -86,11 +91,18 @@ class _OtpInputFieldState extends State<OtpInputField> {
         child: Stack(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(widget.length, (index) {
-                final isFocused = _focusNode.hasFocus && index == activeIndex;
-                return _buildBox(index, text, isFocused);
-              }),
+              children: [
+                for (var index = 0; index < widget.length; index++) ...[
+                  if (index > 0) SizedBox(width: 8.w),
+                  Expanded(
+                    child: _buildBox(
+                      index,
+                      text,
+                      _focusNode.hasFocus && index == activeIndex,
+                    ),
+                  ),
+                ],
+              ],
             ),
             Opacity(
               opacity: 0,

@@ -35,7 +35,6 @@ import '../../features/patient/domain/usecases/reverse_geocode_usecase.dart';
 import '../../features/patient/domain/usecases/search_address_usecase.dart';
 import '../../features/patient/domain/usecases/update_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
-import '../../features/patient/presentation/cubit/complete_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_data_source.dart';
@@ -134,7 +133,7 @@ Future<void> setupGetIt() async {
   );
   getIt.registerLazySingleton(() => GetOnboardingSeenUseCase(getIt()));
   getIt.registerLazySingleton(() => SetOnboardingSeenUseCase(getIt()));
-  getIt.registerFactory(() => PatientAuthCubit(getIt(), getIt(), getIt()));
+  getIt.registerFactory(() => PatientAuthCubit(getIt(), getIt(), getIt(), getIt()));
   getIt.registerFactory(() => PharmacyAuthCubit(getIt(), getIt()));
   getIt.registerFactory(() => LogoutCubit(getIt()));
 
@@ -316,15 +315,5 @@ Future<void> setupGetIt() async {
   );
   getIt.registerFactory(
     () => NotificationsCubit(getIt(), getIt(), getIt()),
-  );
-
-  // ---------------- Complete Profile ----------------
-  getIt.registerFactoryParam<CompleteProfileCubit, String, void>(
-    (phone, _) => CompleteProfileCubit(
-      getIt(),
-      getIt(),
-      phone: phone,
-      defaultAvatarUrl: dotenv.env['CLOUDINARY_DEFAULT_AVATAR_URL'] ?? '',
-    ),
   );
 }

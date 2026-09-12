@@ -51,13 +51,11 @@ class BirthDateField extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
-          color: AppColors.inputFill,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: AppColors.borderGrey),
+          border: Border.all(color: AppColors.authInputBorder),
         ),
         child: Row(
           children: [
-            Icon(Icons.cake_outlined, color: AppColors.grey, size: 20.sp),
             SizedBox(width: 8.w),
             Expanded(
               child: Text(

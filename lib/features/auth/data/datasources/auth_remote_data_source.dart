@@ -14,10 +14,23 @@ class AuthRemoteDataSource {
   Future<Response<dynamic>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) {
     return _dio.post(
-      ApiConstants.patientLogin,
-      data: {'phone': phone, 'otp': otp},
+      ApiConstants.otpVerify,
+      data: {
+        'phone': phone,
+        'otp': otp,
+        'name': ?name,
+        'birth_date': ?birthDate,
+        'latitude': ?latitude,
+        'longitude': ?longitude,
+        'notifications_enabled': ?notificationsEnabled,
+      },
     );
   }
 

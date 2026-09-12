@@ -45,6 +45,7 @@ Failure _mapBadResponse(DioException error) {
     message: message,
     code: apiError?.code,
     statusCode: statusCode,
+    registrationRequired: apiError?.registrationRequired ?? false,
   );
 }
 

@@ -16,6 +16,91 @@ abstract class AppTextStyles {
         color: AppColors.primaryTeal,
       );
 
+  static TextStyle get accountOptionTitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textDark,
+      );
+
+  static TextStyle get accountTypeSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.greyText,
+      );
+
+  static TextStyle get authScreenTitle => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+        color: AppColors.authTextPrimary,
+      );
+
+  static TextStyle get authScreenSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.3,
+        color: AppColors.authTextMuted,
+      );
+
+  static TextStyle get authPermissionTitle => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w500,
+        height: 1.4,
+        letterSpacing: 0.2,
+        color: AppColors.authTextPrimary,
+      );
+
+  static TextStyle get authPermissionSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 22.75 / 16,
+        letterSpacing: 0,
+        color: AppColors.authTextMuted,
+      );
+
+  static TextStyle get authFieldLabel => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.authTextPrimary,
+      );
+
+  static TextStyle get authFieldError => TextStyle(
+        fontSize: 12.sp,
+        color: AppColors.authError,
+      );
+
+  static TextStyle get authLinkText => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.authTextPrimary,
+      );
+
+  static TextStyle get authFooterMuted => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w300,
+        color: AppColors.authTextPrimary,
+      );
+
+  /// Plain wording inside the sign-up consent sentence ("بالضغط على...").
+  static TextStyle get authConsentText => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w300,
+        height: 1.0,
+        letterSpacing: 0,
+        color: AppColors.authTextPrimary,
+      );
+
+  /// The "التالي"/"الشروط والأحكام"/"سياسة الخصوصية" spans inside that same
+  /// sentence — same size as [authConsentText] but heavier; the two legal
+  /// links additionally get an underline where used.
+  static TextStyle get authConsentLink => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        letterSpacing: 0,
+        color: AppColors.authTextPrimary,
+      );
+
   static TextStyle get cardDescription => TextStyle(
         fontSize: 14.sp,
         fontWeight: FontWeight.w400,

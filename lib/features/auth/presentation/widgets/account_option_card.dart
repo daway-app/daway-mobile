@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
 import '../../domain/entities/account_type.dart';
 
 class AccountOptionCard extends StatelessWidget {
@@ -11,7 +9,6 @@ class AccountOptionCard extends StatelessWidget {
   final String title;
   final String description;
   final Widget iconWidget;
-  final Color iconBgColor;
   final VoidCallback onTap;
 
   const AccountOptionCard({
@@ -21,79 +18,71 @@ class AccountOptionCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.iconWidget,
-    required this.iconBgColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: '$title. $description',
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12.r),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: EdgeInsets.all(16.r),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: isSelected ? AppColors.primaryTeal : Colors.transparent,
-                width: 1.w,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromRGBO(0, 0, 0, 0.04),
-                  blurRadius: 12.r,
-                  offset: Offset(0, 4.h),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 56.w,
-                  height: 56.h,
-                  decoration: BoxDecoration(
-                    color: iconBgColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: iconWidget,
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: AppTextStyles.cardTitle,
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        description,
-                        textAlign: TextAlign.right,
-                        style: AppTextStyles.cardDescription,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                SvgPicture.asset(
-                  'assets/icons/left_icon.svg',
-                  width: 18.w,
-                  height: 18.h,
-                ),
-              ],
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 98.h,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: isSelected ? AppColors.selectedBorder : AppColors.cardBorder,
+            width: isSelected ? 1.5 : 1.0,
           ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 48.w,
+              height: 48.h,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.accountIconBg,
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(
+                  color: AppColors.iconBlueBorder,
+                  width: 1.0,
+                ),
+              ),
+              child: iconWidget,
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.cardTitleDark,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.authTextMuted,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
