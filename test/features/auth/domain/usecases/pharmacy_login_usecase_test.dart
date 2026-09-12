@@ -20,6 +20,11 @@ class _FakeAuthRepository implements AuthRepository {
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) async =>
       const Success(PatientAuthResult(token: 'tok', isNewAccount: false));
 

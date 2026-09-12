@@ -7,8 +7,17 @@ class ApiFailure extends Failure {
   final String? code;
   final int? statusCode;
 
-  const ApiFailure({required String message, this.code, this.statusCode})
-      : super(message);
+  /// True when the backend rejected an OTP-verify call because it needs the
+  /// full registration payload (name/birth_date/latitude/longitude) — the
+  /// OTP itself is still valid and can be resent with that data added.
+  final bool registrationRequired;
+
+  const ApiFailure({
+    required String message,
+    this.code,
+    this.statusCode,
+    this.registrationRequired = false,
+  }) : super(message);
 }
 
 class NetworkFailure extends Failure {

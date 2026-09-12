@@ -10,7 +10,20 @@ class VerifyOtpUseCase {
   Future<ApiResult<PatientAuthResult>> call({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) {
-    return _repository.verifyOtp(phone: phone, otp: otp);
+    return _repository.verifyOtp(
+      phone: phone,
+      otp: otp,
+      name: name,
+      birthDate: birthDate,
+      latitude: latitude,
+      longitude: longitude,
+      notificationsEnabled: notificationsEnabled,
+    );
   }
 }

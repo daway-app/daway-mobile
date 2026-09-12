@@ -24,6 +24,20 @@ abstract class AppColors {
   static const Color continueButtonBackground = Color(0xFF7BAFBB);
   static const Color cardChevron = Color(0xFFBDC8CD);
 
+  // Account Option Cards
+  static const Color cardBorder = Color(0xFFDCE6E9);
+  static const Color iconBlueBorder = Color(0xFFB9DDED);
+  static const Color accountIconBg = Color(0xA3F0F7FB);
+  static const Color permissionIconBg = Color(0xFFF0F7FB);
+  static const Color selectedBorder = Color(0xFF1B75BC);
+  static const Color cardTitleDark = Color(0xFF0F2830);
+
+  // Auth Redesign (account type / login / OTP / create-account)
+  static const Color authTextPrimary = onboardingText;
+  static const Color authTextMuted = Color(0xFF4A6169);
+  static const Color authInputBorder = Color(0xFF98ADB3);
+  static const Color authError = Color(0xFFFF0000);
+
   // Forms & Feedback
   static const Color error = Color(0xFFD32F2F);
   static const Color success = Color(0xFF2E9E5B);

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppLogo extends StatelessWidget {
   final double size;
 
-  const AppLogo({super.key, this.size = 130});
+  const AppLogo({super.key, this.size = 72});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +14,6 @@ class AppLogo extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12.r,
-            offset: Offset(0, 4.h),
-          ),
-        ],
       ),
       child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
     );
