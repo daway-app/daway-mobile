@@ -11,6 +11,11 @@ abstract class AuthRepository {
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   });
 
   Future<ApiResult<PharmacyAuthResult>> pharmacyLogin({

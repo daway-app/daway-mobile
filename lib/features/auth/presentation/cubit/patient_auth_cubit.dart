@@ -1,44 +1,51 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/erroring/failure.dart';
 import '../../../../core/helpers/api_result.dart';
 import '../../../../core/helpers/validators.dart';
+import '../../../patient/domain/usecases/get_current_location_usecase.dart';
 import '../../domain/entities/account_type.dart';
 import '../../domain/usecases/save_session_usecase.dart';
 import '../../domain/usecases/send_otp_usecase.dart';
 import '../../domain/usecases/verify_otp_usecase.dart';
 import 'patient_auth_state.dart';
 
-/// Drives the single merged patient phone-entry + OTP screen. There is no
-/// dedicated "register" endpoint in the backend — verifying the OTP either
-/// logs the patient in or creates their account, and the response tells us
-/// which one happened via [PatientAuthResult.isNewAccount].
+/// Drives both the plain phone-only login screen and the sign-up screen
+/// (name + birth date collected up front). There is no separate "register"
+/// endpoint — verifying the OTP either logs the patient in or creates their
+/// account; for a brand-new phone the backend also requires the full
+/// registration payload (name/birth_date/latitude/longitude) on that same
+/// call, rejecting an incomplete one with `registration_required` while
+/// keeping the OTP valid for a retry.
 class PatientAuthCubit extends Cubit<PatientAuthState> {
   final SendOtpUseCase _sendOtpUseCase;
   final VerifyOtpUseCase _verifyOtpUseCase;
   final SaveSessionUseCase _saveSessionUseCase;
+  final GetCurrentLocationUseCase _getCurrentLocationUseCase;
+
+  String _lastOtp = '';
 
   PatientAuthCubit(
     this._sendOtpUseCase,
     this._verifyOtpUseCase,
     this._saveSessionUseCase,
+    this._getCurrentLocationUseCase,
   ) : super(const PatientAuthState());
 
   void phoneChanged(String phone) {
     emit(state.copyWith(phone: phone, clearError: true));
   }
 
-  void termsToggled(bool value) {
-    emit(state.copyWith(agreedToTerms: value, clearError: true));
+  void nameChanged(String name) {
+    emit(state.copyWith(name: name, clearError: true));
+  }
+
+  void birthDateChanged(String birthDate) {
+    emit(state.copyWith(birthDate: birthDate, clearError: true));
   }
 
   Future<void> sendOtp() async {
-    if (!state.agreedToTerms) {
-      emit(state.copyWith(
-        errorMessage: 'يجب الموافقة على شروط الخدمة وسياسة الخصوصية للمتابعة',
-      ));
-      return;
-    }
     if (!Validators.isValidLocalPhone(state.phone)) {
       emit(state.copyWith(errorMessage: 'يرجى إدخال رقم جوال صحيح مكوّن من 10 أرقام'));
       return;
@@ -68,8 +75,39 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
       return;
     }
 
+    _lastOtp = otp;
     emit(state.copyWith(isVerifying: true, clearError: true));
-    final result = await _verifyOtpUseCase(phone: state.phone, otp: otp);
+    await _submitVerify();
+  }
+
+  Future<void> useCurrentLocation() async {
+    emit(state.copyWith(isFetchingLocation: true, clearLocationError: true));
+
+    final result = await _getCurrentLocationUseCase();
+    switch (result) {
+      case Success(:final data):
+        emit(state.copyWith(
+          isFetchingLocation: false,
+          needsLocation: false,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          isVerifying: true,
+        ));
+        await _submitVerify();
+      case ApiError(:final failure):
+        emit(state.copyWith(isFetchingLocation: false, locationError: failure.message));
+    }
+  }
+
+  Future<void> _submitVerify() async {
+    final result = await _verifyOtpUseCase(
+      phone: state.phone,
+      otp: _lastOtp,
+      name: state.name,
+      birthDate: state.birthDate,
+      latitude: state.latitude,
+      longitude: state.longitude,
+    );
 
     switch (result) {
       case Success(:final data):
@@ -79,10 +117,17 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
         }
         emit(state.copyWith(
           isVerifying: false,
-          destination: data.isNewAccount ? AuthDestination.profile : AuthDestination.home,
+          destination: state.isSignUp ? AuthDestination.notifications : AuthDestination.home,
         ));
       case ApiError(:final failure):
-        emit(state.copyWith(isVerifying: false, errorMessage: failure.message));
+        if (state.isSignUp &&
+            failure is ApiFailure &&
+            failure.registrationRequired &&
+            state.latitude == null) {
+          emit(state.copyWith(isVerifying: false, needsLocation: true));
+        } else {
+          emit(state.copyWith(isVerifying: false, errorMessage: failure.message));
+        }
     }
   }
 }

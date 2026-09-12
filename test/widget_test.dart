@@ -34,8 +34,8 @@ void main() {
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
-    expect(find.text('حساب مريض'), findsOneWidget);
-    expect(find.text('حساب صيدلية'), findsOneWidget);
+    expect(find.text('مستخدم'), findsOneWidget);
+    expect(find.text('صيدلي'), findsOneWidget);
   });
 
   testWidgets('tapping the pharmacy option updates the cubit state', (tester) async {
@@ -46,7 +46,7 @@ void main() {
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('حساب صيدلية'));
+    await tester.tap(find.text('صيدلي'));
     await tester.pumpAndSettle();
 
     expect(cubit.state, AccountType.pharmacy);

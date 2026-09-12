@@ -1,5 +1,6 @@
 import 'package:daway_app/core/erroring/failure.dart';
 import 'package:daway_app/core/helpers/api_result.dart';
+import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
@@ -11,12 +12,18 @@ import 'package:daway_app/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_state.dart';
+import 'package:daway_app/features/patient/domain/repositories/location_repository.dart';
+import 'package:daway_app/features/patient/domain/usecases/get_current_location_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeAuthRepository implements AuthRepository {
   String? lastSendOtpPhone;
   String? lastVerifyPhone;
   String? lastVerifyOtp;
+  String? lastVerifyName;
+  String? lastVerifyBirthDate;
+  double? lastVerifyLatitude;
+  double? lastVerifyLongitude;
   ApiResult<String?> sendOtpResult = const Success(null);
   ApiResult<PatientAuthResult> verifyResult =
       const Success(PatientAuthResult(token: 'fake-token', isNewAccount: false));
@@ -31,9 +38,18 @@ class _FakeAuthRepository implements AuthRepository {
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) async {
     lastVerifyPhone = phone;
     lastVerifyOtp = otp;
+    lastVerifyName = name;
+    lastVerifyBirthDate = birthDate;
+    lastVerifyLatitude = latitude;
+    lastVerifyLongitude = longitude;
     return verifyResult;
   }
 
@@ -64,35 +80,46 @@ class _FakeSessionRepository implements SessionRepository {
   }
 }
 
+class _FakeLocationRepository implements LocationRepository {
+  ApiResult<PickedLocation> currentLocationResult =
+      const Success(PickedLocation(latitude: 31.5, longitude: 34.46, address: 'غزة'));
+
+  @override
+  Future<ApiResult<PickedLocation>> getCurrentLocation() async => currentLocationResult;
+
+  @override
+  Future<ApiResult<String>> reverseGeocode({
+    required double latitude,
+    required double longitude,
+  }) async => const Success('غزة');
+
+  @override
+  Future<ApiResult<PickedLocation>> searchAddress(String query) async =>
+      const Success(PickedLocation(latitude: 31.5, longitude: 34.46, address: 'غزة'));
+}
+
 void main() {
   late _FakeAuthRepository repository;
   late _FakeSessionRepository sessionRepository;
+  late _FakeLocationRepository locationRepository;
   late PatientAuthCubit cubit;
 
   setUp(() {
     repository = _FakeAuthRepository();
     sessionRepository = _FakeSessionRepository();
+    locationRepository = _FakeLocationRepository();
     cubit = PatientAuthCubit(
       SendOtpUseCase(repository),
       VerifyOtpUseCase(repository),
       SaveSessionUseCase(sessionRepository),
+      GetCurrentLocationUseCase(locationRepository),
     );
   });
 
   tearDown(() => cubit.close());
 
   group('sendOtp', () {
-    test('rejects sending without agreeing to the terms', () async {
-      cubit.phoneChanged('0599123456');
-
-      await cubit.sendOtp();
-
-      expect(cubit.state.otpSent, isFalse);
-      expect(cubit.state.errorMessage, isNotNull);
-    });
-
-    test('rejects an invalid phone even when terms are agreed', () async {
-      cubit.termsToggled(true);
+    test('rejects an invalid phone', () async {
       cubit.phoneChanged('123');
 
       await cubit.sendOtp();
@@ -102,7 +129,6 @@ void main() {
     });
 
     test('sends the 10-digit local phone as-is on success', () async {
-      cubit.termsToggled(true);
       cubit.phoneChanged('0599123456');
 
       await cubit.sendOtp();
@@ -115,7 +141,6 @@ void main() {
     test('surfaces the failure message on error', () async {
       repository.sendOtpResult =
           const ApiError(ApiFailure(message: 'فشل الإرسال', code: 'VALIDATION_ERROR'));
-      cubit.termsToggled(true);
       cubit.phoneChanged('0599123456');
 
       await cubit.sendOtp();
@@ -126,7 +151,6 @@ void main() {
 
     test('succeeds whether or not the backend echoes the OTP back', () async {
       repository.sendOtpResult = const Success('519979');
-      cubit.termsToggled(true);
       cubit.phoneChanged('0599123456');
 
       await cubit.sendOtp();
@@ -137,7 +161,6 @@ void main() {
 
   group('backToPhoneStep', () {
     test('clears otpSent and any error', () async {
-      cubit.termsToggled(true);
       cubit.phoneChanged('0599123456');
       await cubit.sendOtp();
 
@@ -148,7 +171,7 @@ void main() {
     });
   });
 
-  group('verifyOtp', () {
+  group('verifyOtp (plain login, no name/birth date set)', () {
     test('rejects an otp that is not 6 digits', () async {
       await cubit.verifyOtp('12345');
 
@@ -156,18 +179,7 @@ void main() {
       expect(cubit.state.errorMessage, isNotNull);
     });
 
-    test('routes to profile when the account was just created', () async {
-      repository.verifyResult =
-          const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
-      cubit.phoneChanged('0599123456');
-
-      await cubit.verifyOtp('123456');
-
-      expect(cubit.state.destination, AuthDestination.profile);
-      expect(repository.lastVerifyOtp, '123456');
-    });
-
-    test('routes to home when the account already existed', () async {
+    test('routes to home on success', () async {
       repository.verifyResult =
           const Success(PatientAuthResult(token: 'tok', isNewAccount: false));
       cubit.phoneChanged('0599123456');
@@ -175,6 +187,8 @@ void main() {
       await cubit.verifyOtp('123456');
 
       expect(cubit.state.destination, AuthDestination.home);
+      expect(repository.lastVerifyOtp, '123456');
+      expect(repository.lastVerifyName, isNull);
     });
 
     test('persists the session on success', () async {
@@ -197,6 +211,72 @@ void main() {
 
       expect(cubit.state.destination, isNull);
       expect(cubit.state.errorMessage, 'رمز التحقق غير صحيح');
+    });
+  });
+
+  group('verifyOtp (sign-up, name/birth date set)', () {
+    setUp(() {
+      cubit.phoneChanged('0599123456');
+      cubit.nameChanged('عبدالرحمن');
+      cubit.birthDateChanged('2005-08-15');
+    });
+
+    test('sends the registration payload alongside phone+otp', () async {
+      repository.verifyResult =
+          const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
+
+      await cubit.verifyOtp('123456');
+
+      expect(repository.lastVerifyName, 'عبدالرحمن');
+      expect(repository.lastVerifyBirthDate, '2005-08-15');
+    });
+
+    test('routes to notifications (not home) once verified', () async {
+      repository.verifyResult =
+          const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
+
+      await cubit.verifyOtp('123456');
+
+      expect(cubit.state.destination, AuthDestination.notifications);
+    });
+
+    test('a registration_required rejection asks for location instead of erroring', () async {
+      repository.verifyResult = const ApiError(
+        ApiFailure(message: 'يرجى إدخال بيانات التسجيل', registrationRequired: true),
+      );
+
+      await cubit.verifyOtp('123456');
+
+      expect(cubit.state.needsLocation, isTrue);
+      expect(cubit.state.errorMessage, isNull);
+      expect(cubit.state.destination, isNull);
+    });
+
+    test('useCurrentLocation resends the same OTP with coordinates and succeeds', () async {
+      repository.verifyResult = const ApiError(
+        ApiFailure(message: 'يرجى إدخال بيانات التسجيل', registrationRequired: true),
+      );
+      await cubit.verifyOtp('123456');
+      expect(cubit.state.needsLocation, isTrue);
+
+      repository.verifyResult =
+          const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
+      await cubit.useCurrentLocation();
+
+      expect(repository.lastVerifyOtp, '123456');
+      expect(repository.lastVerifyLatitude, 31.5);
+      expect(repository.lastVerifyLongitude, 34.46);
+      expect(cubit.state.destination, AuthDestination.notifications);
+    });
+
+    test('a location failure surfaces locationError without losing the otp', () async {
+      locationRepository.currentLocationResult =
+          const ApiError(PermissionFailure('يرجى السماح بالوصول لموقعك'));
+
+      await cubit.useCurrentLocation();
+
+      expect(cubit.state.locationError, 'يرجى السماح بالوصول لموقعك');
+      expect(cubit.state.destination, isNull);
     });
   });
 }

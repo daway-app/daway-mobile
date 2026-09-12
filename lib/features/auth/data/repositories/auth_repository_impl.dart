@@ -27,11 +27,21 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) async {
     try {
       final response = await _remoteDataSource.verifyOtp(
         phone: phone,
         otp: otp,
+        name: name,
+        birthDate: birthDate,
+        latitude: latitude,
+        longitude: longitude,
+        notificationsEnabled: notificationsEnabled,
       );
       final model = PatientAuthResponseModel.fromJson(
         response.data as Map<String, dynamic>,

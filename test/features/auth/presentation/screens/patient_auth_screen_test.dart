@@ -1,4 +1,5 @@
 import 'package:daway_app/core/helpers/api_result.dart';
+import 'package:daway_app/core/models/picked_location.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
@@ -10,6 +11,8 @@ import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart'
 import 'package:daway_app/core/widgets/otp_input_field.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
+import 'package:daway_app/features/patient/domain/repositories/location_repository.dart';
+import 'package:daway_app/features/patient/domain/usecases/get_current_location_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,6 +30,11 @@ class _FakeAuthRepository implements AuthRepository {
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,
     required String otp,
+    String? name,
+    String? birthDate,
+    double? latitude,
+    double? longitude,
+    bool? notificationsEnabled,
   }) async => verifyResult;
 
   @override
@@ -56,12 +64,37 @@ class _FakeSessionRepository implements SessionRepository {
   }
 }
 
+class _FakeLocationRepository implements LocationRepository {
+  @override
+  Future<ApiResult<PickedLocation>> getCurrentLocation() async =>
+      const Success(PickedLocation(latitude: 31.5, longitude: 34.46, address: 'غزة'));
+
+  @override
+  Future<ApiResult<String>> reverseGeocode({
+    required double latitude,
+    required double longitude,
+  }) async => const Success('غزة');
+
+  @override
+  Future<ApiResult<PickedLocation>> searchAddress(String query) async =>
+      const Success(PickedLocation(latitude: 31.5, longitude: 34.46, address: 'غزة'));
+}
+
 void main() {
   Future<void> setPhoneViewport(WidgetTester tester) async {
     tester.view.physicalSize = const Size(375, 812);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+  }
+
+  PatientAuthCubit buildCubit(_FakeAuthRepository repository) {
+    return PatientAuthCubit(
+      SendOtpUseCase(repository),
+      VerifyOtpUseCase(repository),
+      SaveSessionUseCase(_FakeSessionRepository()),
+      GetCurrentLocationUseCase(_FakeLocationRepository()),
+    );
   }
 
   Widget buildTestableScreen(PatientAuthCubit cubit) {
@@ -82,70 +115,51 @@ void main() {
   testWidgets('renders the phone step without layout overflow', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository();
-    final cubit = PatientAuthCubit(
-      SendOtpUseCase(repository),
-      VerifyOtpUseCase(repository),
-      SaveSessionUseCase(_FakeSessionRepository()),
-    );
+    final cubit = buildCubit(repository);
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('أهلاً بك في دوائي'), findsOneWidget);
-    expect(find.text('رقم الجوال'), findsOneWidget);
-    expect(find.text('إرسال رمز التحقق'), findsOneWidget);
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget is RichText && widget.text.toPlainText().contains('شروط الخدمة'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('مرحباً بعودتك!'), findsOneWidget);
+    expect(find.text('رقم هاتفك'), findsOneWidget);
+    expect(find.text('التالي'), findsOneWidget);
   });
 
-  testWidgets('shows a validation error when sending without agreeing to terms', (tester) async {
+  testWidgets('shows a validation error when sending with an empty phone', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository();
-    final cubit = PatientAuthCubit(
-      SendOtpUseCase(repository),
-      VerifyOtpUseCase(repository),
-      SaveSessionUseCase(_FakeSessionRepository()),
-    );
+    final cubit = buildCubit(repository);
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('إرسال رمز التحقق'));
+    await tester.tap(find.text('التالي'));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
     expect(cubit.state.otpSent, isFalse);
-    expect(cubit.state.errorMessage, isNotNull);
+    expect(find.text('الرجاء إدخال رقم الهاتف'), findsOneWidget);
   });
 
   testWidgets('pushes the dedicated OTP screen after a successful send', (tester) async {
     await setPhoneViewport(tester);
     final repository = _FakeAuthRepository();
-    final cubit = PatientAuthCubit(
-      SendOtpUseCase(repository),
-      VerifyOtpUseCase(repository),
-      SaveSessionUseCase(_FakeSessionRepository()),
-    );
+    final cubit = buildCubit(repository);
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
-    cubit.termsToggled(true);
     cubit.phoneChanged('0599123456');
     await cubit.sendOtp();
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('أهلاً بك في دوائي'), findsNothing);
-    expect(find.text('ادخل رمز التحقق'), findsOneWidget);
+    expect(find.text('مرحباً بعودتك!'), findsNothing);
+    expect(find.text('خطوة أخيرة!'), findsOneWidget);
     expect(find.text('تحقق'), findsOneWidget);
     expect(find.byType(OtpInputField), findsOneWidget);
     expect(

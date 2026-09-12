@@ -3,18 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/routing/routes.dart';
-import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/app_card.dart';
-import '../../../../core/widgets/app_logo.dart';
 import '../cubit/patient_auth_cubit.dart';
 import '../cubit/patient_auth_state.dart';
+import '../widgets/auth_back_button.dart';
 import '../widgets/otp_verification_form.dart';
-import '../widgets/resend_otp_link.dart';
+import 'location_permission_screen.dart';
+import 'notifications_permission_screen.dart';
 
-/// Its own screen (pushed on top of [PatientAuthScreen], sharing the same
-/// [PatientAuthCubit] instance) so the phone step and the OTP step are two
-/// distinct screens rather than one screen toggling its content.
 class OtpVerificationScreen extends StatelessWidget {
   const OtpVerificationScreen({super.key});
 
@@ -25,54 +21,63 @@ class OtpVerificationScreen extends StatelessWidget {
         if (didPop) context.read<PatientAuthCubit>().backToPhoneStep();
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: AppColors.textDark),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
         body: SafeArea(
           child: BlocListener<PatientAuthCubit, PatientAuthState>(
             listenWhen: (previous, current) =>
-                current.destination != null && previous.destination != current.destination,
+                (current.needsLocation && !previous.needsLocation) ||
+                (current.destination != null && previous.destination != current.destination),
             listener: (context, state) {
-              final route = state.destination == AuthDestination.profile
-                  ? Routes.profileScreen
-                  : Routes.patientHomeScreen;
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                route,
-                (route) => false,
-                arguments: state.destination == AuthDestination.profile ? state.phone : null,
-              );
+              final cubit = context.read<PatientAuthCubit>();
+              if (state.needsLocation) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: cubit,
+                      child: const LocationPermissionScreen(),
+                    ),
+                  ),
+                );
+              } else if (state.destination == AuthDestination.notifications) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: cubit,
+                      child: const NotificationsPermissionScreen(),
+                    ),
+                  ),
+                );
+              } else if (state.destination == AuthDestination.home) {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(Routes.patientHomeScreen, (route) => false);
+              }
             },
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 16.h),
-                  const AppLogo(size: 96),
-                  SizedBox(height: 16.h),
+                  AuthBackButton(onTap: () => Navigator.of(context).pop()),
+                  SizedBox(height: 32.h),
+
                   Text(
-                    'ادخل رمز التحقق',
-                    style: AppTextStyles.authTitle,
-                    textAlign: TextAlign.center,
+                    'خطوة أخيرة!',
+                    textAlign: TextAlign.right,
+                    style: AppTextStyles.authScreenTitle,
                   ),
                   SizedBox(height: 8.h),
-                  Text(
-                    'تم إرسال رمز التحقق إلى رقم جوالك',
-                    style: AppTextStyles.authSubtitle,
-                    textAlign: TextAlign.center,
+
+                  BlocSelector<PatientAuthCubit, PatientAuthState, String>(
+                    selector: (state) => state.phone,
+                    builder: (context, phone) => Text(
+                      'أدخل رمز التحقق المرسل إلى رقم هاتفك\n للمتابعة $phone',
+                      textAlign: TextAlign.right,
+                      style: AppTextStyles.authScreenSubtitle,
+                    ),
                   ),
-                  SizedBox(height: 24.h),
-                  const AppCard(child: OtpVerificationForm()),
-                  SizedBox(height: 20.h),
-                  const ResendOtpLink(),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 32.h),
+
+                  const OtpVerificationForm(),
                 ],
               ),
             ),
