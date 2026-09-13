@@ -120,11 +120,21 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
           destination: state.isSignUp ? AuthDestination.notifications : AuthDestination.home,
         ));
       case ApiError(:final failure):
-        if (state.isSignUp &&
-            failure is ApiFailure &&
-            failure.registrationRequired &&
-            state.latitude == null) {
-          emit(state.copyWith(isVerifying: false, needsLocation: true));
+        if (failure is ApiFailure && failure.registrationRequired) {
+          if (state.isSignUp) {
+            // Re-request location even if we already have a (possibly
+            // stale) one on file — retrying with a fresh fix is the only
+            // actionable next step the user has for this rejection.
+            emit(state.copyWith(isVerifying: false, needsLocation: true));
+          } else {
+            // Reached from the plain phone-only login screen: the backend
+            // has no account for this phone and needs the full sign-up
+            // payload (name/birth date) we never collected here.
+            emit(state.copyWith(
+              isVerifying: false,
+              errorMessage: 'لا يوجد حساب بهذا الرقم، يرجى إنشاء حساب جديد',
+            ));
+          }
         } else {
           emit(state.copyWith(isVerifying: false, errorMessage: failure.message));
         }

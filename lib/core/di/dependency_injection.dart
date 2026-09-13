@@ -18,6 +18,7 @@ import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
+import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../../features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
@@ -103,8 +104,6 @@ const String _cloudinaryDioInstanceName = 'cloudinaryDio';
 final getIt = GetIt.instance;
 
 Future<void> setupGetIt() async {
-  getIt.registerFactory<AccountTypeCubit>(() => AccountTypeCubit());
-
   // ---------------- Networking ----------------
   getIt.registerLazySingleton(() => DioFactory.getDio());
 
@@ -133,8 +132,10 @@ Future<void> setupGetIt() async {
   );
   getIt.registerLazySingleton(() => GetOnboardingSeenUseCase(getIt()));
   getIt.registerLazySingleton(() => SetOnboardingSeenUseCase(getIt()));
+  getIt.registerFactory<AccountTypeCubit>(() => AccountTypeCubit(getIt(), getIt()));
   getIt.registerFactory(() => PatientAuthCubit(getIt(), getIt(), getIt(), getIt()));
   getIt.registerFactory(() => PharmacyAuthCubit(getIt(), getIt()));
+  getIt.registerFactory(() => PharmacySignUpCubit(getIt()));
   getIt.registerFactory(() => LogoutCubit(getIt()));
 
   // ---------------- Patient Profile ----------------
