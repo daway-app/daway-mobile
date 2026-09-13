@@ -7,12 +7,47 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_logo.dart';
+import '../../../onboarding/domain/entities/onboarding_page.dart';
+import '../../../onboarding/presentation/onboarding_content.dart';
+import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 import '../../domain/entities/account_type.dart';
 import '../cubit/account_type_cubit.dart';
 import '../widgets/account_option_card.dart';
 
 class AccountTypeScreen extends StatelessWidget {
   const AccountTypeScreen({super.key});
+
+  static String _loginRouteFor(AccountType type) =>
+      type == AccountType.patient ? Routes.patientAuthScreen : Routes.pharmacyAuthScreen;
+
+  static List<OnboardingPage> _onboardingPagesFor(AccountType type) =>
+      type == AccountType.patient ? patientOnboardingPages : pharmacyOnboardingPages;
+
+  Future<void> _continue(BuildContext context, AccountType selectedType) async {
+    final cubit = context.read<AccountTypeCubit>();
+    final loginRoute = _loginRouteFor(selectedType);
+    final seen = await cubit.hasSeenOnboarding(selectedType);
+    if (!context.mounted) return;
+
+    if (seen) {
+      Navigator.pushNamed(context, loginRoute);
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OnboardingScreen(
+          pages: _onboardingPagesFor(selectedType),
+          onFinished: () async {
+            await cubit.markOnboardingSeen(selectedType);
+            if (!context.mounted) return;
+            Navigator.of(context).pushReplacementNamed(loginRoute);
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +130,8 @@ class AccountTypeScreen extends StatelessWidget {
                 child: AppCustomButton(
                   backgroundColor: AppColors.primaryTeal,
                   text: 'التالي',
-                  onPressed: () {
-                    final selectedType = context.read<AccountTypeCubit>().state;
-                    if (selectedType == AccountType.patient) {
-                      Navigator.pushNamed(context, Routes.patientAuthScreen);
-                    } else {
-                      Navigator.pushNamed(context, Routes.pharmacyAuthScreen);
-                    }
-                  },
+                  onPressed: () =>
+                      _continue(context, context.read<AccountTypeCubit>().state),
                 ),
               ),
               SizedBox(height: 40.h),

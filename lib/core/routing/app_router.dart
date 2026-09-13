@@ -1,7 +1,7 @@
 import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
-import 'package:daway_app/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
+import 'package:daway_app/features/auth/presentation/screens/pharmacy_sign_up_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/location_picker_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
@@ -19,6 +19,7 @@ import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
+import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
 import '../models/picked_location.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/pharmacy/domain/entities/medicine.dart';
@@ -35,9 +36,6 @@ import 'routes.dart';
 class AppRouter {
   Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case Routes.onboardingScreen:
-        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
-
       case Routes.accountTypeScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
@@ -67,6 +65,14 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<PatientAuthCubit>(),
             child: const SignUpScreen(),
+          ),
+        );
+
+      case Routes.pharmacySignUpScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<PharmacySignUpCubit>(),
+            child: const PharmacySignUpScreen(),
           ),
         );
 

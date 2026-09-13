@@ -212,6 +212,19 @@ void main() {
       expect(cubit.state.destination, isNull);
       expect(cubit.state.errorMessage, 'رمز التحقق غير صحيح');
     });
+
+    test('a registration_required rejection surfaces a sign-up prompt instead of asking for location',
+        () async {
+      repository.verifyResult = const ApiError(
+        ApiFailure(message: 'يرجى إدخال بيانات التسجيل', registrationRequired: true),
+      );
+      cubit.phoneChanged('0599123456');
+
+      await cubit.verifyOtp('123456');
+
+      expect(cubit.state.needsLocation, isFalse);
+      expect(cubit.state.errorMessage, 'لا يوجد حساب بهذا الرقم، يرجى إنشاء حساب جديد');
+    });
   });
 
   group('verifyOtp (sign-up, name/birth date set)', () {
@@ -267,6 +280,33 @@ void main() {
       expect(repository.lastVerifyLatitude, 31.5);
       expect(repository.lastVerifyLongitude, 34.46);
       expect(cubit.state.destination, AuthDestination.notifications);
+    });
+
+    test(
+        'a registration_required rejection asks for location again even when a stale one is already set',
+        () async {
+      repository.verifyResult = const ApiError(
+        ApiFailure(message: 'يرجى إدخال بيانات التسجيل', registrationRequired: true),
+      );
+      await cubit.verifyOtp('123456');
+      expect(cubit.state.needsLocation, isTrue);
+
+      repository.verifyResult =
+          const Success(PatientAuthResult(token: 'tok', isNewAccount: true));
+      await cubit.useCurrentLocation();
+      expect(cubit.state.latitude, isNotNull);
+
+      // The backend rejects again with registrationRequired despite already
+      // having a latitude on file (e.g. it was stale/invalid) — the cubit
+      // must send the user back to the location step to retry, not dead-end
+      // into a generic error.
+      repository.verifyResult = const ApiError(
+        ApiFailure(message: 'يرجى إدخال بيانات التسجيل', registrationRequired: true),
+      );
+      await cubit.verifyOtp('123456');
+
+      expect(cubit.state.needsLocation, isTrue);
+      expect(cubit.state.errorMessage, isNull);
     });
 
     test('a location failure surfaces locationError without losing the otp', () async {
