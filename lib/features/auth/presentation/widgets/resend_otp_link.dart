@@ -76,9 +76,11 @@ class _ResendOtpLinkState extends State<ResendOtpLink> {
         }
 
         return GestureDetector(
-          onTap: () {
-            context.read<PatientAuthCubit>().sendOtp();
-            _startCooldown();
+          onTap: () async {
+            final cubit = context.read<PatientAuthCubit>();
+            await cubit.sendOtp();
+            if (!mounted) return;
+            if (cubit.state.errorMessage == null) _startCooldown();
           },
           child: Row(
             mainAxisSize: MainAxisSize.min,

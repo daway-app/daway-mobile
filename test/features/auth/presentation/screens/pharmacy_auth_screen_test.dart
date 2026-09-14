@@ -41,6 +41,14 @@ class _FakeAuthRepository implements AuthRepository {
       loginResult;
 
   @override
+  Future<ApiResult<void>> registerPharmacy({
+    required String pharmacyName,
+    required String phone,
+    required String region,
+    required String password,
+  }) async => const Success(null);
+
+  @override
   Future<ApiResult<void>> logout({required String token}) async => const Success(null);
 }
 
@@ -96,10 +104,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('دخول الصيدلة'), findsOneWidget);
-    expect(find.text('معرف الصيدلية'), findsOneWidget);
+    expect(find.text('مرحباً بعودتك!'), findsOneWidget);
+    expect(find.text('معرف الصيدلية (ID)'), findsOneWidget);
     expect(find.text('كلمة المرور'), findsOneWidget);
-    expect(find.text('تسجيل الدخول'), findsOneWidget);
+    expect(find.text('التالي'), findsOneWidget);
   });
 
   testWidgets('toggles password visibility without changing cubit state', (tester) async {
@@ -124,7 +132,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('shows a validation error when submitting empty fields', (tester) async {
+  testWidgets('shows per-field validation errors when submitting empty fields', (tester) async {
     await setPhoneViewport(tester);
     final cubit = PharmacyAuthCubit(
       PharmacyLoginUseCase(_FakeAuthRepository()),
@@ -135,11 +143,13 @@ void main() {
     await tester.pumpWidget(buildTestableScreen(cubit));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('تسجيل الدخول'));
+    await tester.tap(find.text('التالي'));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    expect(find.text('معرف الصيدلية مطلوب'), findsOneWidget);
+    expect(find.text('كلمة المرور مطلوبة'), findsOneWidget);
     expect(cubit.state.token, isNull);
-    expect(cubit.state.errorMessage, isNotNull);
+    expect(cubit.state.errorMessage, isNull);
   });
 }

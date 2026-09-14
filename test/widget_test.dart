@@ -1,12 +1,31 @@
 import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/presentation/cubit/account_type_cubit.dart';
 import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
+import 'package:daway_app/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:daway_app/features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
+import 'package:daway_app/features/onboarding/domain/usecases/set_onboarding_seen_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+class _FakeOnboardingRepository implements OnboardingRepository {
+  @override
+  Future<bool> isOnboardingSeen(AccountType accountType) async => false;
+
+  @override
+  Future<void> setOnboardingSeen(AccountType accountType) async {}
+}
+
 void main() {
+  AccountTypeCubit buildCubit() {
+    final repository = _FakeOnboardingRepository();
+    return AccountTypeCubit(
+      GetOnboardingSeenUseCase(repository),
+      SetOnboardingSeenUseCase(repository),
+    );
+  }
+
   Widget buildTestableScreen(AccountTypeCubit cubit) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
@@ -28,7 +47,7 @@ void main() {
 
   testWidgets('shows both account type options', (tester) async {
     await setPhoneViewport(tester);
-    final cubit = AccountTypeCubit();
+    final cubit = buildCubit();
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));
@@ -40,7 +59,7 @@ void main() {
 
   testWidgets('tapping the pharmacy option updates the cubit state', (tester) async {
     await setPhoneViewport(tester);
-    final cubit = AccountTypeCubit();
+    final cubit = buildCubit();
     addTearDown(cubit.close);
 
     await tester.pumpWidget(buildTestableScreen(cubit));

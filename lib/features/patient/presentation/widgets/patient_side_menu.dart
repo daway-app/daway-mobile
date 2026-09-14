@@ -50,19 +50,19 @@ class PatientSideMenu extends StatelessWidget {
               onTap: () => _switchToTab(context, PatientDashboardTab.home),
             ),
             _MenuItem(
+              icon: Icons.search,
+              label: 'البحث',
+              onTap: () => _switchToTab(context, PatientDashboardTab.search),
+            ),
+            _MenuItem(
+              icon: Icons.chat_bubble_outline,
+              label: 'المراسلات',
+              onTap: () => _switchToTab(context, PatientDashboardTab.messages),
+            ),
+            _MenuItem(
               icon: Icons.person_outline,
-              label: 'حسابي',
+              label: 'الملف الشخصي',
               onTap: () => _switchToTab(context, PatientDashboardTab.profile),
-            ),
-            _MenuItem(
-              icon: Icons.calendar_month_outlined,
-              label: 'مواعيدي',
-              onTap: () => _switchToTab(context, PatientDashboardTab.appointments),
-            ),
-            _MenuItem(
-              icon: Icons.medication_outlined,
-              label: 'أدويتي',
-              onTap: () => _switchToTab(context, PatientDashboardTab.medications),
             ),
             _MenuItem(
               icon: Icons.settings_outlined,

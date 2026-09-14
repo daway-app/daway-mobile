@@ -117,7 +117,7 @@ class _PatientPhoneFormState extends State<PatientPhoneForm> {
             builder: (context, state) {
               return AppCustomButton(
                 text: 'التالي',
-                backgroundColor: AppColors.primaryTeal,
+                backgroundColor: AppColors.mainTeal,
                 isLoading: state.isSendingOtp,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {

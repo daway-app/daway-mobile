@@ -1,3 +1,4 @@
+import '../../../auth/domain/entities/account_type.dart';
 import '../repositories/onboarding_repository.dart';
 
 class SetOnboardingSeenUseCase {
@@ -5,7 +6,7 @@ class SetOnboardingSeenUseCase {
 
   const SetOnboardingSeenUseCase(this._repository);
 
-  Future<void> call() {
-    return _repository.setOnboardingSeen();
+  Future<void> call(AccountType accountType) {
+    return _repository.setOnboardingSeen(accountType);
   }
 }

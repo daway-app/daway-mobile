@@ -3,14 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/routing/routes.dart';
-import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../cubit/pharmacy_auth_cubit.dart';
 import '../cubit/pharmacy_auth_state.dart';
 import '../widgets/pharmacy_login_form.dart';
-import '../widgets/pharmacy_support_card.dart';
 
 class PharmacyAuthScreen extends StatelessWidget {
   const PharmacyAuthScreen({super.key});
@@ -18,16 +15,6 @@ class PharmacyAuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textDark),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
       body: SafeArea(
         child: BlocListener<PharmacyAuthCubit, PharmacyAuthState>(
           listenWhen: (previous, current) => previous.token == null && current.token != null,
@@ -38,29 +25,24 @@ class PharmacyAuthScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 8.h),
-                const AppLogo(size: 96),
-                SizedBox(height: 16.h),
+                SizedBox(height: 32.h),
+                const Center(child: AppLogo()),
+                SizedBox(height: 32.h),
                 Text(
-                  'دخول الصيدلة',
-                  style: AppTextStyles.authTitle,
-                  textAlign: TextAlign.center,
+                  'مرحباً بعودتك!',
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.authScreenTitle,
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'يرجى إدخال بيانات اعتماد الصيدلية للمتابعة',
-                  style: AppTextStyles.authSubtitle,
-                  textAlign: TextAlign.center,
+                  'سجّل دخولك ببيانات صيدليتك للوصول إلى حسابك ومتابعة طلباتك بسهولة.',
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.authScreenSubtitle,
                 ),
                 SizedBox(height: 24.h),
-                const AppCard(child: PharmacyLoginForm()),
-                SizedBox(height: 20.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32.w),
-                  child: const PharmacySupportCard(),
-                ),
+                const PharmacyLoginForm(),
                 SizedBox(height: 16.h),
               ],
             ),

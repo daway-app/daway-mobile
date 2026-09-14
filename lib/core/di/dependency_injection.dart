@@ -14,10 +14,12 @@ import '../../features/auth/domain/usecases/save_session_usecase.dart';
 import '../../features/auth/domain/usecases/send_otp_usecase.dart';
 import '../../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../../features/auth/domain/usecases/pharmacy_login_usecase.dart';
+import '../../features/auth/domain/usecases/register_pharmacy_usecase.dart';
 import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
+import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../../features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
@@ -103,8 +105,6 @@ const String _cloudinaryDioInstanceName = 'cloudinaryDio';
 final getIt = GetIt.instance;
 
 Future<void> setupGetIt() async {
-  getIt.registerFactory<AccountTypeCubit>(() => AccountTypeCubit());
-
   // ---------------- Networking ----------------
   getIt.registerLazySingleton(() => DioFactory.getDio());
 
@@ -123,6 +123,7 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => SendOtpUseCase(getIt()));
   getIt.registerLazySingleton(() => VerifyOtpUseCase(getIt()));
   getIt.registerLazySingleton(() => PharmacyLoginUseCase(getIt()));
+  getIt.registerLazySingleton(() => RegisterPharmacyUseCase(getIt()));
   getIt.registerLazySingleton(() => SaveSessionUseCase(getIt()));
   getIt.registerLazySingleton(() => GetSessionUseCase(getIt()));
   getIt.registerLazySingleton(() => LogoutUseCase(getIt(), getIt()));
@@ -133,8 +134,10 @@ Future<void> setupGetIt() async {
   );
   getIt.registerLazySingleton(() => GetOnboardingSeenUseCase(getIt()));
   getIt.registerLazySingleton(() => SetOnboardingSeenUseCase(getIt()));
+  getIt.registerFactory<AccountTypeCubit>(() => AccountTypeCubit(getIt(), getIt()));
   getIt.registerFactory(() => PatientAuthCubit(getIt(), getIt(), getIt(), getIt()));
   getIt.registerFactory(() => PharmacyAuthCubit(getIt(), getIt()));
+  getIt.registerFactory(() => PharmacySignUpCubit(getIt(), getIt()));
   getIt.registerFactory(() => LogoutCubit(getIt()));
 
   // ---------------- Patient Profile ----------------

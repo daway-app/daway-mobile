@@ -42,6 +42,38 @@ abstract class AppTextStyles {
         color: AppColors.authTextMuted,
       );
 
+  /// Row label used by the account-hub menu (e.g. "معلومات الحساب").
+  static TextStyle get accountMenuLabel => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.authTextPrimary,
+      );
+
+  /// Field-section labels (e.g. "الاسم") and the profile name shown under
+  /// the avatar circle on the account-info screen.
+  static TextStyle get profileFieldLabel => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        height: 24 / 16,
+        color: AppColors.authTextPrimary,
+      );
+
+  /// Read-only value shown inside a profile field row, next to its edit chip.
+  static TextStyle get profileFieldValue => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.authTextPrimary,
+      );
+
+  /// Bold section title used by the address cards ("المنزل"/"العمل") and
+  /// the "اضافة عنوان" button.
+  static TextStyle get addressCardTitle => TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 16.sp,
+        height: 20 / 16,
+        color: AppColors.authTextPrimary,
+      );
+
   static TextStyle get authPermissionTitle => TextStyle(
         fontSize: 24.sp,
         fontWeight: FontWeight.w500,

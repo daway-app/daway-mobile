@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theming/app_colors.dart';
+import '../theming/app_colors.dart';
 
-/// The small square "back" chip used at the top of the OTP/terms/privacy
-/// screens — right-aligned, pointing right to read as "back" in RTL.
-class AuthBackButton extends StatelessWidget {
+/// The small square "back" chip used at the top of sub-screens across
+/// features (auth's OTP/terms/privacy screens, patient's account-info and
+/// addresses screens, ...) — right-aligned, pointing right to read as "back"
+/// in RTL.
+class AppBackButton extends StatelessWidget {
   final VoidCallback onTap;
 
-  const AuthBackButton({super.key, required this.onTap});
+  const AppBackButton({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
