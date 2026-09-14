@@ -57,7 +57,7 @@ class _OtpVerificationFormState extends State<OtpVerificationForm> {
           builder: (context, state) {
             return AppCustomButton(
               text: 'تحقق',
-              backgroundColor: AppColors.primaryTeal,
+              backgroundColor: AppColors.mainTeal,
               isLoading: state.isVerifying,
               onPressed: () => context.read<PatientAuthCubit>().verifyOtp(_otp),
             );

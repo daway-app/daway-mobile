@@ -2,17 +2,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
 import '../../../patient/domain/usecases/get_current_location_usecase.dart';
+import '../../domain/usecases/register_pharmacy_usecase.dart';
 import 'pharmacy_sign_up_state.dart';
 
-/// Drives the pharmacy account-creation screen. There is no pharmacy
-/// registration endpoint yet, so [detailsChanged] just holds the entered
-/// fields for the eventual create-account call once that API is ready;
-/// today the form only carries the pharmacy through the location and
-/// notifications permission steps, mirroring the patient sign-up flow.
+/// Drives the pharmacy account-creation screen — collects the form fields,
+/// then calls the create-account API (which always leaves the account
+/// pending admin approval) before moving on to the location/notifications
+/// steps.
 class PharmacySignUpCubit extends Cubit<PharmacySignUpState> {
   final GetCurrentLocationUseCase _getCurrentLocationUseCase;
+  final RegisterPharmacyUseCase _registerPharmacyUseCase;
 
-  PharmacySignUpCubit(this._getCurrentLocationUseCase) : super(const PharmacySignUpState());
+  PharmacySignUpCubit(this._getCurrentLocationUseCase, this._registerPharmacyUseCase)
+      : super(const PharmacySignUpState());
 
   void detailsChanged({
     required String pharmacyName,
@@ -26,6 +28,24 @@ class PharmacySignUpCubit extends Cubit<PharmacySignUpState> {
       address: address,
       password: password,
     ));
+  }
+
+  Future<void> register() async {
+    emit(state.copyWith(isRegistering: true, clearRegisterError: true));
+
+    final result = await _registerPharmacyUseCase(
+      pharmacyName: state.pharmacyName,
+      phone: state.phone,
+      region: state.address,
+      password: state.password,
+    );
+
+    switch (result) {
+      case Success():
+        emit(state.copyWith(isRegistering: false, registered: true));
+      case ApiError(:final failure):
+        emit(state.copyWith(isRegistering: false, registerError: failure.message));
+    }
   }
 
   Future<void> useCurrentLocation() async {

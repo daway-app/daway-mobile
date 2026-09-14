@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/di/dependency_injection.dart';
-import '../../../../core/routing/routes.dart';
-import '../../domain/usecases/set_onboarding_seen_usecase.dart';
-import '../onboarding_content.dart';
+import '../../domain/entities/onboarding_page.dart';
 import '../widgets/onboarding_page_content.dart';
 
+/// Generic 3-slide onboarding carousel — the caller supplies which pages to
+/// show (patient vs. pharmacy content) and what happens once the user
+/// finishes or skips (marking that role's onboarding seen, then navigating
+/// to its login screen).
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final List<OnboardingPage> pages;
+  final VoidCallback onFinished;
+
+  const OnboardingScreen({super.key, required this.pages, required this.onFinished});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -24,20 +28,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _handleActionPressed() {
-    final isLast = _currentIndex == onboardingPages.length - 1;
+    final isLast = _currentIndex == widget.pages.length - 1;
     if (isLast) {
-      _finishOnboarding();
+      widget.onFinished();
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
-  }
-
-  void _finishOnboarding() {
-    getIt<SetOnboardingSeenUseCase>()();
-    Navigator.of(context).pushReplacementNamed(Routes.accountTypeScreen);
   }
 
   @override
@@ -48,16 +47,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         bottom: false,
         child: PageView.builder(
           controller: _pageController,
-          itemCount: onboardingPages.length,
+          itemCount: widget.pages.length,
           onPageChanged: (index) => setState(() => _currentIndex = index),
           itemBuilder: (context, index) {
             return OnboardingPageContent(
-              page: onboardingPages[index],
-              pageCount: onboardingPages.length,
+              page: widget.pages[index],
+              pageCount: widget.pages.length,
               currentIndex: _currentIndex,
-              isLast: index == onboardingPages.length - 1,
+              isLast: index == widget.pages.length - 1,
               onActionPressed: _handleActionPressed,
-              onSkipPressed: _finishOnboarding,
+              onSkipPressed: widget.onFinished,
             );
           },
         ),

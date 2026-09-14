@@ -46,6 +46,14 @@ class _FakeAuthRepository implements AuthRepository {
   }) async => const Success(PharmacyAuthResult(token: 'fake-token'));
 
   @override
+  Future<ApiResult<void>> registerPharmacy({
+    required String pharmacyName,
+    required String phone,
+    required String region,
+    required String password,
+  }) async => const Success(null);
+
+  @override
   Future<ApiResult<void>> logout({required String token}) async => const Success(null);
 }
 

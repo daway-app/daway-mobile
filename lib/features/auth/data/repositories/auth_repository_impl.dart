@@ -74,6 +74,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<ApiResult<void>> registerPharmacy({
+    required String pharmacyName,
+    required String phone,
+    required String region,
+    required String password,
+  }) async {
+    try {
+      await _remoteDataSource.registerPharmacy(
+        pharmacyName: pharmacyName,
+        phone: phone,
+        region: region,
+        password: password,
+      );
+      return const Success(null);
+    } catch (e) {
+      return ApiError(mapExceptionToFailure(e));
+    }
+  }
+
+  @override
   Future<ApiResult<void>> logout({required String token}) async {
     try {
       await _remoteDataSource.logout(token: token);

@@ -23,10 +23,14 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
     load();
   }
 
-  // Bumped by toggleEdit() so an in-flight save()/avatarSelected() that
-  // finishes after the user has already cancelled or re-entered edit mode
+  // Bumped only when toggleEdit() actually cancels (discards) in-progress
+  // edits, so an in-flight save()/avatarSelected() that finishes afterward
   // can tell its result is stale and discard it instead of resurrecting a
-  // discarded edit.
+  // discarded edit. NOT bumped when merely entering edit mode — the
+  // account-info screen calls toggleEdit() from every field's "تعديل"
+  // chip, so bumping unconditionally would orphan an avatar upload still
+  // in flight the moment the user taps any other field's chip, leaving
+  // isUploadingAvatar stuck true forever.
   int _editSession = 0;
 
   Future<void> load() async {
@@ -45,12 +49,12 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
   void toggleEdit() {
     final current = state;
     if (current is! PatientProfileLoaded) return;
-    _editSession++;
-    emit(
-      current.isEditing
-          ? PatientProfileLoaded.fromProfile(current.profile)
-          : current.copyWith(isEditing: true),
-    );
+    if (current.isEditing) {
+      _editSession++;
+      emit(PatientProfileLoaded.fromProfile(current.profile));
+    } else {
+      emit(current.copyWith(isEditing: true));
+    }
   }
 
   void nameChanged(String value) {
@@ -95,7 +99,11 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
 
     switch (result) {
       case Success(:final data):
-        emit(latest.copyWith(avatarUrl: data, isUploadingAvatar: false));
+        emit(latest.copyWith(
+          avatarUrl: data,
+          avatarVersion: DateTime.now().millisecondsSinceEpoch,
+          isUploadingAvatar: false,
+        ));
       case ApiError(:final failure):
         emit(latest.copyWith(isUploadingAvatar: false, avatarError: failure.message));
     }

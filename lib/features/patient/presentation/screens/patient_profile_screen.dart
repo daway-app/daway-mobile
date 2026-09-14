@@ -4,19 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
-import '../../../../core/widgets/app_text_field.dart';
-import '../../../../core/widgets/birth_date_field.dart';
-import '../../../../core/widgets/incomplete_profile_banner.dart';
-import '../../../../core/widgets/profile_avatar_picker.dart';
 import '../../../../core/widgets/profile_load_error.dart';
-import '../../../../core/widgets/profile_location_field.dart';
 import '../cubit/patient_profile_cubit.dart';
 import '../cubit/patient_profile_state.dart';
-import '../widgets/patient_side_menu.dart';
-
+import '../widgets/edit_chip.dart';
+import '../widgets/patient_profile_avatar.dart';
+import '../widgets/patient_sub_screen_header.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   const PatientProfileScreen({super.key});
@@ -27,40 +22,38 @@ class PatientProfileScreen extends StatefulWidget {
 
 class _PatientProfileScreenState extends State<PatientProfileScreen> {
   late final TextEditingController _nameController;
-  late final TextEditingController _phoneController;
   String _controllerBoundTo = '';
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController();
-    _phoneController = TextEditingController();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickBirthDate(BuildContext context, String? current) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(current ?? '') ?? DateTime(now.year - 20),
+      firstDate: DateTime(now.year - 120),
+      lastDate: now,
+    );
+    if (picked == null || !context.mounted) return;
+    final year = picked.year.toString().padLeft(4, '0');
+    final month = picked.month.toString().padLeft(2, '0');
+    final day = picked.day.toString().padLeft(2, '0');
+    context.read<PatientProfileCubit>().birthDateChanged('$year-$month-$day');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Text(
-          'حسابي',
-          style: AppTextStyles.screenTitle.copyWith(
-            color: AppColors.mainTeal,
-            fontSize: 20.sp,
-          ),
-        ),
-      ),
-      drawer: const PatientSideMenu(),
       body: SafeArea(
         child: BlocConsumer<PatientProfileCubit, PatientProfileState>(
           listener: (context, state) {
@@ -90,111 +83,119 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   }
 
   Widget _buildLoaded(BuildContext context, PatientProfileLoaded state) {
-    if (_phoneController.text.isEmpty) {
-      _phoneController.text = state.profile.phone;
-    }
+    final cubit = context.read<PatientProfileCubit>();
 
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (state.isIncomplete) ...[
-            const IncompleteProfileBanner(),
-            SizedBox(height: 16.h),
-          ],
+          const PatientSubScreenHeader(
+            title: 'معلومات الحساب',
+            description: 'إدارة معلوماتك الشخصية وتفاصيل حسابك',
+          ),
+          SizedBox(height: 32.h),
           Center(
-            child: ProfileAvatarPicker(
+            child: PatientProfileAvatar(
+              name: state.name,
               avatarLocalPath: state.avatarLocalPath,
               avatarUrl: state.avatarUrl,
+              avatarVersion: state.avatarVersion,
               isUploading: state.isUploadingAvatar,
               errorMessage: state.avatarError,
-              onImagePicked: (file) => context.read<PatientProfileCubit>().avatarSelected(file),
+              onImagePicked: (file) => cubit.avatarSelected(file),
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Center(
+            child: Text(
+              state.name,
+              style: AppTextStyles.profileFieldLabel,
+              textAlign: TextAlign.center,
             ),
           ),
           SizedBox(height: 24.h),
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('الاسم الكامل', style: AppTextStyles.inputLabel),
-                SizedBox(height: 12.h),
-                AppTextField(
-                  controller: _nameController,
-                  readOnly: !state.isEditing,
-                  prefixIcon: Icon(Icons.person_outline, color: AppColors.grey, size: 20.sp),
-                  onChanged: (value) => context.read<PatientProfileCubit>().nameChanged(value),
-                ),
-                SizedBox(height: 16.h),
-                Text('رقم الهاتف', style: AppTextStyles.inputLabel),
-                SizedBox(height: 12.h),
-                AppTextField(
-                  controller: _phoneController,
-                  textAlign: TextAlign.left,
-                  prefixIcon: Icon(Icons.lock_outline, color: AppColors.grey, size: 18.sp),
-                  readOnly: true,
-                ),
-                SizedBox(height: 16.h),
-                Text('تاريخ الميلاد', style: AppTextStyles.inputLabel),
-                SizedBox(height: 12.h),
-                BirthDateField(
-                  birthDate: state.birthDate,
-                  enabled: state.isEditing,
-                  onChanged: (value) =>
-                      context.read<PatientProfileCubit>().birthDateChanged(value),
-                ),
-                SizedBox(height: 16.h),
-                Text('الموقع', style: AppTextStyles.inputLabel),
-                SizedBox(height: 12.h),
-                IgnorePointer(
-                  ignoring: !state.isEditing,
-                  child: ProfileLocationField(
-                    hasLocation: state.hasLocation,
-                    latitude: state.latitude,
-                    longitude: state.longitude,
-                    address: state.address,
-                    onLocationPicked: (location) =>
-                        context.read<PatientProfileCubit>().locationSelected(location),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24.h),
-          Row(
-            children: [
-              Expanded(
-                child: AppCustomButton(
-                  text: 'حفظ',
-                  isLoading: state.isSaving,
-                  backgroundColor:
-                      state.isEditing && state.canSave ? AppColors.mainTeal : AppColors.borderGrey,
-                  onPressed: state.isEditing && state.canSave
-                      ? () => context.read<PatientProfileCubit>().save()
-                      : () {},
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => context.read<PatientProfileCubit>().toggleEdit(),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 55.h),
-                    side: const BorderSide(color: AppColors.mainTeal),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                  ),
-                  child: Text(
-                    state.isEditing ? 'إلغاء' : 'تعديل',
-                    style: TextStyle(
-                      color: AppColors.mainTeal,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
+          Text('الاسم', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
+          SizedBox(height: 8.h),
+          _ProfileFieldRow(
+            onEditTap: () => cubit.toggleEdit(),
+            child: state.isEditing
+                ? TextField(
+                    controller: _nameController,
+                    textAlign: TextAlign.right,
+                    onChanged: (value) => cubit.nameChanged(value),
+                    style: AppTextStyles.profileFieldValue,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
                     ),
+                  )
+                : Text(
+                    state.name,
+                    textAlign: TextAlign.right,
+                    style: AppTextStyles.profileFieldValue,
                   ),
-                ),
-              ),
-            ],
           ),
+          SizedBox(height: 24.h),
+          Text('رقم الهاتف', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
+          SizedBox(height: 8.h),
+          _ProfileFieldRow(
+            onEditTap: () => cubit.toggleEdit(),
+            child: Text(
+              state.profile.phone,
+              textAlign: TextAlign.right,
+              style: AppTextStyles.profileFieldValue,
+            ),
+          ),
+          SizedBox(height: 24.h),
+          Text('تاريخ الميلاد', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
+          SizedBox(height: 8.h),
+          _ProfileFieldRow(
+            onEditTap: () => cubit.toggleEdit(),
+            child: GestureDetector(
+              onTap: state.isEditing ? () => _pickBirthDate(context, state.birthDate) : null,
+              child: Text(
+                state.birthDate ?? 'اختر تاريخ ميلادك',
+                textAlign: TextAlign.right,
+                style: AppTextStyles.profileFieldValue,
+              ),
+            ),
+          ),
+          SizedBox(height: 48.h),
+          AppCustomButton(
+            text: 'حفظ التعديلات',
+            isLoading: state.isSaving,
+            backgroundColor: state.canSave ? AppColors.mainTeal : AppColors.borderGrey,
+            onPressed: state.canSave ? () => cubit.save() : () {},
+          ),
+          SizedBox(height: 24.h),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileFieldRow extends StatelessWidget {
+  final Widget child;
+  final VoidCallback onEditTap;
+
+  const _ProfileFieldRow({required this.child, required this.onEditTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 62.h,
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.cardBorder),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: child),
+          SizedBox(width: 8.w),
+          EditChip(onTap: onEditTap),
         ],
       ),
     );

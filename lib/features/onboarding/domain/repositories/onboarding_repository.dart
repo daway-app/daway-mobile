@@ -1,5 +1,7 @@
-abstract class OnboardingRepository {
-  Future<bool> isOnboardingSeen();
+import '../../../auth/domain/entities/account_type.dart';
 
-  Future<void> setOnboardingSeen();
+abstract class OnboardingRepository {
+  Future<bool> isOnboardingSeen(AccountType accountType);
+
+  Future<void> setOnboardingSeen(AccountType accountType);
 }

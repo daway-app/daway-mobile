@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_text_styles.dart';
-import 'auth_back_button.dart';
+import '../../../../core/widgets/app_back_button.dart';
 
 /// Static, read-only content screen shared by [TermsScreen] and
 /// [PrivacyPolicyScreen] — same back button and layout, different title/body.
@@ -22,7 +22,7 @@ class LegalContentScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 48.h),
-              AuthBackButton(onTap: () => Navigator.of(context).pop()),
+              AppBackButton(onTap: () => Navigator.of(context).pop()),
               SizedBox(height: 24.h),
               Text(title, textAlign: TextAlign.right, style: AppTextStyles.authScreenTitle),
               SizedBox(height: 16.h),

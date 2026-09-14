@@ -23,5 +23,15 @@ abstract class AuthRepository {
     required String password,
   });
 
+  /// Creates a pharmacy account pending admin approval — the backend never
+  /// returns login credentials here; once approved, the pharmacy_id and
+  /// chosen password are sent to them out-of-band.
+  Future<ApiResult<void>> registerPharmacy({
+    required String pharmacyName,
+    required String phone,
+    required String region,
+    required String password,
+  });
+
   Future<ApiResult<void>> logout({required String token});
 }

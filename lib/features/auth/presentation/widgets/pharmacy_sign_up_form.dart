@@ -8,7 +8,7 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../cubit/pharmacy_sign_up_cubit.dart';
-import '../screens/pharmacy_location_permission_screen.dart';
+import '../cubit/pharmacy_sign_up_state.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_screen.dart';
 
@@ -56,14 +56,7 @@ class _PharmacySignUpFormState extends State<PharmacySignUpForm> {
       address: _addressController.text.trim(),
       password: _passwordController.text,
     );
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: cubit,
-          child: const PharmacyLocationPermissionScreen(),
-        ),
-      ),
-    );
+    cubit.register();
   }
 
   /// See [SignUpForm._consentLink] for why this is a [WidgetSpan].
@@ -145,8 +138,11 @@ class _PharmacySignUpFormState extends State<PharmacySignUpForm> {
             obscureText: _obscurePassword,
             textAlign: TextAlign.right,
             style: TextStyle(fontSize: 16.sp, color: AppColors.authTextPrimary),
-            validator: (value) =>
-                (value == null || value.isEmpty) ? 'كلمة المرور مطلوبة' : null,
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'كلمة المرور مطلوبة';
+              if (value.length < 8) return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+              return null;
+            },
             decoration: _fieldDecoration().copyWith(
               suffixIcon: IconButton(
                 icon: Icon(
@@ -159,12 +155,33 @@ class _PharmacySignUpFormState extends State<PharmacySignUpForm> {
             ),
           ),
 
+          BlocBuilder<PharmacySignUpCubit, PharmacySignUpState>(
+            buildWhen: (previous, current) => previous.registerError != current.registerError,
+            builder: (context, state) {
+              if (state.registerError == null) return const SizedBox.shrink();
+              return Padding(
+                padding: EdgeInsets.only(top: 8.h),
+                child: Text(
+                  state.registerError!,
+                  style: AppTextStyles.authFieldError,
+                  textAlign: TextAlign.right,
+                ),
+              );
+            },
+          ),
+
           SizedBox(height: 24.h),
 
-          AppCustomButton(
-            text: 'التالي',
-            backgroundColor: AppColors.mainTeal,
-            onPressed: () => _submit(context),
+          BlocBuilder<PharmacySignUpCubit, PharmacySignUpState>(
+            buildWhen: (previous, current) => previous.isRegistering != current.isRegistering,
+            builder: (context, state) {
+              return AppCustomButton(
+                text: 'التالي',
+                backgroundColor: AppColors.mainTeal,
+                isLoading: state.isRegistering,
+                onPressed: () => _submit(context),
+              );
+            },
           ),
 
           SizedBox(height: 16.h),

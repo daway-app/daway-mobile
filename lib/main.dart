@@ -7,7 +7,6 @@ import 'core/di/dependency_injection.dart';
 import 'core/routing/app_router.dart';
 import 'core/routing/initial_route_resolver.dart';
 import 'features/auth/domain/usecases/get_session_usecase.dart';
-import 'features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -16,10 +15,8 @@ void main() async {
   await dotenv.load(fileName: '.env');
   await setupGetIt();
 
-  final initialRoute = await InitialRouteResolver(
-    getIt<GetSessionUseCase>(),
-    getIt<GetOnboardingSeenUseCase>(),
-  ).resolve();
+  final initialRoute =
+      await InitialRouteResolver(getIt<GetSessionUseCase>()).resolve();
 
   runApp(DawayApp(appRouter: AppRouter(), initialRoute: initialRoute));
 

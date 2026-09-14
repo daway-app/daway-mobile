@@ -44,6 +44,23 @@ class AuthRemoteDataSource {
     );
   }
 
+  Future<Response<dynamic>> registerPharmacy({
+    required String pharmacyName,
+    required String phone,
+    required String region,
+    required String password,
+  }) {
+    return _dio.post(
+      ApiConstants.registerPharmacy,
+      data: {
+        'pharmacy_name': pharmacyName,
+        'phone': phone,
+        'region': region,
+        'password': password,
+      },
+    );
+  }
+
   Future<Response<dynamic>> logout({required String token}) {
     return _dio.post(
       ApiConstants.logout,

@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/app_back_button.dart';
 import '../cubit/patient_auth_cubit.dart';
 import '../cubit/patient_auth_state.dart';
-import '../widgets/auth_back_button.dart';
 import '../widgets/otp_verification_form.dart';
 import 'location_permission_screen.dart';
 import 'notifications_permission_screen.dart';
@@ -57,7 +57,7 @@ class OtpVerificationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 16.h),
-                  AuthBackButton(onTap: () => Navigator.of(context).pop()),
+                  AppBackButton(onTap: () => Navigator.of(context).pop()),
                   SizedBox(height: 32.h),
 
                   Text(

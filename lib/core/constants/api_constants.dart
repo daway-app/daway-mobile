@@ -6,6 +6,7 @@ abstract class ApiConstants {
   static const String sendOtp = '/otp/send';
   static const String otpVerify = '/otp/verify';
   static const String pharmacyLogin = '/login/pharmacy';
+  static const String registerPharmacy = '/register/pharmacy';
   static const String logout = '/logout';
   static const String patientProfile = '/profile/patient';
   static const String pharmacyProfile = '/profile/pharmacy';

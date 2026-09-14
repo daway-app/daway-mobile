@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../widgets/notifications_permission_view.dart';
+import 'pharmacy_pending_approval_screen.dart';
 
 /// Final step of the pharmacy sign-up flow — mirrors
 /// [NotificationsPermissionScreen] from the patient flow via the shared
-/// [NotificationsPermissionView]. There is no pharmacy registration endpoint
-/// yet, so no session is ever saved here; rather than landing on the
-/// authenticated dashboard with no token, this sends the pharmacy back to
-/// the login screen once the create-account API exists it will be called
-/// here with the details collected on [PharmacySignUpCubit], and this can
-/// route to [Routes.pharmacyHomeScreen] with a real saved session instead.
+/// [NotificationsPermissionView]. The account was already created (pending
+/// admin approval) back on the sign-up form, so this just requests the OS
+/// notification permission (best-effort) and lands on
+/// [PharmacyPendingApprovalScreen] — there is no token yet to reach the
+/// dashboard with.
 class PharmacyNotificationsPermissionScreen extends StatelessWidget {
   const PharmacyNotificationsPermissionScreen({super.key});
 
@@ -21,8 +20,9 @@ class PharmacyNotificationsPermissionScreen extends StatelessWidget {
       await Permission.notification.request();
     }
     if (!context.mounted) return;
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil(Routes.pharmacyAuthScreen, (route) => false);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const PharmacyPendingApprovalScreen()),
+    );
   }
 
   @override
