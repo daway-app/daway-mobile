@@ -194,6 +194,25 @@ void main() {
     expect(state.name, 'أحمد محمد');
   });
 
+  test(
+      'a successful avatar upload bumps avatarVersion without touching the raw URL, '
+      'so a re-upload to the same backend URL still cache-busts the displayed image',
+      () async {
+    final initialVersion = (cubit.state as PatientProfileLoaded).avatarVersion;
+    avatarRepository.result = const Success('https://example.com/avatar.jpg');
+
+    await cubit.avatarSelected(File('avatar.jpg'));
+
+    final state = cubit.state as PatientProfileLoaded;
+    expect(state.avatarUrl, 'https://example.com/avatar.jpg');
+    expect(state.avatarVersion, isNot(initialVersion));
+
+    // save() must persist the raw URL, not a cache-busted one, or the
+    // backend would store junk query params permanently.
+    await cubit.save();
+    expect(profileRepository.lastUpdatedProfile?.avatarUrl, 'https://example.com/avatar.jpg');
+  });
+
   test('cancelling while an avatar upload is in flight is not undone when it resolves', () async {
     final gate = Completer<void>();
     avatarRepository.uploadGate = gate;
@@ -207,6 +226,29 @@ void main() {
     final state = cubit.state as PatientProfileLoaded;
     expect(state.isEditing, isFalse);
     expect(state.avatarUrl, isNull);
+  });
+
+  test(
+      'entering edit mode for another field while an avatar upload is in flight '
+      'does not leave isUploadingAvatar stuck true', () async {
+    final gate = Completer<void>();
+    avatarRepository.uploadGate = gate;
+    avatarRepository.result = const Success('https://example.com/avatar.jpg');
+
+    // Start the avatar upload (e.g. tapping the upload badge), then — while
+    // it's still in flight — tap a different field's "تعديل" chip, which
+    // just enters edit mode rather than cancelling anything.
+    final uploadFuture = cubit.avatarSelected(File('avatar.jpg'));
+    cubit.toggleEdit();
+    expect((cubit.state as PatientProfileLoaded).isEditing, isTrue);
+    expect((cubit.state as PatientProfileLoaded).isUploadingAvatar, isTrue);
+
+    gate.complete();
+    await uploadFuture;
+
+    final state = cubit.state as PatientProfileLoaded;
+    expect(state.isUploadingAvatar, isFalse);
+    expect(state.avatarUrl, 'https://example.com/avatar.jpg');
   });
 
   group('save', () {

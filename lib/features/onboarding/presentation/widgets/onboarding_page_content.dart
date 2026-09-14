@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../domain/entities/onboarding_page.dart';
@@ -32,11 +33,13 @@ class OnboardingPageContent extends StatelessWidget {
           SizedBox(height: 60.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 37.w),
-            child: Image.asset(
-              page.illustrationAsset,
-              height: 230.h,
-              fit: BoxFit.contain,
-            ),
+            child: page.illustrationAsset != null
+                ? Image.asset(
+                    page.illustrationAsset!,
+                    height: 230.h,
+                    fit: BoxFit.contain,
+                  )
+                : _IllustrationPlaceholder(),
           ),
           SizedBox(height: 40.h),
           Padding(
@@ -82,6 +85,29 @@ class OnboardingPageContent extends StatelessWidget {
             SizedBox(height: 10.h),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Shown instead of the real illustration until design delivers the final
+/// artwork for this onboarding page.
+class _IllustrationPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 230.h,
+      width: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.accountIconBg,
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(color: AppColors.iconBlueBorder, width: 1.0),
+      ),
+      child: Icon(
+        Icons.image_outlined,
+        size: 64.sp,
+        color: AppColors.primaryTeal,
       ),
     );
   }

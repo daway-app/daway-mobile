@@ -23,6 +23,12 @@ class PatientProfileLoaded extends PatientProfileState {
   final String? birthDate;
   final String? avatarLocalPath;
   final String? avatarUrl;
+
+  /// Bumped whenever [avatarUrl] is (re)assigned to a possibly-changed
+  /// image, so the widget can cache-bust its [Image.network] — kept
+  /// separate from the URL itself so the raw, un-busted URL is what gets
+  /// persisted back to the backend on save.
+  final int avatarVersion;
   final bool isUploadingAvatar;
   final String? avatarError;
   final double? latitude;
@@ -38,6 +44,7 @@ class PatientProfileLoaded extends PatientProfileState {
     this.birthDate,
     this.avatarLocalPath,
     this.avatarUrl,
+    this.avatarVersion = 0,
     this.isUploadingAvatar = false,
     this.avatarError,
     this.latitude,
@@ -53,6 +60,9 @@ class PatientProfileLoaded extends PatientProfileState {
       name: profile.name,
       birthDate: profile.birthDate,
       avatarUrl: profile.avatarUrl,
+      // Bumped on every (re)load so a re-uploaded avatar — same backend URL,
+      // new bytes — doesn't keep showing Image.network's cached old copy.
+      avatarVersion: DateTime.now().millisecondsSinceEpoch,
       latitude: profile.latitude,
       longitude: profile.longitude,
       address: profile.address,
@@ -73,6 +83,7 @@ class PatientProfileLoaded extends PatientProfileState {
     String? birthDate,
     String? avatarLocalPath,
     String? avatarUrl,
+    int? avatarVersion,
     bool? isUploadingAvatar,
     String? avatarError,
     bool clearAvatarError = false,
@@ -90,6 +101,7 @@ class PatientProfileLoaded extends PatientProfileState {
       birthDate: birthDate ?? this.birthDate,
       avatarLocalPath: avatarLocalPath ?? this.avatarLocalPath,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      avatarVersion: avatarVersion ?? this.avatarVersion,
       isUploadingAvatar: isUploadingAvatar ?? this.isUploadingAvatar,
       avatarError: clearAvatarError ? null : (avatarError ?? this.avatarError),
       latitude: latitude ?? this.latitude,

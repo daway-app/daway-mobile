@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 /// named so call sites (e.g. the side menu) never hand a raw tab index
 /// around, which would silently drift out of sync with the shell's list if
 /// either side were reordered.
-enum PatientDashboardTab { home, profile, appointments, medications }
+enum PatientDashboardTab { home, search, scan, messages, profile }
 
 /// Lets a widget nested anywhere inside a dashboard tab (e.g. the side menu,
 /// which is instantiated separately per tab) switch the shell's active tab
