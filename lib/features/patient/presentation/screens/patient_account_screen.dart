@@ -6,7 +6,10 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/app_snackbar.dart';
+import '../../../../core/widgets/logout_confirmation_dialog.dart';
+import '../../../auth/presentation/cubit/logout_cubit.dart';
 import '../cubit/patient_profile_cubit.dart';
 import 'patient_addresses_screen.dart';
 import 'patient_profile_screen.dart';
@@ -37,6 +40,11 @@ class PatientAccountScreen extends StatelessWidget {
   }
 
   void _comingSoon(BuildContext context) => AppSnackbar.show(context, 'قريباً');
+
+  void _logout(BuildContext context) => LogoutConfirmationDialog.show(
+        context,
+        onConfirm: () => context.read<LogoutCubit>().logout(),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +89,9 @@ class PatientAccountScreen extends StatelessWidget {
               ),
               SizedBox(height: 24.h),
               _AccountMenuRow(
-                iconAsset: 'assets/icons/credit_card_icon.svg',
-                label: 'طرق الدفع',
-                onTap: () => _comingSoon(context),
+                iconData: Icons.alarm_rounded,
+                label: 'تذكيرات الأدوية',
+                onTap: () => Navigator.of(context).pushNamed(Routes.medicineRemindersScreen),
               ),
               SizedBox(height: 24.h),
               _AccountMenuRow(
@@ -104,6 +112,14 @@ class PatientAccountScreen extends StatelessWidget {
                 onTap: () => _comingSoon(context),
               ),
               SizedBox(height: 24.h),
+              _AccountMenuRow(
+                iconData: Icons.logout,
+                label: 'تسجيل الخروج',
+                iconColor: AppColors.error,
+                labelColor: AppColors.error,
+                onTap: () => _logout(context),
+              ),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -117,12 +133,16 @@ class _AccountMenuRow extends StatelessWidget {
   final IconData? iconData;
   final String label;
   final VoidCallback onTap;
+  final Color? iconColor;
+  final Color? labelColor;
 
   const _AccountMenuRow({
     this.iconAsset,
     this.iconData,
     required this.label,
     required this.onTap,
+    this.iconColor,
+    this.labelColor,
   }) : assert(iconAsset != null || iconData != null);
 
   @override
@@ -147,15 +167,15 @@ class _AccountMenuRow extends StatelessWidget {
                       iconAsset!,
                       width: 22.w,
                       height: 22.w,
-                      colorFilter: const ColorFilter.mode(AppColors.mainTeal, BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(iconColor ?? AppColors.mainTeal, BlendMode.srcIn),
                     )
-                  : Icon(iconData, color: AppColors.mainTeal, size: 22.sp),
+                  : Icon(iconData, color: iconColor ?? AppColors.mainTeal, size: 22.sp),
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
                   label,
                   textAlign: TextAlign.right,
-                  style: AppTextStyles.accountMenuLabel,
+                  style: AppTextStyles.accountMenuLabel.copyWith(color: labelColor),
                 ),
               ),
             ],

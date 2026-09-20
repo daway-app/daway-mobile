@@ -16,7 +16,7 @@ abstract class AppColors {
   static const Color background = Color(0xFFF6FAFC);
 
   // Onboarding Screen
-  static const Color onboardingText = Color(0xFF0D2538);
+  static const Color  onboardingText = Color(0xFF0D2538);
 
   // Account Type Screen
   static const Color patientIconBackground = Color(0xFFA6EDE2);
@@ -43,5 +43,8 @@ abstract class AppColors {
   static const Color success = Color(0xFF2E9E5B);
   static const Color warning = Color(0xFFE8A33D);
   static const Color inputFill = Color(0xFFF5F5F5);
+
+  // Patient Home Screen
+  static const Color homeChipBackground = Color(0x1AF0F7FB);
 }
 

@@ -24,19 +24,35 @@ import '../../features/onboarding/data/repositories/onboarding_repository_impl.d
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../../features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
 import '../../features/onboarding/domain/usecases/set_onboarding_seen_usecase.dart';
+import '../../features/patient/data/datasources/category_remote_data_source.dart';
+import '../../features/patient/data/datasources/reminder_local_data_source.dart';
+import '../../features/patient/data/repositories/reminder_repository_impl.dart';
+import '../../features/patient/domain/repositories/reminder_repository.dart';
+import '../../features/patient/domain/usecases/delete_reminder_usecase.dart';
+import '../../features/patient/domain/usecases/get_reminders_usecase.dart';
+import '../../features/patient/domain/usecases/save_reminder_usecase.dart';
+import '../../features/patient/presentation/cubit/reminders_cubit.dart';
 import '../../features/patient/data/datasources/patient_profile_remote_data_source.dart';
+import '../../features/patient/data/repositories/category_repository_impl.dart';
 import '../../features/patient/data/repositories/cloudinary_avatar_repository_impl.dart';
 import '../../features/patient/data/repositories/location_repository_impl.dart';
 import '../../features/patient/data/repositories/patient_profile_repository_impl.dart';
 import '../../features/patient/domain/repositories/avatar_repository.dart';
+import '../../features/patient/domain/entities/category.dart';
+import '../../features/patient/domain/repositories/category_repository.dart';
 import '../../features/patient/domain/repositories/location_repository.dart';
 import '../../features/patient/domain/repositories/patient_profile_repository.dart';
+import '../../features/patient/domain/usecases/get_categories_usecase.dart';
+import '../../features/patient/domain/usecases/get_category_medicines_usecase.dart';
 import '../../features/patient/domain/usecases/get_current_location_usecase.dart';
+import '../../features/patient/domain/usecases/get_dosage_forms_usecase.dart';
 import '../../features/patient/domain/usecases/get_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/reverse_geocode_usecase.dart';
 import '../../features/patient/domain/usecases/search_address_usecase.dart';
 import '../../features/patient/domain/usecases/update_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
+import '../../features/patient/presentation/cubit/categories_cubit.dart';
+import '../../features/patient/presentation/cubit/category_medicines_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_data_source.dart';
@@ -191,6 +207,29 @@ Future<void> setupGetIt() async {
 
   // ---------------- Patient Dashboard ----------------
   getIt.registerFactory(() => PatientProfileCubit(getIt(), getIt(), getIt()));
+
+  // ---------------- Categories ----------------
+  getIt.registerLazySingleton(() => CategoryRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetCategoriesUseCase(getIt()));
+  getIt.registerLazySingleton(() => GetCategoryMedicinesUseCase(getIt()));
+  getIt.registerLazySingleton(() => GetDosageFormsUseCase(getIt()));
+  getIt.registerFactory(() => CategoriesCubit(getIt()));
+  getIt.registerFactoryParam<CategoryMedicinesCubit, Category, void>(
+    (category, _) => CategoryMedicinesCubit(category, getIt(), getIt()),
+  );
+
+  // ---------------- Medicine Reminders ----------------
+  getIt.registerLazySingleton(() => ReminderLocalDataSource());
+  getIt.registerLazySingleton<ReminderRepository>(
+    () => ReminderRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetRemindersUseCase(getIt()));
+  getIt.registerLazySingleton(() => SaveReminderUseCase(getIt()));
+  getIt.registerLazySingleton(() => DeleteReminderUseCase(getIt()));
+  getIt.registerFactory(() => RemindersCubit(getIt(), getIt(), getIt()));
 
   // ---------------- Pharmacy Profile ----------------
   getIt.registerLazySingleton(() => PharmacyProfileRemoteDataSource(getIt()));
