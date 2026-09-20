@@ -3,6 +3,9 @@ import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_sign_up_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/sign_up_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/all_categories_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/category_medicines_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/medicine_reminders_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/location_picker_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/add_medicine_screen.dart';
@@ -21,6 +24,7 @@ import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
 import '../models/picked_location.dart';
+import '../../features/patient/domain/entities/category.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
 import '../../features/pharmacy/domain/entities/medicine.dart';
 import '../../features/pharmacy/presentation/cubit/add_medicine_cubit.dart';
@@ -141,6 +145,22 @@ class AppRouter {
             create: (context) => getIt<NotificationsCubit>(),
             child: const PharmacyNotificationsScreen(),
           ),
+        );
+
+      case Routes.allCategoriesScreen:
+        return MaterialPageRoute(
+          builder: (_) => const AllCategoriesScreen(),
+        );
+
+      case Routes.categoryMedicinesScreen:
+        final category = settings.arguments as Category;
+        return MaterialPageRoute(
+          builder: (_) => CategoryMedicinesScreen(category: category),
+        );
+
+      case Routes.medicineRemindersScreen:
+        return MaterialPageRoute(
+          builder: (_) => const MedicineRemindersScreen(),
         );
 
       case Routes.locationPickerScreen:

@@ -23,4 +23,6 @@ abstract class ApiConstants {
   static const String notificationsCount = '/notifications/count';
   static const String notificationsMarkAllAsRead =
       '/notifications/mark-all-as-read';
+  static const String categories = '/categories';
+  static const String dosageForms = '/dosage-forms';
 }

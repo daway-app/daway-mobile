@@ -6,6 +6,7 @@ import 'app.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/routing/app_router.dart';
 import 'core/routing/initial_route_resolver.dart';
+import 'core/services/notification_service.dart';
 import 'features/auth/domain/usecases/get_session_usecase.dart';
 
 void main() async {
@@ -14,6 +15,7 @@ void main() async {
 
   await dotenv.load(fileName: '.env');
   await setupGetIt();
+  await NotificationService.init();
 
   final initialRoute =
       await InitialRouteResolver(getIt<GetSessionUseCase>()).resolve();

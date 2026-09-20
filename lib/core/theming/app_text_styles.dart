@@ -202,4 +202,117 @@ abstract class AppTextStyles {
         letterSpacing: 0,
         color: AppColors.onboardingText,
       );
+
+  // ---- Patient Home Screen ----
+
+  /// The "أهلاً بك" half of the header greeting — the patient's name after
+  /// it uses [homeGreetingName] instead.
+  static TextStyle get homeGreetingRegular => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeGreetingName => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeLocationText => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeSearchHint => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.grey,
+      );
+
+  static TextStyle get homeImageSearchTitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeImageSearchSubtitle => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.authTextMuted,
+      );
+
+  static TextStyle get homeImageSearchButton => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  /// Section headers ("الاقسام"، "الصيدليات").
+  static TextStyle get homeSectionTitle => TextStyle(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.bold,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeSectionChip => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homeCategoryLabel => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get allCategoriesTitle => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get allCategoriesSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homePharmacyCardTitle => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get homePharmacyCardSubtitle => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.authTextMuted,
+      );
+
+  /// Section headers on the category-medicines screen ("بماذا تشعر"،
+  /// "أدوية قد تعالجها") — medium weight, unlike [homeSectionTitle]'s bold.
+  static TextStyle get categorySectionTitle => TextStyle(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get categoryMedicineName => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onboardingText,
+      );
+
+  static TextStyle get categoryMedicineSubtitle => TextStyle(
+        fontSize: 10.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onboardingText,
+      );
 }
