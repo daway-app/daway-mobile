@@ -54,6 +54,9 @@ dependencies:
   geocoding: ^5.0.0
   image_picker: ^1.2.3
   permission_handler: ^11.3.1
+  shared_preferences: ^2.5.3
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.1
 
 
 dev_dependencies:
