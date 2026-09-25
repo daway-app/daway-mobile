@@ -44,7 +44,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        bottom: false,
         child: PageView.builder(
           controller: _pageController,
           itemCount: widget.pages.length,

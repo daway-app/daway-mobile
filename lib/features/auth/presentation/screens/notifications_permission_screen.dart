@@ -28,7 +28,7 @@ class NotificationsPermissionScreen extends StatelessWidget {
         body: SafeArea(
           child: NotificationsPermissionView(
             subtitle: 'فعّل الإشعارات لتصلك تحديثات طلباتك وتنبيهات الأدوية المهمة.',
-            buttonColor: AppColors.primaryTeal,
+            buttonColor: AppColors.mainTeal,
             onAllow: () => _finish(context, requestPermission: true),
             onSkip: () => _finish(context, requestPermission: false),
           ),

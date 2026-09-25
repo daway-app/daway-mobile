@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_colors.dart';
+import 'app_fonts.dart';
 
 abstract class AppTextStyles {
   static TextStyle get screenTitle => TextStyle(
@@ -42,10 +43,12 @@ abstract class AppTextStyles {
         color: AppColors.authTextMuted,
       );
 
-  /// Row label used by the account-hub menu (e.g. "معلومات الحساب").
+  /// Row label used by the account-hub and account-settings cards (e.g.
+  /// "معلومات الحساب", "اللغة").
   static TextStyle get accountMenuLabel => TextStyle(
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
+        height: 24 / 14,
         color: AppColors.authTextPrimary,
       );
 
@@ -314,5 +317,220 @@ abstract class AppTextStyles {
         fontSize: 10.sp,
         fontWeight: FontWeight.w400,
         color: AppColors.onboardingText,
+      );
+
+  // ---- Patient Search Screen ----
+
+  /// "الأكثر بحثاً" section title.
+  static TextStyle get searchSectionTitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w800,
+        color: AppColors.onboardingText,
+      );
+
+  /// A trending-search row's term text.
+  static TextStyle get searchTermText => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        color: AppColors.onboardingText,
+      );
+
+  // ---- Empty states (orders, favorites, reminders, notifications, addresses) ----
+
+  /// The bold title of an empty-state view ("لا يوجد طلبات") — Tajawal
+  /// ExtraBold, the real weight file (see [AppFonts]).
+  static TextStyle get emptyStateTitle => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 16.sp,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w800,
+      );
+
+  /// The darker supporting line under an empty-state title.
+  static TextStyle get emptyStateSubtitle => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: Colors.black,
+      );
+
+  /// The label of an empty-state view's call-to-action button — pure black,
+  /// like the supporting line above it.
+  static TextStyle get emptyStateAction => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w500,
+        color: Colors.black,
+      );
+
+  // ---- Patient Orders Screen ----
+
+  /// An order card's pharmacy name.
+  static TextStyle get orderCardPharmacyName => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w700,
+        height: 20 / 14,
+        color: AppColors.onboardingText,
+      );
+
+  /// An order card's "#DW-1021" order number, and a status filter tab's label.
+  static TextStyle get orderCardMuted => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        color: AppColors.authTextMuted,
+      );
+
+  // ---- Patient Notifications Screen ----
+
+  /// A notification's bold title line.
+  static TextStyle get notificationTitle => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w700,
+        height: 19.25 / 14,
+        color: AppColors.onboardingText,
+      );
+
+  /// A notification's message body and its relative time — Gray-500
+  /// (#98ADB3) in the design.
+  static TextStyle get notificationBody => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 19.5 / 12,
+        color: AppColors.authInputBorder,
+      );
+
+  /// Small muted caption text — Gray-500 (#98ADB3), 12/16: a notification's
+  /// relative time, and the English trade name under an Arabic one.
+  static TextStyle get mutedCaption => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        color: AppColors.authInputBorder,
+      );
+
+  /// The category chip ("الطلبات", "النظام", ...) on a notification.
+  static TextStyle get notificationChip => TextStyle(
+        fontSize: 10.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onboardingText,
+      );
+
+  // ---- Patient Favorites Screen ----
+
+  /// A saved-medicine card's Arabic (or, absent that, English) trade name.
+  static TextStyle get favoriteCardName => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w700,
+        height: 20 / 16,
+        color: AppColors.onboardingText,
+      );
+
+  /// "متوفر في N صيدليات" inside a favorite card's availability strip.
+  static TextStyle get favoriteCardAvailability => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w500,
+        height: 16 / 12,
+        color: AppColors.onboardingText,
+      );
+
+  /// "يبدأ من" label preceding a favorite card's price.
+  static TextStyle get favoriteCardPriceLabel => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        color: AppColors.grey,
+      );
+
+  /// The bold price itself on a favorite card.
+  static TextStyle get favoriteCardPrice => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w800,
+        height: 20 / 14,
+        color: AppColors.onboardingText,
+      );
+
+  // ---- Account Settings Screen ----
+
+  /// A settings group title ("التفضيلات") — Gray-500 (#98ADB3), bold.
+  static TextStyle get settingsSectionLabel => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w700,
+        height: 20 / 14,
+        color: AppColors.authInputBorder,
+      );
+
+  /// Muted supporting text on the settings screen: a row's current value
+  /// ("العربية") and the app version line.
+  static TextStyle get settingsMutedText => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        height: 20 / 14,
+        color: AppColors.authInputBorder,
+      );
+
+  /// The "دواك" wordmark in the settings footer.
+  static TextStyle get settingsBrandName => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+        color: AppColors.mainTeal,
+      );
+
+  // ---- Bottom sheets (language picker, logout confirmation) ----
+
+  /// The heading of the language picker sheet ("اختر اللغة") — Tajawal
+  /// ExtraBold, the real weight file (see [AppFonts]).
+  static TextStyle get sheetHeading => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 18.sp,
+          height: 28 / 18,
+          color: AppColors.sheetTitleText,
+        ),
+        FontWeight.w800,
+      );
+
+  /// A language option's name ("العربية", "English") — Tajawal ExtraBold, the
+  /// real weight file (see [AppFonts]).
+  static TextStyle get sheetOptionTitle => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 16.sp,
+          height: 24 / 16,
+          color: AppColors.sheetTitleText,
+        ),
+        FontWeight.w800,
+      );
+
+  /// The small line under a language option's name ("Arabic").
+  static TextStyle get sheetOptionSubtitle => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 16 / 12,
+        color: AppColors.sheetSubtitleText,
+      );
+
+  /// The centered title of the logout confirmation sheet ("تسجيل الخروج؟") —
+  /// Tajawal ExtraBold, the real weight file (see [AppFonts]).
+  static TextStyle get confirmSheetTitle => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 20.sp,
+          height: 28 / 20,
+          color: AppColors.sheetTitleText,
+        ),
+        FontWeight.w800,
+      );
+
+  /// The explanatory line under the confirmation sheet's title.
+  static TextStyle get confirmSheetMessage => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        height: 22.75 / 14,
+        color: AppColors.sheetSubtitleText,
+      );
+
+  /// The label of a bottom-sheet action button (color set by the button) —
+  /// Tajawal ExtraBold, the real weight file (see [AppFonts]).
+  static TextStyle get sheetButtonLabel => AppFonts.tajawal(
+        TextStyle(fontSize: 16.sp),
+        FontWeight.w800,
       );
 }

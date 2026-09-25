@@ -8,8 +8,8 @@ import '../../domain/entities/category_subcategory.dart';
 /// "بماذا تشعر" grid on the medicines category screen — one card per
 /// symptom subcategory (`group_key == 'symptoms'`), styled like the
 /// category cards on the home/all-categories grids. The backend doesn't
-/// return an illustration per subcategory, so this falls back to a
-/// stand-in Material icon, same as [CategoryIcon] does for categories.
+/// return an illustration per subcategory, so the artwork is bundled in
+/// `assets/images/` and looked up by slug.
 class CategorySymptomGrid extends StatelessWidget {
   final List<CategorySubcategory> symptoms;
   final ValueChanged<CategorySubcategory> onSymptomTap;
@@ -56,7 +56,7 @@ class _SymptomCard extends StatelessWidget {
           border: Border.all(color: AppColors.iconBlueBorder),
           borderRadius: BorderRadius.circular(8.r),
         ),
-        padding: EdgeInsets.only(top: 8.h, right: 8.w, left: 4.w, bottom: 4.h),
+        padding: EdgeInsets.only(top: 8.h, right: 8.w, left: 4.w, bottom: 9.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -70,7 +70,7 @@ class _SymptomCard extends StatelessWidget {
             Expanded(
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: Icon(iconForSymptomSlug(symptom.slug), size: 40.sp, color: AppColors.mainTeal),
+                child: _SymptomImage(slug: symptom.slug),
               ),
             ),
           ],
@@ -80,16 +80,36 @@ class _SymptomCard extends StatelessWidget {
   }
 }
 
-/// Maps a symptom subcategory slug to a stand-in Material icon — used until
-/// the backend has real illustrations for these (see class doc comment).
-IconData iconForSymptomSlug(String slug) {
-  return switch (slug) {
-    'cough-sore-throat' => Icons.sick_outlined,
-    'cold-flu' => Icons.ac_unit_rounded,
-    'pain-headache' => Icons.psychology_alt_outlined,
-    'stomach-care' => Icons.emoji_food_beverage_outlined,
-    'allergy' => Icons.air_rounded,
-    'fever-temperature' => Icons.thermostat_rounded,
-    _ => Icons.medical_information_outlined,
-  };
+/// Same size as [CategoryIcon] so these cards match the category grid.
+class _SymptomImage extends StatelessWidget {
+  final String slug;
+
+  const _SymptomImage({required this.slug});
+
+  @override
+  Widget build(BuildContext context) {
+    final asset = _symptomAssets[slug];
+    if (asset == null) {
+      return Icon(Icons.medical_information_outlined, size: 56.sp, color: AppColors.mainTeal);
+    }
+    return Image.asset(
+      asset,
+      width: 62.w,
+      height: 62.w,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          Icon(Icons.medical_information_outlined, size: 56.sp, color: AppColors.mainTeal),
+    );
+  }
 }
+
+/// Bundled illustrations for the symptom subcategories the backend sends
+/// today. A symptom with no entry here falls back to a generic icon.
+const Map<String, String> _symptomAssets = {
+  'cough-sore-throat': 'assets/images/cough_sore_throat.png',
+  'cold-flu': 'assets/images/cold_flu.png',
+  'pain-headache': 'assets/images/headache.png',
+  'stomach-care': 'assets/images/stomach_problems.png',
+  'allergy': 'assets/images/allergy.png',
+  'fever-temperature': 'assets/images/fever.png',
+};

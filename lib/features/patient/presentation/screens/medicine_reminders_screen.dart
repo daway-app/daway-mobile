@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/empty_state_view.dart';
 import '../../domain/entities/medicine_reminder.dart';
 import '../cubit/reminders_cubit.dart';
 import '../cubit/reminders_state.dart';
@@ -103,6 +104,23 @@ class _RemindersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (reminders.isEmpty) {
+      return ListView(
+        children: [
+          EmptyStateView(
+            imageAsset: 'assets/images/empty_reminder.png',
+            title: 'لم تقم باضافة اي تذكير لادويتك',
+            actionLabel: 'أضف تذكير',
+            onActionTap: () => _showAddDialog(context),
+            // This screen's own header is ~19 shorter than the shared
+            // sub-screen header (and adds a 22 gap), so this lands the
+            // illustration at the same height as on the other list screens.
+            topSpacing: 78,
+          ),
+        ],
+      );
+    }
+
     return ListView(
       children: [
         ...reminders.map((r) => Padding(

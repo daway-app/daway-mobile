@@ -54,7 +54,7 @@ class LocationPermissionScreen extends StatelessWidget {
               return LocationPermissionView(
                 subtitle:
                     'فعّل موقعك لمساعدتك في العثور على أقرب الصيدليات والمنتجات المتوفرة حولك.',
-                buttonColor: AppColors.primaryTeal,
+                buttonColor: AppColors.mainTeal,
                 errorText: state.locationError,
                 isBusy: state.isFetchingLocation || state.isVerifying,
                 onAllow: () => context.read<PatientAuthCubit>().useCurrentLocation(),

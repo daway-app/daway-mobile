@@ -6,15 +6,17 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_snackbar.dart';
-import '../../../../core/widgets/logout_confirmation_dialog.dart';
 import '../../../auth/presentation/cubit/logout_cubit.dart';
+import '../screens/patient_settings_screen.dart';
 import 'patient_dashboard_tab_scope.dart';
 
 /// Drawer shown from every tab inside [PatientDashboardShellScreen] — each
 /// tab owns its own instance rather than the shell owning one shared Drawer,
 /// so tapping a tab item here switches the shell's selected tab via
-/// [PatientDashboardTabScope] instead of pushing a new route. Items with no
-/// screen at all yet just close the drawer with a "coming soon" cue.
+/// [PatientDashboardTabScope] instead of pushing a new route ("الإعدادات"
+/// pushes [PatientSettingsScreen], which is also where logging out lives).
+/// Items with no screen at all yet just close the drawer with a "coming
+/// soon" cue.
 class PatientSideMenu extends StatelessWidget {
   const PatientSideMenu({super.key});
 
@@ -26,6 +28,13 @@ class PatientSideMenu extends StatelessWidget {
     } else {
       AppSnackbar.show(context, 'قريباً');
     }
+  }
+
+  void _openSettings(BuildContext context) {
+    final navigator = Navigator.of(context);
+    final logoutCubit = context.read<LogoutCubit>();
+    navigator.pop(); // close the drawer
+    navigator.push(PatientSettingsScreen.route(logoutCubit: logoutCubit));
   }
 
   void _handleComingSoon(BuildContext context) {
@@ -67,26 +76,13 @@ class PatientSideMenu extends StatelessWidget {
             _MenuItem(
               icon: Icons.settings_outlined,
               label: 'الإعدادات',
-              onTap: () => _handleComingSoon(context),
+              onTap: () => _openSettings(context),
             ),
             _MenuItem(
               icon: Icons.support_agent_outlined,
               label: 'المساعدة والدعم',
               onTap: () => _handleComingSoon(context),
             ),
-            const Spacer(),
-            Divider(color: AppColors.borderGrey, height: 1),
-            _MenuItem(
-              icon: Icons.logout,
-              label: 'تسجيل الخروج',
-              iconColor: AppColors.error,
-              labelColor: AppColors.error,
-              onTap: () => LogoutConfirmationDialog.show(
-                context,
-                onConfirm: () => context.read<LogoutCubit>().logout(),
-              ),
-            ),
-            SizedBox(height: 16.h),
           ],
         ),
       ),
@@ -98,26 +94,22 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  final Color? iconColor;
-  final Color? labelColor;
 
   const _MenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.iconColor,
-    this.labelColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? AppColors.textDark),
+      leading: Icon(icon, color: AppColors.textDark),
       title: Text(
         label,
         textAlign: TextAlign.right,
         style: AppTextStyles.cardDescription.copyWith(
-          color: labelColor ?? AppColors.textDark,
+          color: AppColors.textDark,
           fontWeight: FontWeight.w600,
         ),
       ),

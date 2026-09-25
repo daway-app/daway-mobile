@@ -1,3 +1,5 @@
+import 'arabic_plural.dart';
+
 const _arabicMonths = [
   'يناير',
   'فبراير',
@@ -43,26 +45,13 @@ String relativeTimeAr(DateTime dateTime) {
     final diff = now.difference(dateTime);
     if (diff.inMinutes < 1) return 'الآن';
     if (diff.inMinutes < 60) {
-      return 'منذ ${_arabicCount(diff.inMinutes, 'دقيقة', 'دقيقتين', 'دقائق')}';
+      return 'منذ ${arabicCountedNoun(diff.inMinutes, singular: 'دقيقة', dual: 'دقيقتين', plural: 'دقائق')}';
     }
-    return 'منذ ${_arabicCount(diff.inHours, 'ساعة', 'ساعتين', 'ساعات')}';
+    return 'منذ ${arabicCountedNoun(diff.inHours, singular: 'ساعة', dual: 'ساعتين', plural: 'ساعات')}';
   }
   final yesterday = DateTime(now.year, now.month, now.day - 1);
   if (_isSameDate(dateTime, yesterday)) return 'أمس';
   return smartDate(dateTime);
-}
-
-/// Arabic numeral-noun agreement: 1 -> singular alone, 2 -> dual alone,
-/// 3-10 -> number + plural, 11+ -> number + singular (e.g. "5 دقائق" but
-/// "20 دقيقة") — getting this right matters here since, unlike the simple
-/// "$count تقييم" counters elsewhere in the app, a relative-time feed shows
-/// both a 5 and a 20 side by side often enough for the wrong form to stand
-/// out.
-String _arabicCount(int count, String singular, String dual, String plural) {
-  if (count == 1) return singular;
-  if (count == 2) return dual;
-  if (count >= 3 && count <= 10) return '$count $plural';
-  return '$count $singular';
 }
 
 String _formatTime(DateTime dateTime) {

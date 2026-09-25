@@ -161,7 +161,7 @@ class _SignUpFormState extends State<SignUpForm> {
             builder: (context, state) {
               return AppCustomButton(
                 text: 'التالي',
-                backgroundColor: AppColors.primaryTeal,
+                backgroundColor: AppColors.mainTeal,
                 isLoading: state.isSendingOtp,
                 onPressed: () => _submit(context),
               );

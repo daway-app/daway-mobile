@@ -128,7 +128,7 @@ class AccountTypeScreen extends StatelessWidget {
                 height: 56.h,
                 width: double.infinity,
                 child: AppCustomButton(
-                  backgroundColor: AppColors.primaryTeal,
+                  backgroundColor: AppColors.mainTeal,
                   text: 'التالي',
                   onPressed: () =>
                       _continue(context, context.read<AccountTypeCubit>().state),

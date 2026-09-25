@@ -1,5 +1,6 @@
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/core/models/picked_location.dart';
+import 'package:daway_app/core/theming/app_colors.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
@@ -10,7 +11,10 @@ import 'package:daway_app/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:daway_app/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:daway_app/core/widgets/otp_input_field.dart';
 import 'package:daway_app/features/auth/presentation/cubit/patient_auth_cubit.dart';
+import 'package:daway_app/features/auth/presentation/screens/location_permission_screen.dart';
+import 'package:daway_app/features/auth/presentation/screens/notifications_permission_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
+import 'package:daway_app/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:daway_app/features/patient/domain/repositories/location_repository.dart';
 import 'package:daway_app/features/patient/domain/usecases/get_current_location_usecase.dart';
 import 'package:flutter/material.dart';
@@ -174,5 +178,55 @@ void main() {
       find.descendant(of: find.byType(OtpInputField), matching: find.byType(Container)),
       findsNWidgets(6),
     );
+  });
+
+  group('the primary buttons of the sign-up flow use the main button colour', () {
+    Widget buildTestableFlowScreen(Widget screen, {PatientAuthCubit? cubit}) {
+      return ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => MaterialApp(
+          home: cubit == null ? screen : BlocProvider.value(value: cubit, child: screen),
+        ),
+      );
+    }
+
+    // What the button labelled [label] is filled with while enabled.
+    Color? fillOf(WidgetTester tester, String label) {
+      final button = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, label));
+      return button.style?.backgroundColor?.resolve(<WidgetState>{});
+    }
+
+    testWidgets('create account: "التالي"', (tester) async {
+      await setPhoneViewport(tester);
+      final cubit = buildCubit(_FakeAuthRepository());
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(buildTestableFlowScreen(const SignUpScreen(), cubit: cubit));
+      await tester.pumpAndSettle();
+
+      expect(fillOf(tester, 'التالي'), AppColors.mainTeal);
+    });
+
+    testWidgets('location permission: "السماح بالوصول للموقع"', (tester) async {
+      await setPhoneViewport(tester);
+      final cubit = buildCubit(_FakeAuthRepository());
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(
+        buildTestableFlowScreen(const LocationPermissionScreen(), cubit: cubit),
+      );
+      await tester.pumpAndSettle();
+
+      expect(fillOf(tester, 'السماح بالوصول للموقع'), AppColors.mainTeal);
+    });
+
+    testWidgets('notifications permission: "السماح بالإشعارات"', (tester) async {
+      await setPhoneViewport(tester);
+
+      await tester.pumpWidget(buildTestableFlowScreen(const NotificationsPermissionScreen()));
+      await tester.pumpAndSettle();
+
+      expect(fillOf(tester, 'السماح بالإشعارات'), AppColors.mainTeal);
+    });
   });
 }

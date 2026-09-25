@@ -4,6 +4,7 @@ import '../../../../core/widgets/coming_soon_tab_screen.dart';
 import '../widgets/patient_bottom_nav_bar.dart';
 import '../widgets/patient_dashboard_tab_scope.dart';
 import '../widgets/patient_side_menu.dart';
+import 'medicine_search_screen.dart';
 import 'patient_account_screen.dart';
 import 'patient_home_screen.dart';
 
@@ -25,11 +26,7 @@ class _PatientDashboardShellScreenState extends State<PatientDashboardShellScree
     // Order must match PatientDashboardTab's declaration order.
     final tabs = [
       const PatientHomeScreen(),
-      const ComingSoonTabScreen(
-        title: 'البحث',
-        icon: Icons.search,
-        drawer: PatientSideMenu(),
-      ),
+      const MedicineSearchScreen(),
       const ComingSoonTabScreen(
         title: 'المسح الضوئي',
         icon: Icons.crop_free,

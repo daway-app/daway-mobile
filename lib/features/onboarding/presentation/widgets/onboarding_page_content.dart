@@ -27,65 +27,78 @@ class OnboardingPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: 60.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 37.w),
-            child: page.illustrationAsset != null
-                ? Image.asset(
-                    page.illustrationAsset!,
-                    height: 230.h,
-                    fit: BoxFit.contain,
-                  )
-                : _IllustrationPlaceholder(),
-          ),
-          SizedBox(height: 40.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 37.w),
+    // The action button (and skip link) sit in a fixed block below the
+    // scrollable content instead of a fixed-height spacer, so they stay
+    // right under the content on every screen size instead of being
+    // pushed toward the bottom edge by a magic-number gap.
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
             child: Column(
               children: [
-                Text(
-                  page.title,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.onboardingTitle,
+                SizedBox(height: 60.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 37.w),
+                  child: page.illustrationAsset != null
+                      ? Image.asset(
+                          page.illustrationAsset!,
+                          height: 230.h,
+                          fit: BoxFit.contain,
+                        )
+                      : _IllustrationPlaceholder(),
+                ),
+                SizedBox(height: 40.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 37.w),
+                  child: Column(
+                    children: [
+                      Text(
+                        page.title,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.onboardingTitle,
+                      ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        page.subtitle,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.onboardingSubtitle,
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 12.h),
-                Text(
-                  page.subtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.onboardingSubtitle,
-                ),
+                OnboardingIndicator(count: pageCount, currentIndex: currentIndex),
               ],
             ),
           ),
-          SizedBox(height: 12.h),
-          OnboardingIndicator(count: pageCount, currentIndex: currentIndex),
-          SizedBox(height: 220.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: AppCustomButton(
-              text: isLast ? 'ابدأ الآن' : 'التالي',
-              onPressed: onActionPressed,
-              fontWeight: FontWeight.w500,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: AppCustomButton(
+            text: isLast ? 'ابدأ الآن' : 'التالي',
+            onPressed: onActionPressed,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        if (isLast)
+          SizedBox(height: 24.h)
+        else ...[
+          // 10 of space plus the link's own 14 of vertical padding is the
+          // design's 24 of visible space above and below "تخطي" — while the
+          // tap target stays 44 tall instead of shrinking to the text line.
+          SizedBox(height: 10.h),
+          GestureDetector(
+            onTap: onSkipPressed,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 14.h),
+              child: Text('تخطي', textAlign: TextAlign.center, style: AppTextStyles.onboardingSkip),
             ),
           ),
-          if (isLast)
-            SizedBox(height: 40.h)
-          else ...[
-            GestureDetector(
-              onTap: onSkipPressed,
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                child: Text('تخطي', style: AppTextStyles.onboardingSkip),
-              ),
-            ),
-            SizedBox(height: 10.h),
-          ],
+          SizedBox(height: 10.h),
         ],
-      ),
+      ],
     );
   }
 }
