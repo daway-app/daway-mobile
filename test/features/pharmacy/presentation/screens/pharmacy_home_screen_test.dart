@@ -142,7 +142,7 @@ void main() {
     );
   }
 
-  testWidgets('shows the confirmation dialog when tapping logout', (
+  testWidgets('shows the logout confirmation sheet when tapping logout', (
     tester,
   ) async {
     await setPhoneViewport(tester);
@@ -159,7 +159,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.logout));
     await tester.pumpAndSettle();
 
-    expect(find.text('تأكيد تسجيل الخروج'), findsOneWidget);
+    expect(find.text('تسجيل الخروج؟'), findsOneWidget);
   });
 
   testWidgets('navigates to account-type screen after confirming logout', (
@@ -181,7 +181,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.logout));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('تأكيد'));
+    await tester.tap(find.widgetWithText(ElevatedButton, 'تسجيل الخروج'));
     await tester.pumpAndSettle();
 
     expect(cubit.state.isLoggedOut, isTrue);

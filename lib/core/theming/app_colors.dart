@@ -46,5 +46,25 @@ abstract class AppColors {
 
   // Patient Home Screen
   static const Color homeChipBackground = Color(0x1AF0F7FB);
+
+  // Patient Search Screen
+  static const Color searchTermDivider = Color(0x3D104665);
+
+  // Patient Orders Screen — status badges
+  static const Color orderCompletedColor = Color(0xFF22C55E);
+  static const Color orderInProgressColor = Color(0xFFFF9000);
+  static const Color orderCancelledColor = Color(0xFFFF0000);
+
+  // Patient Favorites Screen — medicine thumbnail placeholder
+  static const Color thumbnailBackground = Color(0xFFF8FAFA);
+  static const Color thumbnailBorder = Color(0xFFE4EAEB);
+
+  // Account settings screen + its bottom sheets (language, logout)
+  static const Color logoutRed = Color(0xFFDC2626);
+  static const Color logoutRedTint = Color(0xFFFEF2F2);
+  static const Color sheetTitleText = Color(0xFF1B3D5F);
+  static const Color sheetSubtitleText = Color(0xFF9CA3AF);
+  static const Color sheetOutlineBorder = Color(0xFFCBD9DD);
+  static const Color sheetBarrier = Color(0x33000000);
 }
 

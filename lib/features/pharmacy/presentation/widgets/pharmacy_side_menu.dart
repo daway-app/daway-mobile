@@ -7,7 +7,7 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_snackbar.dart';
-import '../../../../core/widgets/logout_confirmation_dialog.dart';
+import '../../../../core/widgets/logout_confirmation_sheet.dart';
 import '../../../auth/presentation/cubit/logout_cubit.dart';
 import 'pharmacy_dashboard_tab_scope.dart';
 
@@ -105,7 +105,7 @@ class PharmacySideMenu extends StatelessWidget {
               label: 'تسجيل الخروج',
               iconColor: AppColors.error,
               labelColor: AppColors.error,
-              onTap: () => LogoutConfirmationDialog.show(
+              onTap: () => LogoutConfirmationSheet.show(
                 context,
                 onConfirm: () => context.read<LogoutCubit>().logout(),
               ),

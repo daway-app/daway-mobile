@@ -6,6 +6,7 @@ import '../../../../core/models/picked_location.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/empty_state_view.dart';
 import '../widgets/edit_chip.dart';
 import '../widgets/patient_sub_screen_header.dart';
 
@@ -68,7 +69,6 @@ class _PatientAddressesScreenState extends State<PatientAddressesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -80,12 +80,21 @@ class _PatientAddressesScreenState extends State<PatientAddressesScreen> {
                 description: 'أدر عناوين التوصيل الخاصة بك',
               ),
               SizedBox(height: 32.h),
-              for (final address in _addresses) ...[
-                _AddressCard(address: address, onEditTap: () => _editAddress(address)),
+              if (_addresses.isEmpty)
+                EmptyStateView(
+                  imageAsset: 'assets/images/empty_addresses.png',
+                  title: 'لا يوجد عناوين محفوظة',
+                  actionLabel: 'أضف عنوان',
+                  onActionTap: _addAddress,
+                )
+              else ...[
+                for (final address in _addresses) ...[
+                  _AddressCard(address: address, onEditTap: () => _editAddress(address)),
+                  SizedBox(height: 24.h),
+                ],
+                _AddAddressButton(onTap: _addAddress),
                 SizedBox(height: 24.h),
               ],
-              _AddAddressButton(onTap: _addAddress),
-              SizedBox(height: 24.h),
             ],
           ),
         ),

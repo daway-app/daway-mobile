@@ -47,6 +47,55 @@ void main() {
       expect(failure.message, 'انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى');
     });
 
+    test('a nested (non-string) error object is ignored instead of crashing the mapper', () {
+      // Matches Cloudinary's unsigned-upload error shape: {"error": {"message": "..."}} —
+      // json['error'] is a Map here, not a String, so the naive `as String?`
+      // fallback chain must not blow up on it.
+      final failure = mapExceptionToFailure(
+        _badResponse(
+          statusCode: 400,
+          data: {
+            'error': {'message': 'Upload preset not found'},
+          },
+        ),
+      );
+
+      expect(failure, isA<ApiFailure>());
+      // The unusable body is ignored, so the status code still decides the message.
+      expect(failure.message, 'يرجى التحقق من البيانات المدخلة');
+    });
+
+    test('never throws, whatever types the error body carries', () {
+      // Every field the mapper reads, with every JSON type it could arrive as.
+      const oddValues = <Object?>[null, 1, 1.5, true, false, 'text', <Object?>[], <String, Object?>{}];
+      for (final value in oddValues) {
+        for (final key in ['code', 'error_code', 'errorCode', 'message', 'error', 'msg', 'registration_required']) {
+          expect(
+            () => mapExceptionToFailure(_badResponse(statusCode: 422, data: {key: value})),
+            returnsNormally,
+            reason: '$key: $value',
+          );
+        }
+      }
+    });
+
+    test('registration_required is honored as a boolean, 1 or "true", and is false for anything else', () {
+      bool registrationRequired(Object? value) => (mapExceptionToFailure(
+            _badResponse(statusCode: 422, data: {'registration_required': value}),
+          ) as ApiFailure)
+              .registrationRequired;
+
+      expect(registrationRequired(true), isTrue);
+      expect(registrationRequired(1), isTrue);
+      expect(registrationRequired('true'), isTrue);
+      expect(registrationRequired('1'), isTrue);
+      expect(registrationRequired(false), isFalse);
+      expect(registrationRequired(0), isFalse);
+      expect(registrationRequired('yes please'), isFalse);
+      expect(registrationRequired(<Object?>[]), isFalse);
+      expect(registrationRequired(null), isFalse);
+    });
+
     test('maps connection errors to a NetworkFailure', () {
       final requestOptions = RequestOptions(path: '/api/otp/send');
       final failure = mapExceptionToFailure(

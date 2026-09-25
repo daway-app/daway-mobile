@@ -25,4 +25,6 @@ abstract class ApiConstants {
       '/notifications/mark-all-as-read';
   static const String categories = '/categories';
   static const String dosageForms = '/dosage-forms';
+  static const String medicinesSearch = '/medicines/search';
+  static const String patientFavoriteMedicines = '/patient/favorites/medicines';
 }
