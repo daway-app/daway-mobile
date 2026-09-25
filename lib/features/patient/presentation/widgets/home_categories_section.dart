@@ -41,11 +41,7 @@ class HomeCategoriesSection extends StatelessWidget {
               CategoriesLoadFailure(:final message) => SizedBox(
                   height: 110.h,
                   child: Center(
-                    child: Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.homePharmacyCardSubtitle,
-                    ),
+                        child: Text(message , style: TextStyle(color: Colors.black),),
                   ),
                 ),
               CategoriesLoaded(:final categories) when categories.isEmpty => SizedBox(
