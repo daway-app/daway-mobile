@@ -140,7 +140,9 @@ class _PharmacySignUpFormState extends State<PharmacySignUpForm> {
             style: TextStyle(fontSize: 16.sp, color: AppColors.authTextPrimary),
             validator: (value) {
               if (value == null || value.isEmpty) return 'كلمة المرور مطلوبة';
-              if (value.length < 8) return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+              if (!Validators.isValidPassword(value)) {
+                return 'كلمة المرور يجب أن تكون ${Validators.minPasswordLength} أحرف على الأقل';
+              }
               return null;
             },
             decoration: _fieldDecoration().copyWith(

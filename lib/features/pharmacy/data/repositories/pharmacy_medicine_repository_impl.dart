@@ -1,6 +1,7 @@
 import '../../../../core/erroring/error_handler.dart';
 import '../../../../core/helpers/api_result.dart';
 import '../../../../core/helpers/json_list_extractor.dart';
+import '../../../../core/helpers/paginated_fetch.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_catalog_item.dart';
 import '../../domain/repositories/pharmacy_medicine_repository.dart';
@@ -33,11 +34,19 @@ class PharmacyMedicineRepositoryImpl implements PharmacyMedicineRepository {
     return extractJsonList(data);
   }
 
+  /// Reads every page: the products screen counts and searches the whole list,
+  /// and the patient endpoints answer a fixed 20 per page whatever `per_page`
+  /// says (this one has not been checked), so page 1 alone could show a
+  /// pharmacy with 120 medicines as having 20.
   @override
   Future<ApiResult<List<Medicine>>> getMedicines({required String token}) async {
     try {
-      final response = await _remoteDataSource.getMedicines(token: token);
-      final medicines = extractJsonList(response.data, source: 'GET /pharmacy/medicines')
+      final medicinesJson = await fetchAllPages(
+        fetchPage: (page) async =>
+            (await _remoteDataSource.getMedicines(token: token, page: page)).data,
+        source: 'GET /pharmacy/medicines',
+      );
+      final medicines = medicinesJson
           .map((json) => MedicineModel.fromJson(json as Map<String, dynamic>).toEntity())
           .toList();
       return Success(medicines);

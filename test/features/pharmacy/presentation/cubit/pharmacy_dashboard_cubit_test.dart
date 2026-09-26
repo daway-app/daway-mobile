@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:daway_app/core/erroring/failure.dart';
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/features/auth/domain/entities/account_type.dart';
@@ -22,13 +24,35 @@ const _stats = PharmacyDashboardStats(
   recentInquiries: [],
 );
 
+const _newerStats = PharmacyDashboardStats(
+  totalMedicines: 11,
+  availableCount: 9,
+  lowStockCount: 1,
+  outOfStockCount: 1,
+  newInquiriesCount: 3,
+  averageRating: 4.5,
+  ratingsCount: 2,
+  lowStockItems: [],
+  recentInquiries: [],
+);
+
 class _FakePharmacyDashboardRepository implements PharmacyDashboardRepository {
   ApiResult<PharmacyDashboardStats> getResult = const Success(_stats);
+  int fetches = 0;
+
+  /// When set, a fetch waits for it — keeps a load in flight for as long as a
+  /// test needs.
+  Completer<void>? gate;
 
   @override
   Future<ApiResult<PharmacyDashboardStats>> getDashboardStats({
     required String token,
-  }) async => getResult;
+  }) async {
+    fetches++;
+    final pending = gate;
+    if (pending != null) await pending.future;
+    return getResult;
+  }
 }
 
 class _FakeSessionRepository implements SessionRepository {
@@ -93,5 +117,62 @@ void main() {
     await cubit.load();
 
     expect(cubit.state, isA<PharmacyDashboardLoaded>());
+  });
+
+  group('refresh()', () {
+    test('swaps in the new figures without going back to loading', () async {
+      final emitted = <PharmacyDashboardState>[];
+      final subscription = cubit.stream.listen(emitted.add);
+      addTearDown(subscription.cancel);
+      repository.getResult = const Success(_newerStats);
+
+      await cubit.refresh();
+      await Future<void>.delayed(Duration.zero); // let the stream deliver
+
+      expect(emitted.length, 1);
+      expect(emitted.single, isA<PharmacyDashboardLoaded>());
+      expect((cubit.state as PharmacyDashboardLoaded).stats.totalMedicines, 11);
+    });
+
+    test('keeps the figures on screen when the fetch fails', () async {
+      final emitted = <PharmacyDashboardState>[];
+      final subscription = cubit.stream.listen(emitted.add);
+      addTearDown(subscription.cancel);
+      repository.getResult = const ApiError(NetworkFailure('تعذر الاتصال بالخادم'));
+
+      await cubit.refresh();
+      await Future<void>.delayed(Duration.zero); // let the stream deliver
+
+      expect(emitted, isEmpty);
+      expect((cubit.state as PharmacyDashboardLoaded).stats.totalMedicines, 10);
+    });
+
+    test('retries a load that had failed', () async {
+      repository.getResult = const ApiError(NetworkFailure('تعذر الاتصال بالخادم'));
+      await cubit.load();
+      expect(cubit.state, isA<PharmacyDashboardLoadFailure>());
+
+      repository.getResult = const Success(_newerStats);
+      await cubit.refresh();
+
+      expect((cubit.state as PharmacyDashboardLoaded).stats.totalMedicines, 11);
+    });
+
+    test('leaves a load that is still on its way to finish, without a second fetch', () async {
+      final slowRepository = _FakePharmacyDashboardRepository()..gate = Completer<void>();
+      final slowCubit = PharmacyDashboardCubit(
+        GetPharmacyDashboardStatsUseCase(slowRepository, _FakeSessionRepository()),
+      );
+      addTearDown(slowCubit.close);
+      await Future<void>.delayed(Duration.zero);
+      expect(slowCubit.state, isA<PharmacyDashboardLoading>());
+      final fetchesBefore = slowRepository.fetches;
+
+      await slowCubit.refresh();
+
+      expect(slowRepository.fetches, fetchesBefore);
+      expect(slowCubit.state, isA<PharmacyDashboardLoading>());
+      slowRepository.gate!.complete();
+    });
   });
 }

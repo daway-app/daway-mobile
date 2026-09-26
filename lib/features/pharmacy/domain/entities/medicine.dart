@@ -62,6 +62,21 @@ class Medicine {
     return medicineStatusFor(quantity);
   }
 
+  /// This medicine with a new stock [quantity]. The server's low/out flags
+  /// described the old quantity, so they are dropped and [status] is worked
+  /// out from [quantity] again, with the same fixed threshold the backend uses.
+  Medicine copyWithQuantity(int quantity) => Medicine(
+        id: id,
+        medicineId: medicineId,
+        name: name,
+        nameAr: nameAr,
+        activeIngredient: activeIngredient,
+        imageUrl: imageUrl,
+        price: price,
+        quantity: quantity,
+        isAvailable: isAvailable,
+      );
+
   /// Prefers the Arabic trade name when the catalog has one — only falls
   /// back to [name] (often the English catalog name) when it doesn't.
   String get displayName {

@@ -1,5 +1,6 @@
 import '../../../../core/erroring/failure.dart';
 import '../../../../core/helpers/api_result.dart';
+import '../../../../core/helpers/validators.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterPharmacyUseCase {
@@ -18,9 +19,11 @@ class RegisterPharmacyUseCase {
         const ApiError(ValidationFailure('يرجى تعبئة جميع الحقول المطلوبة')),
       );
     }
-    if (password.length < 8) {
+    if (!Validators.isValidPassword(password)) {
       return Future.value(
-        const ApiError(ValidationFailure('كلمة المرور يجب أن تكون 8 أحرف على الأقل')),
+        const ApiError(
+          ValidationFailure('كلمة المرور يجب أن تكون ${Validators.minPasswordLength} أحرف على الأقل'),
+        ),
       );
     }
     return _repository.registerPharmacy(

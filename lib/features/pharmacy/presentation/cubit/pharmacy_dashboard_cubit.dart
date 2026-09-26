@@ -23,4 +23,18 @@ class PharmacyDashboardCubit extends Cubit<PharmacyDashboardState> {
         emit(PharmacyDashboardLoadFailure(failure.message));
     }
   }
+
+  /// Fetches the figures again without going back to the loading state: what
+  /// is on screen stays until the new figures arrive, and stays if the fetch
+  /// fails. With nothing on screen yet, a load already on its way is left to
+  /// finish, and a failed one is retried.
+  Future<void> refresh() async {
+    final current = state;
+    if (current is PharmacyDashboardLoading) return;
+    if (current is PharmacyDashboardLoadFailure) return load();
+
+    final result = await _getPharmacyDashboardStatsUseCase();
+    if (isClosed) return;
+    if (result case Success(:final data)) emit(PharmacyDashboardLoaded(data));
+  }
 }

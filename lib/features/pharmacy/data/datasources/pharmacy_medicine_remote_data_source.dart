@@ -7,10 +7,10 @@ class PharmacyMedicineRemoteDataSource {
 
   const PharmacyMedicineRemoteDataSource(this._dio);
 
-  Future<Response<dynamic>> getMedicines({required String token}) {
+  Future<Response<dynamic>> getMedicines({required String token, int page = 1}) {
     return _dio.get(
       ApiConstants.pharmacyMedicines,
-      queryParameters: {'per_page': 100},
+      queryParameters: {'per_page': 100, 'page': page},
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }

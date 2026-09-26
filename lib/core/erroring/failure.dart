@@ -37,3 +37,9 @@ class ValidationFailure extends Failure {
 class PermissionFailure extends Failure {
   const PermissionFailure(super.message);
 }
+
+/// The call belongs to a feature whose backend endpoint does not exist yet:
+/// the screen answers with the app's "قريباً" rather than an error.
+class ComingSoonFailure extends Failure {
+  const ComingSoonFailure() : super('قريباً');
+}

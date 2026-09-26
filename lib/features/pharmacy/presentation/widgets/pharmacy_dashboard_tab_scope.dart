@@ -6,7 +6,12 @@ import '../../../../core/widgets/app_snackbar.dart';
 /// them — named so call sites (e.g. the side menu) never hand a raw tab
 /// index around, which would silently drift out of sync with the shell's
 /// list if either side were reordered.
-enum PharmacyDashboardTab { home, medicines, inventory, inquiries, profile }
+///
+/// Two of them have no item in the bottom navigation bar: [inventory] is
+/// reached from the side menu and from a notification, and [products] — the
+/// "اجمالي المنتجات" page — from the الرئيسية card of that name; while it shows,
+/// the bar keeps الرئيسية marked.
+enum PharmacyDashboardTab { home, products, medicines, orders, inventory, inquiries, profile }
 
 /// Lets a widget nested anywhere inside a dashboard tab (e.g. the side menu,
 /// which is instantiated separately per tab) switch the shell's active tab

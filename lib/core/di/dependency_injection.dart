@@ -5,8 +5,10 @@ import 'package:get_it/get_it.dart';
 
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/data/repositories/coming_soon_password_reset_repository.dart';
 import '../../features/auth/data/repositories/session_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/repositories/password_reset_repository.dart';
 import '../../features/auth/domain/repositories/session_repository.dart';
 import '../../features/auth/domain/usecases/get_session_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';
@@ -15,8 +17,12 @@ import '../../features/auth/domain/usecases/send_otp_usecase.dart';
 import '../../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../../features/auth/domain/usecases/pharmacy_login_usecase.dart';
 import '../../features/auth/domain/usecases/register_pharmacy_usecase.dart';
+import '../../features/auth/domain/usecases/reset_password_usecase.dart';
+import '../../features/auth/domain/usecases/send_password_reset_code_usecase.dart';
+import '../../features/auth/domain/usecases/verify_password_reset_code_usecase.dart';
 import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
+import '../../features/auth/presentation/cubit/password_reset_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
@@ -167,6 +173,15 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => GetSessionUseCase(getIt()));
   getIt.registerLazySingleton(() => LogoutUseCase(getIt(), getIt()));
 
+  // Resetting a forgotten pharmacy password: the backend has no endpoints for
+  // it yet, so the repository answers "قريباً" until one is written.
+  getIt.registerLazySingleton<PasswordResetRepository>(
+    () => const ComingSoonPasswordResetRepository(),
+  );
+  getIt.registerLazySingleton(() => SendPasswordResetCodeUseCase(getIt()));
+  getIt.registerLazySingleton(() => VerifyPasswordResetCodeUseCase(getIt()));
+  getIt.registerLazySingleton(() => ResetPasswordUseCase(getIt()));
+
   // ---------------- Onboarding ----------------
   getIt.registerLazySingleton<OnboardingRepository>(
     () => OnboardingRepositoryImpl(getIt()),
@@ -177,6 +192,7 @@ Future<void> setupGetIt() async {
   getIt.registerFactory(() => PatientAuthCubit(getIt(), getIt(), getIt(), getIt()));
   getIt.registerFactory(() => PharmacyAuthCubit(getIt(), getIt()));
   getIt.registerFactory(() => PharmacySignUpCubit(getIt(), getIt()));
+  getIt.registerFactory(() => PasswordResetCubit(getIt(), getIt(), getIt()));
   getIt.registerFactory(() => LogoutCubit(getIt()));
 
   // ---------------- Patient Profile ----------------
@@ -324,7 +340,7 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(
     () => UpdatePharmacyMedicineUseCase(getIt(), getIt()),
   );
-  getIt.registerFactory(() => PharmacyMedicinesCubit(getIt(), getIt()));
+  getIt.registerFactory(() => PharmacyMedicinesCubit(getIt(), getIt(), getIt()));
   getIt.registerFactory(
     () => AddMedicineCubit(getIt(), getIt(), getIt(), getIt()),
   );
