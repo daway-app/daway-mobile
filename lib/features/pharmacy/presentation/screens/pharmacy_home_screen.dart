@@ -106,7 +106,7 @@ class _HomeContent extends StatelessWidget {
       children: [
         if (!stats.hasMedicines) ...[
           // Importing a file has no endpoint yet.
-          AddMedicinesFileCard(onTap: () => _comingSoon(context)),
+          AddMedicinesFileCard(onPickFile: () => _comingSoon(context)),
           SizedBox(height: 16.h),
         ],
         PharmacySummaryCards(

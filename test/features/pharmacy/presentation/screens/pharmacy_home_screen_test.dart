@@ -64,7 +64,7 @@ const _profile = PharmacyProfile(
   address: 'غزة الرمال',
 );
 
-const _addFilePrompt = 'أضف ملف الادوية و المنتجات\nالمتوفرة في صيدليتك';
+const _addFilePrompt = 'رفع ملف المنتجات';
 
 final _order = PharmacyOrder(
   orderNumber: 'DW-1021',
@@ -328,7 +328,7 @@ void main() {
       await tester.pumpWidget(buildTestableScreen());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(_addFilePrompt));
+      await tester.tap(find.text('اختيار ملف'));
       await tester.pump();
 
       expect(find.text('قريباً'), findsOneWidget);

@@ -10,7 +10,6 @@ import '../cubit/pharmacy_profile_cubit.dart';
 import '../widgets/pharmacy_bottom_nav_bar.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
 import '../widgets/pharmacy_side_menu.dart';
-import '../../domain/entities/pharmacy_order.dart';
 import 'pharmacy_home_screen.dart';
 import 'pharmacy_conversations_screen.dart';
 import 'pharmacy_inventory_screen.dart';
@@ -54,22 +53,6 @@ class _PharmacyDashboardShellScreenState
     super.dispose();
   }
 
-  // TODO: design preview only — there is no pharmacy orders API yet. Replace
-  // with the real orders (and drop this) once the backend delivers.
-  static List<PharmacyOrder> _previewOrders() {
-    final now = DateTime.now();
-    return [
-      for (final minutes in const [5, 30])
-        PharmacyOrder(
-          orderNumber: 'DW-1021',
-          createdAt: now.subtract(Duration(minutes: minutes)),
-          itemsCount: 2,
-          total: 80,
-          area: 'غزة - النصر',
-        ),
-    ];
-  }
-
   void _selectTab(PharmacyDashboardTab tab) {
     if (tab != _selectedTab) {
       switch (tab) {
@@ -100,7 +83,7 @@ class _PharmacyDashboardShellScreenState
     final tabs = <PharmacyDashboardTab, Widget>{
       PharmacyDashboardTab.home: BlocProvider.value(
         value: _dashboardCubit,
-        child: PharmacyHomeScreen(orders: _previewOrders()),
+        child: const PharmacyHomeScreen(),
       ),
       PharmacyDashboardTab.products: switch (_productsCubit) {
         final cubit? => BlocProvider.value(

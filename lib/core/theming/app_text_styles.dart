@@ -474,16 +474,37 @@ abstract class AppTextStyles {
   static TextStyle get pharmacySummaryCurrency =>
       pharmacySummaryValue.copyWith(fontSize: 24.sp);
 
-  /// The text of the dashed "add your medicines file" card — 14/140% Bold,
-  /// centered.
-  static TextStyle get pharmacyAddFileText => AppFonts.tajawal(
+  /// The upload card's title ("رفع ملف المنتجات") — Bold 17/150%, centered.
+  static TextStyle get pharmacyUploadTitle => AppFonts.tajawal(
         TextStyle(
-          fontSize: 14.sp,
-          height: 1.4,
-          letterSpacing: 0.2,
+          fontSize: 17.sp,
+          height: 25.5 / 17,
+          letterSpacing: 0,
           color: AppColors.onboardingText,
         ),
         FontWeight.w700,
+      );
+
+  /// The upload card's line under the title — Regular 13/160%, centered.
+  static TextStyle get pharmacyUploadSubtitle => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 13.sp,
+          height: 20.8 / 13,
+          letterSpacing: 0,
+          color: const Color(0xFF738994),
+        ),
+        FontWeight.w400,
+      );
+
+  /// The upload card's "اختيار ملف" button label.
+  static TextStyle get pharmacyUploadButton => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 14.sp,
+          height: 1.4,
+          letterSpacing: 0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
       );
 
   /// A small stat tile's figure ("45") — Bold 16 at 100%; the colour is the
