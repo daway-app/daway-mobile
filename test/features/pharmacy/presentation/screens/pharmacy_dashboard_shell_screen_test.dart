@@ -8,10 +8,10 @@ import 'package:daway_app/features/auth/domain/repositories/auth_repository.dart
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/logout_cubit.dart';
+import 'package:daway_app/features/chat/presentation/cubit/conversations_cubit.dart';
+import 'package:daway_app/features/chat/presentation/cubit/conversations_state.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_dashboard_cubit.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_dashboard_state.dart';
-import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_inquiries_cubit.dart';
-import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_inquiries_state.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_inventory_cubit.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_inventory_state.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_medicines_cubit.dart';
@@ -69,9 +69,9 @@ class _FakeInventoryCubit extends Cubit<PharmacyInventoryState>
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _FakeInquiriesCubit extends Cubit<PharmacyInquiriesState>
-    implements PharmacyInquiriesCubit {
-  _FakeInquiriesCubit() : super(const PharmacyInquiriesLoading());
+class _FakeConversationsCubit extends Cubit<ConversationsState>
+    implements ConversationsCubit {
+  _FakeConversationsCubit() : super(const ConversationsLoading());
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -87,7 +87,7 @@ class _FakeProfileCubit extends Cubit<PharmacyProfileState>
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async => const Success(null);
+  Future<ApiResult<String?>> sendOtp({required String phone, String? name, String? birthDate}) async => const Success(null);
 
   @override
   Future<ApiResult<PatientAuthResult>> verifyOtp({
@@ -149,7 +149,10 @@ void main() {
         return cubit;
       })
       ..registerFactory<PharmacyInventoryCubit>(_FakeInventoryCubit.new)
-      ..registerFactory<PharmacyInquiriesCubit>(_FakeInquiriesCubit.new)
+      ..registerFactory<ConversationsCubit>(
+        _FakeConversationsCubit.new,
+        instanceName: 'pharmacy',
+      )
       ..registerFactory<PharmacyProfileCubit>(_FakeProfileCubit.new);
   });
 
@@ -196,7 +199,7 @@ void main() {
     expect(appBarTitle('الطلبات'), findsOneWidget);
 
     await tapNavItem(tester, 'المراسلات');
-    expect(appBarTitle('استفسارات المرضى'), findsOneWidget);
+    expect(find.text('الاستفسارات'), findsOneWidget);
 
     await tapNavItem(tester, 'الملف الشخصي');
     expect(appBarTitle('حسابي'), findsOneWidget);

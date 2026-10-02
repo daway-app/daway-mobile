@@ -32,7 +32,7 @@ import '../../../../helpers/fake_password_reset_repository.dart';
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async => const Success(null);
+  Future<ApiResult<String?>> sendOtp({required String phone, String? name, String? birthDate}) async => const Success(null);
 
   @override
   Future<ApiResult<PatientAuthResult>> verifyOtp({
