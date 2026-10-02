@@ -113,5 +113,26 @@ void main() {
 
       expect(failure, isA<UnknownFailure>());
     });
+
+    test('a validation response with no message shows its first field error', () {
+      final failure = mapExceptionToFailure(
+        DioException(
+          requestOptions: RequestOptions(path: '/api/patient/inquiries'),
+          type: DioExceptionType.badResponse,
+          response: Response(
+            requestOptions: RequestOptions(path: '/api/patient/inquiries'),
+            statusCode: 422,
+            data: {
+              'success': false,
+              'errors': {
+                'medicine_id': ['حقل الدواء مطلوب'],
+              },
+            },
+          ),
+        ),
+      );
+
+      expect((failure as ApiFailure).message, 'حقل الدواء مطلوب');
+    });
   });
 }

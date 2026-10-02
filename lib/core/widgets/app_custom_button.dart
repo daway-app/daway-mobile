@@ -13,6 +13,15 @@ class AppCustomButton extends StatelessWidget {
   final IconData? trailingIcon;
   final FontWeight? fontWeight;
 
+  /// Draws an outline in this colour — a secondary button (white/transparent
+  /// [backgroundColor], bordered) instead of the default filled one.
+  final Color? borderColor;
+  /// The label's own style, in place of the theme's (its colour is still
+  /// [textColor]'s, or white) — for a screen whose label is a real Tajawal
+  /// weight, which a [fontWeight] over the theme's regular-only font cannot
+  /// draw.
+  final TextStyle? textStyle;
+
   const AppCustomButton({
     super.key,
     required this.text,
@@ -24,6 +33,8 @@ class AppCustomButton extends StatelessWidget {
     this.textColor,
     this.trailingIcon,
     this.fontWeight,
+    this.borderColor,
+    this.textStyle,
   });
 
   @override
@@ -39,6 +50,7 @@ class AppCustomButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
+            side: borderColor == null ? BorderSide.none : BorderSide(color: borderColor!),
           ),
           elevation: 0,
         ),
@@ -57,11 +69,12 @@ class AppCustomButton extends StatelessWidget {
             Flexible(
               child: Text(
                 text,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: textColor ?? Colors.white,
-                  fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: 16.sp,
-                ),
+                style: textStyle?.copyWith(color: textColor ?? Colors.white) ??
+                    Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: textColor ?? Colors.white,
+                      fontWeight: fontWeight ?? FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

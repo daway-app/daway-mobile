@@ -1,4 +1,5 @@
 import 'package:daway_app/core/helpers/api_result.dart';
+import 'package:daway_app/core/routing/routes.dart';
 import 'package:daway_app/features/auth/domain/entities/patient_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/pharmacy_auth_result.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
@@ -13,12 +14,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../helpers/arabic_test_app.dart';
+
 class _FakeAuthRepository implements AuthRepository {
   ApiResult<PharmacyAuthResult> loginResult =
       const Success(PharmacyAuthResult(token: 'fake-token'));
 
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async =>
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  }) async =>
       const Success(null);
 
   @override
@@ -77,13 +84,14 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   }
 
-  Widget buildTestableScreen(PharmacyAuthCubit cubit) {
+  Widget buildTestableScreen(PharmacyAuthCubit cubit, {RouteFactory? onGenerateRoute}) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       builder: (context, child) => MaterialApp(
-        onGenerateRoute: (settings) => MaterialPageRoute(
-          builder: (_) => const Scaffold(body: SizedBox.shrink()),
-        ),
+        onGenerateRoute: onGenerateRoute ??
+            (settings) => MaterialPageRoute(
+                  builder: (_) => const Scaffold(body: SizedBox.shrink()),
+                ),
         home: BlocProvider.value(
           value: cubit,
           child: const PharmacyAuthScreen(),
@@ -108,6 +116,95 @@ void main() {
     expect(find.text('معرف الصيدلية (ID)'), findsOneWidget);
     expect(find.text('كلمة المرور'), findsOneWidget);
     expect(find.text('التالي'), findsOneWidget);
+  });
+
+  group('the forgot-password link', () {
+    testWidgets('sits under the password field, at the right of the right-to-left page', (
+      tester,
+    ) async {
+      await setDesignViewport(tester);
+      final cubit = PharmacyAuthCubit(
+        PharmacyLoginUseCase(_FakeAuthRepository()),
+        SaveSessionUseCase(_FakeSessionRepository()),
+      );
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(
+        buildArabicTestApp(
+          home: BlocProvider.value(value: cubit, child: const PharmacyAuthScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final link = tester.getRect(find.text('نسيت كلمة المرور؟'));
+      final passwordField = tester.getRect(find.byType(TextField).last);
+      final button = tester.getRect(find.byType(ElevatedButton));
+
+      expect(link.top, greaterThan(passwordField.bottom));
+      expect(link.bottom, lessThan(button.top));
+      expect(link.right, closeTo(passwordField.right, 1));
+    });
+
+    testWidgets('is underlined', (tester) async {
+      await setPhoneViewport(tester);
+      final cubit = PharmacyAuthCubit(
+        PharmacyLoginUseCase(_FakeAuthRepository()),
+        SaveSessionUseCase(_FakeSessionRepository()),
+      );
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(buildTestableScreen(cubit));
+      await tester.pumpAndSettle();
+
+      final style = tester.widget<Text>(find.text('نسيت كلمة المرور؟')).style!;
+      expect(style.decoration, TextDecoration.underline);
+    });
+
+    testWidgets('opens the forgot-password screen', (tester) async {
+      await setPhoneViewport(tester);
+      final cubit = PharmacyAuthCubit(
+        PharmacyLoginUseCase(_FakeAuthRepository()),
+        SaveSessionUseCase(_FakeSessionRepository()),
+      );
+      addTearDown(cubit.close);
+      final opened = <String?>[];
+
+      await tester.pumpWidget(
+        buildTestableScreen(
+          cubit,
+          onGenerateRoute: (settings) {
+            opened.add(settings.name);
+            return MaterialPageRoute(builder: (_) => const Scaffold(body: SizedBox.shrink()));
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      opened.clear();
+
+      await tester.tap(find.text('نسيت كلمة المرور؟'));
+      await tester.pumpAndSettle();
+
+      expect(opened, [Routes.pharmacyForgotPasswordScreen]);
+    });
+
+    testWidgets('does not try to log in', (tester) async {
+      await setPhoneViewport(tester);
+      final cubit = PharmacyAuthCubit(
+        PharmacyLoginUseCase(_FakeAuthRepository()),
+        SaveSessionUseCase(_FakeSessionRepository()),
+      );
+      addTearDown(cubit.close);
+
+      await tester.pumpWidget(buildTestableScreen(cubit));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('نسيت كلمة المرور؟'));
+      await tester.pumpAndSettle();
+
+      expect(cubit.state.isLoggingIn, isFalse);
+      expect(cubit.state.errorMessage, isNull);
+      expect(find.text('معرف الصيدلية مطلوب'), findsNothing);
+    });
   });
 
   testWidgets('toggles password visibility without changing cubit state', (tester) async {

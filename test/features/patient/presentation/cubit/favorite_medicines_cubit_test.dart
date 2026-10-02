@@ -22,6 +22,20 @@ class _FakeFavoritesRepository implements FavoritesRepository {
   @override
   Future<ApiResult<List<FavoriteMedicine>>> getFavoriteMedicines({required String token}) async =>
       result;
+
+  @override
+  Future<ApiResult<void>> addFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
+
+  @override
+  Future<ApiResult<void>> removeFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
 }
 
 /// Answers only when the test completes it.
@@ -31,6 +45,20 @@ class _ControlledFavoritesRepository implements FavoritesRepository {
   @override
   Future<ApiResult<List<FavoriteMedicine>>> getFavoriteMedicines({required String token}) =>
       completer.future;
+
+  @override
+  Future<ApiResult<void>> addFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
+
+  @override
+  Future<ApiResult<void>> removeFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
 }
 
 class _FakeSessionRepository implements SessionRepository {

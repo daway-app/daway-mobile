@@ -36,4 +36,20 @@ void main() {
   test('anything that is not a date throws a FormatException', () {
     expect(() => parseServerTimestamp('not a date'), throwsFormatException);
   });
+
+  group('tryParseServerTimestamp', () {
+    test('parses a valid timestamp the same as parseServerTimestamp', () {
+      final parsed = tryParseServerTimestamp('2026-09-24T16:08:09.000000Z');
+
+      expect(parsed!.isAtSameMomentAs(instant), isTrue);
+    });
+
+    test('a malformed value returns null instead of throwing', () {
+      expect(tryParseServerTimestamp('not a date'), isNull);
+    });
+
+    test('a null value returns null instead of throwing', () {
+      expect(tryParseServerTimestamp(null), isNull);
+    });
+  });
 }

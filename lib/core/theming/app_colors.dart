@@ -55,9 +55,37 @@ abstract class AppColors {
   static const Color orderInProgressColor = Color(0xFFFF9000);
   static const Color orderCancelledColor = Color(0xFFFF0000);
 
+  // Pharmacy Home Screen — stat tiles: the colour is the tile's figure and
+  // caption, and the same colour at 5% is its fill
+  static const Color statAvailable = Color(0xFF22C55E);
+  static const Color statLowStock = Color(0xFFFF9000);
+  static const Color statOutOfStock = Color(0xFFFF0000);
+  static const Color statRatings = Color(0xFFCAC842);
+
+  // Pharmacy Products Screen — the stock badges (the low / out-of-stock text
+  // is statLowStock / statOutOfStock; each text colour has its tint behind it)
+  // and the ingredient line
+  static const Color productAvailableText = Color(0xFF16A34A);
+  static const Color productAvailableTint = Color(0xFFF0FDF4);
+  static const Color productLowStockTint = Color(0x1AFF9000);
+  static const Color productOutOfStockTint = Color(0x1AFF0000);
+  static const Color productSecondaryText = Color(0xFF9CA3AF);
+
   // Patient Favorites Screen — medicine thumbnail placeholder
   static const Color thumbnailBackground = Color(0xFFF8FAFA);
   static const Color thumbnailBorder = Color(0xFFE4EAEB);
+
+  // Patient Pharmacies Map Screen — the open/closed-now badge: a light tint
+  // background behind text in the same colour, solid.
+  static const Color pharmacyOpenBg = Color(0x1A15803D);
+  static const Color pharmacyOpenText = Color(0xFF15803D);
+
+  // Patient Medicine Detail Screen — the unselected pharmacy card's border
+  // and the divider under the tags row are the same Gray-500 (#98ADB3) at two
+  // different opacities; the selected card reuses permissionIconBg/
+  // iconBlueBorder (Primary-50/200) already above.
+  static const Color productDetailDivider = Color(0x3D98ADB3);
+  static const Color productDetailCardBorder = Color(0x5298ADB3);
 
   // Account settings screen + its bottom sheets (language, logout)
   static const Color logoutRed = Color(0xFFDC2626);

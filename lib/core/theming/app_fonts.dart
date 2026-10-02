@@ -16,7 +16,7 @@ abstract class AppFonts {
 
   /// The weights the app asks [tajawal] for — keep in step with its callers,
   /// so [preload] warms exactly those.
-  static const _preloadedWeights = [FontWeight.w800];
+  static const _preloadedWeights = [FontWeight.w500, FontWeight.w700, FontWeight.w800];
 
   /// [base] with Tajawal at [weight].
   static TextStyle tajawal(TextStyle base, FontWeight weight) {

@@ -1,69 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 
+import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/models/picked_location.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/empty_state_view.dart';
+import '../../../../core/widgets/profile_load_error.dart';
+import '../../domain/entities/patient_address.dart';
+import '../cubit/patient_addresses_cubit.dart';
+import '../cubit/patient_addresses_state.dart';
+import '../widgets/address_sheets.dart';
 import '../widgets/edit_chip.dart';
 import '../widgets/patient_sub_screen_header.dart';
 
-class _SavedAddress {
-  final String label;
-  final PickedLocation location;
-
-  const _SavedAddress({required this.label, required this.location});
-}
-
-/// Delivery-address book. There is no backend for named addresses yet, so
-/// picked locations only live in this screen's local state (reusing the
-/// existing map picker for the actual pick/edit step) rather than being
-/// persisted — the first two additions default to "المنزل"/"العمل" to match
-/// the design, further ones are just numbered.
-class PatientAddressesScreen extends StatefulWidget {
+/// "عناويني" — backed by the real `/patient/addresses` endpoints. The screen
+/// has no name/phone fields of its own, so [PatientAddressesCubit] borrows
+/// the patient's profile for those on a new address, and keeps an edited
+/// one's existing name/phone unchanged.
+class PatientAddressesScreen extends StatelessWidget {
   const PatientAddressesScreen({super.key});
 
   @override
-  State<PatientAddressesScreen> createState() => _PatientAddressesScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<PatientAddressesCubit>(),
+      child: const _AddressesView(),
+    );
+  }
 }
 
-class _PatientAddressesScreenState extends State<PatientAddressesScreen> {
-  final List<_SavedAddress> _addresses = [];
+class _AddressesView extends StatefulWidget {
+  const _AddressesView();
 
-  String _labelFor(int index) {
-    return switch (index) {
-      0 => 'المنزل',
-      1 => 'العمل',
-      _ => 'عنوان ${index + 1}',
-    };
-  }
+  @override
+  State<_AddressesView> createState() => _AddressesViewState();
+}
 
+class _AddressesViewState extends State<_AddressesView> {
   Future<void> _addAddress() async {
-    final result = await Navigator.of(context).pushNamed<PickedLocation>(
+    final location = await Navigator.of(context).pushNamed<PickedLocation>(
       Routes.locationPickerScreen,
     );
-    if (result == null || !mounted) return;
-    setState(() {
-      _addresses.add(_SavedAddress(label: _labelFor(_addresses.length), location: result));
-    });
+    if (location == null || !mounted) return;
+    final label = await showAddressLabelSheet(context);
+    if (label == null || !mounted) return;
+    final error =
+        await context.read<PatientAddressesCubit>().addAddress(location, label: label);
+    if (error != null && mounted) AppSnackbar.show(context, error);
   }
 
-  Future<void> _editAddress(_SavedAddress existing) async {
-    final result = await Navigator.of(context).pushNamed<PickedLocation>(
-      Routes.locationPickerScreen,
-      arguments: {
-        'latitude': existing.location.latitude,
-        'longitude': existing.location.longitude,
-        'address': existing.location.address,
-      },
-    );
+  Future<void> _editAddress(PatientAddress existing) async {
+    final result = await showAddressEditSheet(context, existing);
     if (result == null || !mounted) return;
-    setState(() {
-      final index = _addresses.indexOf(existing);
-      _addresses[index] = _SavedAddress(label: existing.label, location: result);
-    });
+    final cubit = context.read<PatientAddressesCubit>();
+
+    String? error;
+    switch (result.action) {
+      case AddressEditAction.save:
+        if (result.label == existing.label) return;
+        error = await cubit.updateAddress(existing, null, label: result.label);
+      case AddressEditAction.changeLocation:
+        final location = await Navigator.of(context).pushNamed<PickedLocation>(
+          Routes.locationPickerScreen,
+          arguments: {
+            'latitude': existing.latitude,
+            'longitude': existing.longitude,
+            'address': existing.address,
+          },
+        );
+        if (location == null || !mounted) return;
+        error = await cubit.updateAddress(existing, location, label: result.label);
+      case AddressEditAction.delete:
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('حذف العنوان'),
+            content: Text('هل تريد حذف عنوان "${existing.label}"؟'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('إلغاء'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: Text('حذف', style: TextStyle(color: AppColors.logoutRed)),
+              ),
+            ],
+          ),
+        );
+        if (confirmed != true || !mounted) return;
+        error = await cubit.deleteAddress(existing);
+    }
+    if (error != null && mounted) AppSnackbar.show(context, error);
   }
 
   @override
@@ -80,21 +112,39 @@ class _PatientAddressesScreenState extends State<PatientAddressesScreen> {
                 description: 'أدر عناوين التوصيل الخاصة بك',
               ),
               SizedBox(height: 32.h),
-              if (_addresses.isEmpty)
-                EmptyStateView(
-                  imageAsset: 'assets/images/empty_addresses.png',
-                  title: 'لا يوجد عناوين محفوظة',
-                  actionLabel: 'أضف عنوان',
-                  onActionTap: _addAddress,
-                )
-              else ...[
-                for (final address in _addresses) ...[
-                  _AddressCard(address: address, onEditTap: () => _editAddress(address)),
-                  SizedBox(height: 24.h),
-                ],
-                _AddAddressButton(onTap: _addAddress),
-                SizedBox(height: 24.h),
-              ],
+              BlocBuilder<PatientAddressesCubit, PatientAddressesState>(
+                builder: (context, state) {
+                  return switch (state) {
+                    PatientAddressesLoading() =>
+                      const Center(child: CircularProgressIndicator()),
+                    PatientAddressesLoadFailure(:final message) => ProfileLoadError(
+                        message: message,
+                        onRetry: () => context.read<PatientAddressesCubit>().load(),
+                      ),
+                    PatientAddressesLoaded(:final addresses) when addresses.isEmpty =>
+                      EmptyStateView(
+                        imageAsset: 'assets/images/empty_addresses.png',
+                        title: 'لا يوجد عناوين محفوظة',
+                        actionLabel: 'أضف عنوان',
+                        onActionTap: _addAddress,
+                      ),
+                    PatientAddressesLoaded(:final addresses) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final address in addresses) ...[
+                            _AddressCard(
+                              address: address,
+                              onEditTap: () => _editAddress(address),
+                            ),
+                            SizedBox(height: 24.h),
+                          ],
+                          _AddAddressButton(onTap: _addAddress),
+                          SizedBox(height: 24.h),
+                        ],
+                      ),
+                  };
+                },
+              ),
             ],
           ),
         ),
@@ -104,7 +154,7 @@ class _PatientAddressesScreenState extends State<PatientAddressesScreen> {
 }
 
 class _AddressCard extends StatelessWidget {
-  final _SavedAddress address;
+  final PatientAddress address;
   final VoidCallback onEditTap;
 
   const _AddressCard({required this.address, required this.onEditTap});
@@ -143,16 +193,9 @@ class _AddressCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                SvgPicture.asset(
-                  'assets/icons/home_fill_icon.svg',
-                  width: 18.w,
-                  height: 18.w,
-                  colorFilter: const ColorFilter.mode(AppColors.mainTeal, BlendMode.srcIn),
-                ),
-                SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
-                    address.location.address,
+                    address.address,
                     textAlign: TextAlign.right,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

@@ -5,8 +5,10 @@ import '../../../../core/theming/app_colors.dart';
 import '../../domain/entities/order.dart';
 
 (String, Color) _labelAndColor(OrderStatus status) => switch (status) {
-      OrderStatus.completed => ('مكتمل', AppColors.orderCompletedColor),
-      OrderStatus.inProgress => ('قيد التنفيذ', AppColors.orderInProgressColor),
+      OrderStatus.pending => ('قيد الانتظار', AppColors.orderInProgressColor),
+      OrderStatus.confirmed => ('تم التأكيد', AppColors.orderInProgressColor),
+      OrderStatus.preparing => ('قيد التحضير', AppColors.orderInProgressColor),
+      OrderStatus.delivered => ('تم التوصيل', AppColors.orderCompletedColor),
       OrderStatus.cancelled => ('ملغي', AppColors.orderCancelledColor),
     };
 

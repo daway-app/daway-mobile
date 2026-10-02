@@ -1,3 +1,8 @@
+import 'package:daway_app/core/erroring/failure.dart';
+import 'package:daway_app/core/models/picked_location.dart';
+import 'package:daway_app/features/patient/domain/repositories/location_repository.dart';
+import 'package:daway_app/features/patient/domain/usecases/get_current_location_usecase.dart';
+import 'package:daway_app/features/patient/presentation/cubit/home_location_cubit.dart';
 import 'dart:io';
 
 import 'package:daway_app/core/helpers/api_result.dart';
@@ -44,7 +49,11 @@ const _categories = [
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async => const Success(null);
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  }) async => const Success(null);
 
   @override
   Future<ApiResult<PatientAuthResult>> verifyOtp({
@@ -104,6 +113,23 @@ class _FakePatientProfileRepository implements PatientProfileRepository {
   }) async => const Success(null);
 }
 
+class _FakeLocationRepository implements LocationRepository {
+  @override
+  Future<ApiResult<PickedLocation>> getCurrentLocation() async =>
+      const ApiError(PermissionFailure('يرجى السماح بالوصول لموقعك'));
+
+  @override
+  Future<ApiResult<String>> reverseGeocode({
+    required double latitude,
+    required double longitude,
+  }) async =>
+      const Success('');
+
+  @override
+  Future<ApiResult<PickedLocation>> searchAddress(String query) async =>
+      const ApiError(ValidationFailure('لم يتم العثور على هذا العنوان'));
+}
+
 class _FakeAvatarRepository implements AvatarRepository {
   @override
   Future<ApiResult<String>> uploadAvatar(File imageFile) async => const Success('');
@@ -148,6 +174,9 @@ void main() {
         UploadAvatarUseCase(_FakeAvatarRepository()),
       ),
     );
+    getIt.registerFactory<HomeLocationCubit>(
+      () => HomeLocationCubit(GetCurrentLocationUseCase(_FakeLocationRepository())),
+    );
     getIt.registerFactory<CategoriesCubit>(
       () => CategoriesCubit(GetCategoriesUseCase(_FakeCategoryRepository())),
     );
@@ -187,7 +216,7 @@ void main() {
     expect(find.text('العناية بالأسنان'), findsOneWidget);
   });
 
-  testWidgets('navigates to account-type screen once LogoutCubit reports logged out',
+  testWidgets('navigates to the logout farewell screen once LogoutCubit reports logged out',
       (tester) async {
     await setPhoneViewport(tester);
     final cubit = LogoutCubit(LogoutUseCase(_FakeAuthRepository(), _FakeSessionRepository()));
@@ -201,6 +230,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(cubit.state.isLoggedOut, isTrue);
-    expect(visitedRoutes, contains(Routes.accountTypeScreen));
+    expect(visitedRoutes, contains(Routes.logoutFarewellScreen));
+  });
+
+  testWidgets('tapping the cart icon navigates to the cart screen', (tester) async {
+    await setPhoneViewport(tester);
+    final cubit = LogoutCubit(LogoutUseCase(_FakeAuthRepository(), _FakeSessionRepository()));
+    addTearDown(cubit.close);
+    final visitedRoutes = <String>[];
+
+    await tester.pumpWidget(buildTestableScreen(cubit, visitedRoutes: visitedRoutes));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('homeCartIconButton')));
+    await tester.pumpAndSettle();
+
+    expect(visitedRoutes, contains(Routes.patientCartScreen));
   });
 }

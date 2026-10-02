@@ -17,7 +17,11 @@ class _FakeAuthRepository implements AuthRepository {
   ApiResult<void> registerResult = const Success(null);
 
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async =>
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  }) async =>
       const Success(null);
 
   @override

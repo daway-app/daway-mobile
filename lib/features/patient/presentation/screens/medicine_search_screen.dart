@@ -6,9 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/app_snackbar.dart';
 import '../../domain/entities/searched_medicine.dart';
 import '../cubit/medicine_search_cubit.dart';
 import '../cubit/medicine_search_state.dart';
@@ -258,7 +258,10 @@ class _SearchResultsGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) => SearchedMedicineCard(
         medicine: results[index],
-        onDetailsTap: () => AppSnackbar.show(context, 'قريباً'),
+        onDetailsTap: () => Navigator.of(context).pushNamed(
+          Routes.medicineDetailScreen,
+          arguments: results[index].id,
+        ),
       ),
     );
   }

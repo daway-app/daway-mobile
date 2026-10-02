@@ -4,11 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/widgets/section_header.dart';
 import '../../domain/entities/category.dart';
 import '../cubit/categories_cubit.dart';
 import '../cubit/categories_state.dart';
 import 'category_icon.dart';
-import 'home_section_header.dart';
 
 /// How many categories the home grid shows — matches the design's 3x2 grid;
 /// the rest are reachable through "عرض الكل".
@@ -29,7 +29,7 @@ class HomeCategoriesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        HomeSectionHeader(title: 'الاقسام', onViewAllTap: onViewAllTap),
+        SectionHeader(title: 'الاقسام', onActionTap: onViewAllTap),
         SizedBox(height: 16.h),
         BlocBuilder<CategoriesCubit, CategoriesState>(
           builder: (context, state) {
@@ -41,11 +41,7 @@ class HomeCategoriesSection extends StatelessWidget {
               CategoriesLoadFailure(:final message) => SizedBox(
                   height: 110.h,
                   child: Center(
-                    child: Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.homePharmacyCardSubtitle,
-                    ),
+                        child: Text(message , style: TextStyle(color: Colors.black),),
                   ),
                 ),
               CategoriesLoaded(:final categories) when categories.isEmpty => SizedBox(

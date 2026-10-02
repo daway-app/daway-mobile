@@ -10,6 +10,7 @@ import '../../../../core/widgets/empty_state_view.dart';
 import '../../domain/entities/medicine_reminder.dart';
 import '../cubit/reminders_cubit.dart';
 import '../cubit/reminders_state.dart';
+import 'add_medicine_reminder_screen.dart';
 
 class MedicineRemindersScreen extends StatelessWidget {
   const MedicineRemindersScreen({super.key});
@@ -135,15 +136,12 @@ class _RemindersList extends StatelessWidget {
   }
 
   void _showAddDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      builder: (_) => BlocProvider.value(
-        value: context.read<RemindersCubit>(),
-        child: const _AddReminderSheet(),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<RemindersCubit>(),
+          child: const AddMedicineReminderScreen(),
+        ),
       ),
     );
   }
@@ -271,15 +269,12 @@ class _ReminderCard extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      builder: (_) => BlocProvider.value(
-        value: context.read<RemindersCubit>(),
-        child: _AddReminderSheet(existing: reminder),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<RemindersCubit>(),
+          child: AddMedicineReminderScreen(existing: reminder),
+        ),
       ),
     );
   }
@@ -333,204 +328,3 @@ class _AddReminderButton extends StatelessWidget {
   }
 }
 
-class _AddReminderSheet extends StatefulWidget {
-  final MedicineReminder? existing;
-
-  const _AddReminderSheet({this.existing});
-
-  @override
-  State<_AddReminderSheet> createState() => _AddReminderSheetState();
-}
-
-class _AddReminderSheetState extends State<_AddReminderSheet> {
-  late final TextEditingController _nameController;
-  late TimeOfDay _selectedTime;
-  late List<bool> _selectedDays;
-
-  static const _dayLabels = ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
-
-  @override
-  void initState() {
-    super.initState();
-    final e = widget.existing;
-    _nameController = TextEditingController(text: e?.name ?? '');
-    _selectedTime = TimeOfDay(hour: e?.hour ?? 8, minute: e?.minute ?? 0);
-    _selectedDays = List.generate(
-      7,
-      (i) => e?.daysOfWeek.contains(i) ?? true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 24.w,
-        right: 24.w,
-        top: 24.h,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            widget.existing != null ? 'تعديل التذكير' : 'إضافة تذكير جديد',
-            textAlign: TextAlign.right,
-            style: AppTextStyles.addressCardTitle,
-          ),
-          SizedBox(height: 16.h),
-          TextField(
-            controller: _nameController,
-            textAlign: TextAlign.right,
-            decoration: InputDecoration(
-              hintText: 'اسم الدواء',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12.w,
-                vertical: 12.h,
-              ),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          GestureDetector(
-            onTap: () async {
-              final time = await showTimePicker(
-                context: context,
-                initialTime: _selectedTime,
-              );
-              if (time != null) setState(() => _selectedTime = time);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: AppColors.cardBorder),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'الساعة ${_selectedTime.hour > 12 ? _selectedTime.hour - 12 : (_selectedTime.hour == 0 ? 12 : _selectedTime.hour)}:${_selectedTime.minute.toString().padLeft(2, '0')} ${_selectedTime.hour < 12 ? 'ص' : 'م'}',
-                      textAlign: TextAlign.right,
-                      style: AppTextStyles.profileFieldValue,
-                    ),
-                  ),
-                  Icon(Icons.access_time_rounded, size: 20.sp, color: AppColors.mainTeal),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
-            alignment: WrapAlignment.end,
-            children: List.generate(7, (i) {
-              return GestureDetector(
-                onTap: () => setState(() => _selectedDays[i] = !_selectedDays[i]),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    color: _selectedDays[i]
-                        ? AppColors.mainTeal
-                        : AppColors.permissionIconBg,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    _dayLabels[i],
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                      color: _selectedDays[i] ? Colors.white : AppColors.onboardingText,
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-          SizedBox(height: 24.h),
-          Row(
-            children: [
-              if (widget.existing != null) ...[
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      context.read<RemindersCubit>().deleteReminder(widget.existing!.id);
-                      Navigator.of(context).pop();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.error),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                    ),
-                    child: Text(
-                      'حذف',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.error,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-              ],
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _save,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mainTeal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                  ),
-                  child: Text(
-                    'حفظ',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _save() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) return;
-
-    final days = <int>[];
-    for (var i = 0; i < 7; i++) {
-      if (_selectedDays[i]) days.add(i);
-    }
-    if (days.isEmpty) return;
-
-    final reminder = MedicineReminder(
-      id: widget.existing?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      daysOfWeek: days,
-      hour: _selectedTime.hour,
-      minute: _selectedTime.minute,
-    );
-    context.read<RemindersCubit>().saveReminder(reminder);
-    Navigator.of(context).pop();
-  }
-}

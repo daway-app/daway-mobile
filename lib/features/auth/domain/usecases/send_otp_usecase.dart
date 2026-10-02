@@ -6,7 +6,7 @@ class SendOtpUseCase {
 
   const SendOtpUseCase(this._repository);
 
-  Future<ApiResult<String?>> call({required String phone}) {
-    return _repository.sendOtp(phone: phone);
+  Future<ApiResult<String?>> call({required String phone, String? name, String? birthDate}) {
+    return _repository.sendOtp(phone: phone, name: name, birthDate: birthDate);
   }
 }

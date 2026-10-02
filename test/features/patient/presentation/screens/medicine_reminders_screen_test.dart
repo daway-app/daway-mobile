@@ -72,7 +72,7 @@ void main() {
     expect(find.text('اضافة تذكير جديد'), findsNothing); // the list's own add button
   });
 
-  testWidgets('tapping "أضف تذكير" opens the add-reminder sheet', (tester) async {
+  testWidgets('tapping "أضف تذكير" opens the add-reminder screen', (tester) async {
     await setPhoneViewport(tester);
 
     await tester.pumpWidget(buildTestableScreen());
@@ -80,7 +80,7 @@ void main() {
     await tester.tap(find.text('أضف تذكير'));
     await tester.pumpAndSettle();
 
-    expect(find.text('إضافة تذكير جديد'), findsOneWidget);
+    expect(find.text('إضافة تذكير للدواء'), findsOneWidget);
   });
 
   testWidgets('shows the reminders list, not the empty state, once there is a reminder', (
@@ -91,7 +91,7 @@ void main() {
       MedicineReminder(
         id: '1',
         name: 'أكامول',
-        daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+        frequency: ReminderFrequency.daily,
         hour: 10,
         minute: 0,
       ),

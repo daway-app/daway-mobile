@@ -17,6 +17,20 @@ class _FakeFavoritesRepository implements FavoritesRepository {
     lastToken = token;
     return result;
   }
+
+  @override
+  Future<ApiResult<void>> addFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
+
+  @override
+  Future<ApiResult<void>> removeFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async =>
+      const Success(null);
 }
 
 class _FakeSessionRepository implements SessionRepository {
