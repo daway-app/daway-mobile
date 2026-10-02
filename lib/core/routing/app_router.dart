@@ -1,11 +1,17 @@
 import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
+import 'package:daway_app/features/auth/presentation/screens/logout_farewell_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_sign_up_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/all_categories_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/category_medicines_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/medicine_detail_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/medicine_reminders_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/patient_cart_screen.dart';
+import 'package:daway_app/features/chat/presentation/screens/chat_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/patient_pharmacies_map_screen.dart';
+import 'package:daway_app/features/patient/presentation/screens/rate_experience_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/location_picker_screen.dart';
 import 'package:daway_app/features/patient/presentation/screens/patient_dashboard_shell_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/add_medicine_screen.dart';
@@ -161,6 +167,42 @@ class AppRouter {
       case Routes.medicineRemindersScreen:
         return MaterialPageRoute(
           builder: (_) => const MedicineRemindersScreen(),
+        );
+
+      case Routes.medicineDetailScreen:
+        final medicineId = settings.arguments as int;
+        return MaterialPageRoute(
+          builder: (_) => MedicineDetailScreen(medicineId: medicineId),
+        );
+
+      case Routes.patientCartScreen:
+        return MaterialPageRoute(
+          builder: (_) => const PatientCartScreen(),
+        );
+
+      case Routes.patientPharmaciesMapScreen:
+        return MaterialPageRoute(
+          builder: (_) => const PatientPharmaciesMapScreen(),
+        );
+
+      case Routes.logoutFarewellScreen:
+        return MaterialPageRoute(
+          builder: (_) => const LogoutFarewellScreen(),
+        );
+
+      case Routes.rateExperienceScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => RateExperienceScreen(
+            pharmacyId: args['pharmacyId'] as int,
+            pharmacyName: args['pharmacyName'] as String,
+          ),
+        );
+
+      case Routes.chatScreen:
+        final chatArgs = ChatArgs.fromMap(settings.arguments as Map<String, dynamic>);
+        return MaterialPageRoute(
+          builder: (_) => ChatScreen(args: chatArgs),
         );
 
       case Routes.locationPickerScreen:

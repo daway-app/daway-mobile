@@ -4,6 +4,15 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Medicine reminders must still fire after the app is closed or the
+         device reboots (flutter_local_notifications' own README setup
+         section) — RECEIVE_BOOT_COMPLETED lets its native boot receiver
+         below reschedule everything after a restart, and SCHEDULE_EXACT_ALARM
+         is what NotificationService.init() prompts the user to grant so
+         reminders can use exactAllowWhileIdle instead of a batched/delayed
+         inexact alarm. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <application
         android:label="DAWAK"
@@ -39,6 +48,22 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- flutter_local_notifications: required for it to show a
+             scheduled notification at all (not specific to reminders
+             surviving a closed app — every scheduled notification needs
+             this receiver), and to reschedule everything after a reboot
+             or app update (see the RECEIVE_BOOT_COMPLETED permission
+             above). -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
@@ -49,6 +74,17 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher (Android 11+ package visibility): the "اتصال" and
+             "عرض الاتجاهات" actions on the pharmacies map need these to find
+             a dialer / maps app to hand the tel:/https: link to. -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

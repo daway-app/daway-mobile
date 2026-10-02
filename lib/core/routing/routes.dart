@@ -20,4 +20,10 @@ class Routes {
   static const String allCategoriesScreen = '/allCategoriesScreen';
   static const String categoryMedicinesScreen = '/categoryMedicinesScreen';
   static const String medicineRemindersScreen = '/medicineRemindersScreen';
+  static const String medicineDetailScreen = '/medicineDetailScreen';
+  static const String patientCartScreen = '/patientCartScreen';
+  static const String patientPharmaciesMapScreen = '/patientPharmaciesMapScreen';
+  static const String logoutFarewellScreen = '/logoutFarewellScreen';
+  static const String rateExperienceScreen = '/rateExperienceScreen';
+  static const String chatScreen = '/chatScreen';
 }

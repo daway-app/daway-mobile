@@ -35,7 +35,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1022',
       pharmacyName: 'صيدلية الهدى',
-      status: OrderStatus.inProgress,
+      status: OrderStatus.confirmed,
       itemsCount: 1,
       price: 65,
       address: 'غزة - الشجاعية',
@@ -46,7 +46,7 @@ void main() {
 
     expect(find.text('صيدلية الهدى'), findsOneWidget);
     expect(find.text('#DW-1022'), findsOneWidget);
-    expect(find.text('قيد التنفيذ'), findsOneWidget);
+    expect(find.text('تم التأكيد'), findsOneWidget);
     expect(find.text('غزة - الشجاعية'), findsOneWidget);
     expect(find.text('65 ₪'), findsOneWidget);
     expect(find.text('دواء واحد'), findsOneWidget);
@@ -57,7 +57,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1021',
       pharmacyName: 'صيدلية النور',
-      status: OrderStatus.completed,
+      status: OrderStatus.delivered,
       itemsCount: 2,
       price: 80,
       address: 'غزة - النصر',
@@ -67,7 +67,7 @@ void main() {
     await tester.pumpWidget(buildTestable(order));
 
     expect(find.text('دواءان'), findsOneWidget);
-    expect(find.text('مكتمل'), findsOneWidget);
+    expect(find.text('تم التوصيل'), findsOneWidget);
   });
 
   testWidgets('the item count agrees with its noun: 5 أدوية but 11 دواء', (tester) async {
@@ -75,7 +75,7 @@ void main() {
     Order orderWithItems(int count) => Order(
           orderNumber: 'DW-1',
           pharmacyName: 'صيدلية النور',
-          status: OrderStatus.completed,
+          status: OrderStatus.delivered,
           itemsCount: count,
           price: 80,
           address: 'غزة - النصر',
@@ -96,7 +96,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1',
       pharmacyName: 'صيدلية النور',
-      status: OrderStatus.completed,
+      status: OrderStatus.delivered,
       itemsCount: 1,
       price: 80,
       address: 'غزة - النصر',
@@ -114,7 +114,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1',
       pharmacyName: 'صيدلية النور',
-      status: OrderStatus.completed,
+      status: OrderStatus.delivered,
       itemsCount: 1,
       price: 19.9,
       address: 'غزة - النصر',
@@ -148,7 +148,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1022',
       pharmacyName: 'صيدلية الهدى',
-      status: OrderStatus.inProgress,
+      status: OrderStatus.confirmed,
       itemsCount: 1,
       price: 65,
       address: 'غزة - الشجاعية',
@@ -159,7 +159,7 @@ void main() {
 
     final card = tester.getRect(find.byType(OrderCard));
     final name = tester.getRect(find.text('صيدلية الهدى'));
-    final badge = tester.getRect(find.text('قيد التنفيذ'));
+    final badge = tester.getRect(find.text('تم التأكيد'));
 
     // Pharmacy name hugs the right edge, the status badge sits at the left.
     expect(card.right - name.right, lessThan(16));
@@ -184,7 +184,7 @@ void main() {
     final order = Order(
       orderNumber: 'DW-1021',
       pharmacyName: 'صيدلية النور',
-      status: OrderStatus.completed,
+      status: OrderStatus.delivered,
       itemsCount: 2,
       price: 80,
       address: 'غزة - النصر',

@@ -28,4 +28,25 @@ void main() {
     expect(entity.genericName, isNull);
     expect(entity.dosageForm, isNull);
   });
+
+  test('reads the pharmacy medicine id and the image when the backend sends them', () {
+    final model = CategoryMedicineModel.fromJson({
+      'id': 15706,
+      'trade_name': 'ACAMOL 500MG TAB 20 TAB',
+      'generic_name': 'Paracetamol',
+      'medicine_id': 18,
+      'image_url': 'https://example.com/a.jpg',
+    });
+
+    expect(model.id, 15706);
+    expect(model.medicineId, 18);
+    expect(model.imageUrl, 'https://example.com/a.jpg');
+  });
+
+  test('medicine id and image are null when absent', () {
+    final model = CategoryMedicineModel.fromJson({'id': 1, 'trade_name': 'X'});
+
+    expect(model.medicineId, isNull);
+    expect(model.imageUrl, isNull);
+  });
 }

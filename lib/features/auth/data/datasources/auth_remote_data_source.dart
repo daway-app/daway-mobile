@@ -11,11 +11,25 @@ class AuthRemoteDataSource {
     return _dio.post(ApiConstants.sendOtp, data: {'phone': phone});
   }
 
+  /// Step 1 of sign-up: `POST /register/patient`. Like `/otp/send`, its
+  /// response echoes the OTP while SMS delivery isn't wired up.
+  Future<Response<dynamic>> registerPatient({
+    required String phone,
+    required String name,
+    required int age,
+  }) {
+    return _dio.post(
+      ApiConstants.registerPatient,
+      data: {'phone': phone, 'name': name, 'age': age, 'terms_accepted': true},
+    );
+  }
+
   Future<Response<dynamic>> verifyOtp({
     required String phone,
     required String otp,
     String? name,
-    String? birthDate,
+    int? age,
+    bool? termsAccepted,
     double? latitude,
     double? longitude,
     bool? notificationsEnabled,
@@ -26,7 +40,8 @@ class AuthRemoteDataSource {
         'phone': phone,
         'otp': otp,
         'name': ?name,
-        'birth_date': ?birthDate,
+        'age': ?age,
+        'terms_accepted': ?termsAccepted,
         'latitude': ?latitude,
         'longitude': ?longitude,
         'notifications_enabled': ?notificationsEnabled,

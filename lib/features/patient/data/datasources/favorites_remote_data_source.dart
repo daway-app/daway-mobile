@@ -16,4 +16,24 @@ class FavoritesRemoteDataSource {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
+
+  Future<Response<dynamic>> addFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) {
+    return _dio.post(
+      '${ApiConstants.patientFavoriteMedicines}/$medicineId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
+
+  Future<Response<dynamic>> removeFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) {
+    return _dio.delete(
+      '${ApiConstants.patientFavoriteMedicines}/$medicineId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
 }

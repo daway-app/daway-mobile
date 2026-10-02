@@ -42,6 +42,14 @@ class Inquiry {
   final String patientName;
   final String? medicineName;
 
+  /// Patient messages the pharmacy hasn't read yet (`unread_messages_count`).
+  final int unreadCount;
+
+  /// The patient's user id and the thread's latest chat message text (null
+  /// when the API omits them) — used to group inquiries per patient.
+  final int? patientId;
+  final String? lastMessage;
+
   const Inquiry({
     required this.id,
     required this.message,
@@ -49,6 +57,9 @@ class Inquiry {
     required this.createdAt,
     required this.patientName,
     this.medicineName,
+    this.unreadCount = 0,
+    this.patientId,
+    this.lastMessage,
   });
 }
 

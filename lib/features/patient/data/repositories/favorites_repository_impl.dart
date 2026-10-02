@@ -30,4 +30,30 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
       return ApiError(mapExceptionToFailure(e));
     }
   }
+
+  @override
+  Future<ApiResult<void>> addFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async {
+    try {
+      await _remoteDataSource.addFavoriteMedicine(token: token, medicineId: medicineId);
+      return const Success(null);
+    } catch (e) {
+      return ApiError(mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> removeFavoriteMedicine({
+    required String token,
+    required int medicineId,
+  }) async {
+    try {
+      await _remoteDataSource.removeFavoriteMedicine(token: token, medicineId: medicineId);
+      return const Success(null);
+    } catch (e) {
+      return ApiError(mapExceptionToFailure(e));
+    }
+  }
 }

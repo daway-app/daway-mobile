@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/di/dependency_injection.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_snackbar.dart';
@@ -313,7 +314,7 @@ class _SymptomLandingView extends StatelessWidget {
               ),
               itemBuilder: (context, index) => CategoryMedicineCard(
                 medicine: medicines[index],
-                onDetailsTap: () => AppSnackbar.show(context, 'قريباً'),
+                onDetailsTap: () => _openDetails(context, medicines[index]),
               ),
             ),
           ],
@@ -347,9 +348,21 @@ class _MedicinesGrid extends StatelessWidget {
         }
         return CategoryMedicineCard(
           medicine: state.medicines[index],
-          onDetailsTap: () => AppSnackbar.show(context, 'قريباً'),
+          onDetailsTap: () => _openDetails(context, state.medicines[index]),
         );
       },
     );
   }
+}
+
+
+/// Opens the detail page of the pharmacy-stocked medicine behind a catalogue
+/// row; a row no pharmacy carries has no page to open.
+void _openDetails(BuildContext context, CategoryMedicine medicine) {
+  final medicineId = medicine.medicineId;
+  if (medicineId == null) {
+    AppSnackbar.show(context, 'هذا الدواء غير متوفر في أي صيدلية حالياً');
+    return;
+  }
+  Navigator.of(context).pushNamed(Routes.medicineDetailScreen, arguments: medicineId);
 }

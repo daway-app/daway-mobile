@@ -449,6 +449,169 @@ abstract class AppTextStyles {
         color: AppColors.onboardingText,
       );
 
+  // ---- Patient Medicine Detail Screen ----
+  //
+  // Real Tajawal weights (see [AppFonts]) for the Bold/Medium text the design
+  // calls for — the theme's regular-only font family draws those as faux
+  // bold/medium otherwise (see the figma-screen-workflow notes on this).
+
+  /// The medicine's name, as the backend's `trade_name` returns it (it may
+  /// already include the strength, e.g. "أكامول 500 مج") — Bold 24 at 100%.
+  static TextStyle get medicineDetailName => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 24.sp,
+          height: 1.0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w700,
+      );
+
+  /// A symptom/use tag chip's label ("الصداع") — Medium 12.
+  static TextStyle get medicineDetailTag => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 12.sp,
+          color: AppColors.mainTeal,
+        ),
+        FontWeight.w500,
+      );
+
+  /// "اختر الصيدلية المناسبة لك" — Regular 20 at 100%.
+  static TextStyle get medicineDetailSectionLabel => TextStyle(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  /// A pharmacy option card's name — Medium 14 at 100%.
+  static TextStyle get medicinePharmacyName => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 14.sp,
+          height: 1.0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
+      );
+
+  /// A pharmacy option card's "يبعد عنك X كم" distance line — Regular 10.
+  static TextStyle get medicinePharmacyDistance => TextStyle(
+        fontSize: 10.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.authTextMuted,
+      );
+
+  /// A pharmacy option card's price — Regular 12.
+  static TextStyle get medicinePharmacyPrice => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  // ---- Patient Cart Screen ----
+
+  /// A cart line's medicine name — Medium 16 at 100%; the pharmacy name
+  /// after the "/" on the same line is [cartItemPharmacyName] instead.
+  static TextStyle get cartItemName => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 16.sp,
+          height: 1.0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
+      );
+
+  /// The pharmacy name span after the medicine name's "/" — Regular 12,
+  /// lighter than [cartItemName].
+  static TextStyle get cartItemPharmacyName => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.authTextMuted,
+      );
+
+  /// A cart line's price ("18 $/الشريط") — Regular 14.
+  static TextStyle get cartItemPrice => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  /// The quantity number between a cart line's +/- buttons — Regular 16,
+  /// centered.
+  static TextStyle get cartQuantity => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 1.0,
+        color: AppColors.onboardingText,
+      );
+
+  // ---- Patient Pharmacies Map Screen ----
+
+  /// The selected pharmacy's name on the bottom sheet — Medium 24 at 100%
+  /// (Medium, unlike the product screen's Bold name).
+  static TextStyle get pharmacySheetName => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 24.sp,
+          height: 1.0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
+      );
+
+  /// The distance and open/closed badges' label — Medium 12, centered; the
+  /// colour is the badge's.
+  static TextStyle get pharmacySheetBadge => AppFonts.tajawal(
+        TextStyle(fontSize: 12.sp, height: 1.0),
+        FontWeight.w500,
+      );
+
+  /// "مواعيد العمل" label — Medium 16 at 100%.
+  static TextStyle get pharmacySheetHoursLabel => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 16.sp,
+          height: 1.0,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
+      );
+
+  /// The hours value next to the label ("9 ص - 12 م") — Medium 12 in the
+  /// primary blue (the pasted CSS's `background` on a text block is its
+  /// colour, per the figma-screen-workflow note).
+  static TextStyle get pharmacySheetHoursValue => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 12.sp,
+          height: 1.0,
+          color: AppColors.mainTeal,
+        ),
+        FontWeight.w500,
+      );
+
+  // ---- Logout Farewell Screen ----
+
+  /// "سوف نفتقدك" — Medium 30/37.5 (line-height 1.25), centered.
+  static TextStyle get farewellTitle => AppFonts.tajawal(
+        TextStyle(
+          fontSize: 30.sp,
+          height: 37.5 / 30,
+          color: AppColors.onboardingText,
+        ),
+        FontWeight.w500,
+      );
+
+  /// The supporting line under it — Regular 16/26.4 (line-height 1.65),
+  /// centered, Gray-600 (#6B8A9A — the pasted CSS's `background` on a text
+  /// block is its colour, per the figma-screen-workflow note).
+  static TextStyle get farewellSubtitle => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+        height: 26.4 / 16,
+        color: const Color(0xFF6B8A9A),
+      );
+
   // ---- Account Settings Screen ----
 
   /// A settings group title ("التفضيلات") — Gray-500 (#98ADB3), bold.

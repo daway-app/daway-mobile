@@ -12,9 +12,8 @@ import '../widgets/favorite_medicine_card.dart';
 import '../widgets/patient_sub_screen_header.dart';
 
 /// "الأدوية المحفوظة" — backed by the real `GET /patient/favorites/medicines`
-/// endpoint (unlike [PatientOrdersScreen], which has no backend at all yet).
-/// Expects a [FavoriteMedicinesCubit] to already be provided above it (see
-/// [PatientAccountScreen]'s `_openFavorites`).
+/// endpoint. Expects a [FavoriteMedicinesCubit] to already be provided above
+/// it (see [PatientAccountScreen]'s `_openFavorites`).
 class PatientFavoritesScreen extends StatelessWidget {
   const PatientFavoritesScreen({super.key});
 

@@ -6,6 +6,7 @@ import '../widgets/patient_dashboard_tab_scope.dart';
 import '../widgets/patient_side_menu.dart';
 import 'medicine_search_screen.dart';
 import 'patient_account_screen.dart';
+import 'patient_conversations_screen.dart';
 import 'patient_home_screen.dart';
 
 /// Bottom-nav shell for the logged-in patient area. Each tab keeps its own
@@ -32,11 +33,7 @@ class _PatientDashboardShellScreenState extends State<PatientDashboardShellScree
         icon: Icons.crop_free,
         drawer: PatientSideMenu(),
       ),
-      const ComingSoonTabScreen(
-        title: 'المراسلات',
-        icon: Icons.chat_bubble_outline,
-        drawer: PatientSideMenu(),
-      ),
+      const PatientConversationsScreen(),
       const PatientAccountScreen(),
     ];
 

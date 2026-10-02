@@ -11,6 +11,9 @@ class InquiryModel {
   final DateTime createdAt;
   final String patientName;
   final String? medicineName;
+  final int unreadCount;
+  final int? patientId;
+  final String? lastMessage;
 
   const InquiryModel({
     required this.id,
@@ -19,6 +22,9 @@ class InquiryModel {
     required this.createdAt,
     required this.patientName,
     this.medicineName,
+    this.unreadCount = 0,
+    this.patientId,
+    this.lastMessage,
   });
 
   factory InquiryModel.fromJson(Map<String, dynamic> json) {
@@ -33,7 +39,21 @@ class InquiryModel {
           DateTime.now(),
       patientName: user?['name'] as String? ?? '',
       medicineName: medicine?['trade_name'] as String?,
+      unreadCount: (json['unread_messages_count'] as num?)?.toInt() ?? 0,
+      patientId: (user?['id'] as num?)?.toInt() ?? (json['user_id'] as num?)?.toInt(),
+      lastMessage: _lastMessageText(json['last_message']),
     );
+  }
+
+  /// `last_message` may be the message text or the message object.
+  static String? _lastMessageText(Object? value) {
+    if (value is String) return value.isEmpty ? null : value;
+    if (value is Map) {
+      final text = value['message'];
+      if (text is String && text.isNotEmpty) return text;
+      if (value['media_url'] != null) return 'صورة';
+    }
+    return null;
   }
 
   Inquiry toEntity() => Inquiry(
@@ -43,5 +63,8 @@ class InquiryModel {
     createdAt: createdAt,
     patientName: patientName,
     medicineName: medicineName,
+    unreadCount: unreadCount,
+    patientId: patientId,
+    lastMessage: lastMessage,
   );
 }

@@ -59,6 +59,18 @@ abstract class AppColors {
   static const Color thumbnailBackground = Color(0xFFF8FAFA);
   static const Color thumbnailBorder = Color(0xFFE4EAEB);
 
+  // Patient Pharmacies Map Screen — the open/closed-now badge: a light tint
+  // background behind text in the same colour, solid.
+  static const Color pharmacyOpenBg = Color(0x1A15803D);
+  static const Color pharmacyOpenText = Color(0xFF15803D);
+
+  // Patient Medicine Detail Screen — the unselected pharmacy card's border
+  // and the divider under the tags row are the same Gray-500 (#98ADB3) at two
+  // different opacities; the selected card reuses permissionIconBg/
+  // iconBlueBorder (Primary-50/200) already above.
+  static const Color productDetailDivider = Color(0x3D98ADB3);
+  static const Color productDetailCardBorder = Color(0x5298ADB3);
+
   // Account settings screen + its bottom sheets (language, logout)
   static const Color logoutRed = Color(0xFFDC2626);
   static const Color logoutRedTint = Color(0xFFFEF2F2);

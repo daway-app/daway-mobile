@@ -18,6 +18,14 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
 
+  /// For a multi-line field (e.g. a notes area) — a single-line field's
+  /// default of 1 is unaffected when left null.
+  final int? maxLines;
+
+  /// Overrides the default light-grey fill (e.g. white, for a field that
+  /// should instead read by its border like the reminder screen's fields).
+  final Color? fillColor;
+
   const AppTextField({
     super.key,
     required this.controller,
@@ -32,6 +40,8 @@ class AppTextField extends StatelessWidget {
     this.onSubmitted,
     this.textInputAction,
     this.inputFormatters,
+    this.maxLines,
+    this.fillColor,
   });
 
   @override
@@ -46,6 +56,12 @@ class AppTextField extends StatelessWidget {
       textAlign: textAlign,
       obscureText: obscureText,
       readOnly: readOnly,
+      // Explicit fallback to 1, not just omitting the argument when
+      // [maxLines] is null — TextField's own default is 1 too, but relying
+      // on that here would mean passing `maxLines: null` explicitly (since
+      // this argument is always supplied), which Flutter treats as
+      // "unlimited lines", not "use the default".
+      maxLines: obscureText ? 1 : (maxLines ?? 1),
       style: TextStyle(fontSize: 16.sp, color: AppColors.textDark),
       decoration: InputDecoration(
         hintText: hintText,
@@ -53,7 +69,7 @@ class AppTextField extends StatelessWidget {
         suffixIcon: icon,
         prefixIcon: prefixIcon,
         filled: true,
-        fillColor: AppColors.inputFill,
+        fillColor: fillColor ?? AppColors.inputFill,
         isDense: true,
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(

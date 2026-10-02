@@ -14,12 +14,16 @@ class InquiryCard extends StatelessWidget {
   final VoidCallback onMarkAnswered;
   final VoidCallback onClose;
 
+  /// Opens the chat for this inquiry; the button is hidden when null.
+  final VoidCallback? onChatTap;
+
   const InquiryCard({
     super.key,
     required this.inquiry,
     required this.isUpdating,
     required this.onMarkAnswered,
     required this.onClose,
+    this.onChatTap,
   });
 
   (String, Color, Color) get _statusBadge => switch (inquiry.status) {
@@ -119,6 +123,22 @@ class InquiryCard extends StatelessWidget {
             style: TextStyle(fontSize: 11.sp, color: AppColors.grey),
           ),
           SizedBox(height: 12.h),
+          if (onChatTap != null) ...[
+            OutlinedButton.icon(
+              onPressed: onChatTap,
+              icon: Icon(Icons.chat_bubble_outline, size: 18.sp),
+              label: Text(
+                inquiry.unreadCount > 0 ? 'مراسلة (${inquiry.unreadCount})' : 'مراسلة',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.mainTeal,
+                side: BorderSide(color: AppColors.iconBlueBorder),
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+              ),
+            ),
+            SizedBox(height: 10.h),
+          ],
           if (isUpdating)
             Center(
               child: SizedBox(

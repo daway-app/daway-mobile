@@ -29,7 +29,11 @@ class _FakeAuthRepository implements AuthRepository {
       const Success(PatientAuthResult(token: 'fake-token', isNewAccount: false));
 
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async {
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  }) async {
     lastSendOtpPhone = phone;
     return sendOtpResult;
   }

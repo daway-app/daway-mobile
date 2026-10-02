@@ -12,6 +12,7 @@ import '../cubit/patient_profile_cubit.dart';
 import '../widgets/home_categories_section.dart';
 import '../widgets/home_header.dart';
 import '../widgets/home_image_search_card.dart';
+import '../cubit/home_location_cubit.dart';
 import '../widgets/home_pharmacies_section.dart';
 import '../widgets/home_search_bar.dart';
 import '../widgets/patient_dashboard_tab_scope.dart';
@@ -24,6 +25,7 @@ class PatientHomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<PatientProfileCubit>()),
+        BlocProvider(create: (_) => getIt<HomeLocationCubit>()),
         BlocProvider(create: (_) => getIt<CategoriesCubit>()),
       ],
       child: const _PatientHomeView(),
@@ -50,7 +52,7 @@ class _PatientHomeView extends StatelessWidget {
       listenWhen: (previous, current) => !previous.isLoggedOut && current.isLoggedOut,
       listener: (context, state) {
         Navigator.of(context)
-            .pushNamedAndRemoveUntil(Routes.accountTypeScreen, (route) => false);
+            .pushNamedAndRemoveUntil(Routes.logoutFarewellScreen, (route) => false);
       },
       child: SafeArea(
         child: SingleChildScrollView(
@@ -59,7 +61,7 @@ class _PatientHomeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               HomeHeader(
-                onCartTap: () => _comingSoon(context),
+                onCartTap: () => Navigator.of(context).pushNamed(Routes.patientCartScreen),
                 onNotificationsTap: () => _comingSoon(context),
                 onLocationTap: () => _comingSoon(context),
               ),
@@ -74,7 +76,10 @@ class _PatientHomeView extends StatelessWidget {
                     .pushNamed(Routes.categoryMedicinesScreen, arguments: category),
               ),
               SizedBox(height: 24.h),
-              HomePharmaciesSection(onDiscoverTap: () => _comingSoon(context)),
+              HomePharmaciesSection(
+                onDiscoverTap: () =>
+                    Navigator.of(context).pushNamed(Routes.patientPharmaciesMapScreen),
+              ),
               SizedBox(height: 16.h),
             ],
           ),

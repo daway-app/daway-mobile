@@ -52,14 +52,18 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
     }
 
     emit(state.copyWith(isSendingOtp: true, clearError: true));
-    final result = await _sendOtpUseCase(phone: state.phone);
+    final result = await _sendOtpUseCase(
+      phone: state.phone,
+      name: state.name,
+      birthDate: state.birthDate,
+    );
 
     switch (result) {
       case Success(:final data):
         if (kDebugMode && data != null) {
           debugPrint('OTP for ${state.phone}: $data');
         }
-        emit(state.copyWith(isSendingOtp: false, otpSent: true));
+        emit(state.copyWith(isSendingOtp: false, otpSent: true, tempOtp: data));
       case ApiError(:final failure):
         emit(state.copyWith(isSendingOtp: false, errorMessage: failure.message));
     }
@@ -113,7 +117,11 @@ class PatientAuthCubit extends Cubit<PatientAuthState> {
       case Success(:final data):
         final token = data.token;
         if (token != null) {
-          await _saveSessionUseCase(accountType: AccountType.patient, token: token);
+          await _saveSessionUseCase(
+            accountType: AccountType.patient,
+            token: token,
+            userId: data.userId,
+          );
         }
         emit(state.copyWith(
           isVerifying: false,

@@ -5,6 +5,7 @@ abstract class ApiConstants {
 
   static const String sendOtp = '/otp/send';
   static const String otpVerify = '/otp/verify';
+  static const String registerPatient = '/register/patient';
   static const String pharmacyLogin = '/login/pharmacy';
   static const String registerPharmacy = '/register/pharmacy';
   static const String logout = '/logout';
@@ -25,6 +26,17 @@ abstract class ApiConstants {
       '/notifications/mark-all-as-read';
   static const String categories = '/categories';
   static const String dosageForms = '/dosage-forms';
+  static const String medicines = '/medicines';
   static const String medicinesSearch = '/medicines/search';
+  static const String pharmacies = '/pharmacies';
+  static const String ratings = '/ratings';
   static const String patientFavoriteMedicines = '/patient/favorites/medicines';
+  static const String patientCart = '/patient/cart';
+  static const String patientCartItems = '/patient/cart/items';
+  static const String patientAddresses = '/patient/addresses';
+  static const String patientOrders = '/patient/orders';
+  static const String patientCheckout = '/patient/checkout';
+  static const String patientInquiries = '/patient/inquiries';
+  static const String patientAvailabilityAlerts = '/patient/availability-alerts';
+  static const String patientHealthProfile = '/patient/health-profile';
 }

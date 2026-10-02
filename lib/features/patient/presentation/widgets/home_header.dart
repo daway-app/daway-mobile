@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../cubit/home_location_cubit.dart';
 import '../cubit/patient_profile_cubit.dart';
 import '../cubit/patient_profile_state.dart';
 
@@ -58,7 +59,11 @@ class HomeHeader extends StatelessWidget {
             SizedBox(width: 16.w),
             _IconButton(assetName: 'assets/icons/notification_icon.svg', onTap: onNotificationsTap),
             SizedBox(width: 16.w),
-            _IconButton(assetName: 'assets/icons/cart_icon.svg', onTap: onCartTap),
+            _IconButton(
+              key: const ValueKey('homeCartIconButton'),
+              assetName: 'assets/icons/cart_icon.svg',
+              onTap: onCartTap,
+            ),
           ],
         ),
         GestureDetector(
@@ -67,12 +72,23 @@ class HomeHeader extends StatelessWidget {
             children: [
               SvgPicture.asset('assets/icons/location_icon.svg', width: 18.w, height: 18.w),
               SizedBox(width: 4.w),
-              BlocBuilder<PatientProfileCubit, PatientProfileState>(
-                builder: (context, state) {
-                  final address = state is PatientProfileLoaded ? state.address : null;
-                  return Text(
-                    (address == null || address.isEmpty) ? 'حدد موقعك' : address,
-                    style: AppTextStyles.homeLocationText,
+              // The saved profile address wins; otherwise the address of
+              // the device's current GPS position; otherwise the prompt.
+              BlocBuilder<HomeLocationCubit, String?>(
+                builder: (context, deviceAddress) {
+                  return BlocBuilder<PatientProfileCubit, PatientProfileState>(
+                    builder: (context, state) {
+                      final saved = state is PatientProfileLoaded ? state.address : null;
+                      final label = (saved != null && saved.isNotEmpty) ? saved : deviceAddress;
+                      return Flexible(
+                        child: Text(
+                          (label == null || label.isEmpty) ? 'حدد موقعك' : label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.homeLocationText,
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -88,7 +104,7 @@ class _IconButton extends StatelessWidget {
   final String assetName;
   final VoidCallback onTap;
 
-  const _IconButton({required this.assetName, required this.onTap});
+  const _IconButton({super.key, required this.assetName, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

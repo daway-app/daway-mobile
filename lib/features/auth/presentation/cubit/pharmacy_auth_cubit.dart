@@ -19,7 +19,11 @@ class PharmacyAuthCubit extends Cubit<PharmacyAuthState> {
 
     switch (result) {
       case Success(:final data):
-        await _saveSessionUseCase(accountType: AccountType.pharmacy, token: data.token);
+        await _saveSessionUseCase(
+          accountType: AccountType.pharmacy,
+          token: data.token,
+          userId: data.userId,
+        );
         emit(state.copyWith(isLoggingIn: false, token: data.token));
       case ApiError(:final failure):
         emit(state.copyWith(isLoggingIn: false, errorMessage: failure.message));

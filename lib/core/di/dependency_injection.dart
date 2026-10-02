@@ -24,10 +24,17 @@ import '../../features/onboarding/data/repositories/onboarding_repository_impl.d
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../../features/onboarding/domain/usecases/get_onboarding_seen_usecase.dart';
 import '../../features/onboarding/domain/usecases/set_onboarding_seen_usecase.dart';
+import '../../features/patient/data/datasources/cart_remote_data_source.dart';
 import '../../features/patient/data/datasources/category_remote_data_source.dart';
 import '../../features/patient/data/datasources/device_settings_data_source.dart';
 import '../../features/patient/data/datasources/favorites_remote_data_source.dart';
+import '../../features/patient/data/datasources/medicine_detail_remote_data_source.dart';
 import '../../features/patient/data/datasources/medicine_search_remote_data_source.dart';
+import '../../features/patient/data/datasources/orders_remote_data_source.dart';
+import '../../features/patient/data/datasources/patient_addresses_remote_data_source.dart';
+import '../../features/patient/data/datasources/patient_inquiries_remote_data_source.dart';
+import '../../features/patient/data/datasources/patient_ratings_remote_data_source.dart';
+import '../../features/patient/data/datasources/pharmacies_remote_data_source.dart';
 import '../../features/patient/data/datasources/reminder_local_data_source.dart';
 import '../../features/patient/data/repositories/reminder_repository_impl.dart';
 import '../../features/patient/domain/repositories/reminder_repository.dart';
@@ -39,44 +46,110 @@ import '../../features/patient/data/datasources/patient_profile_remote_data_sour
 import '../../features/patient/data/datasources/patient_notifications_remote_data_source.dart';
 import '../../features/patient/data/repositories/category_repository_impl.dart';
 import '../../features/patient/data/repositories/app_info_repository_impl.dart';
+import '../../features/patient/data/repositories/cart_repository_impl.dart';
 import '../../features/patient/data/repositories/cloudinary_avatar_repository_impl.dart';
 import '../../features/patient/data/repositories/device_permissions_repository_impl.dart';
 import '../../features/patient/data/repositories/favorites_repository_impl.dart';
 import '../../features/patient/data/repositories/location_repository_impl.dart';
+import '../../features/patient/data/repositories/medicine_detail_repository_impl.dart';
 import '../../features/patient/data/repositories/medicine_search_repository_impl.dart';
+import '../../features/patient/data/repositories/orders_repository_impl.dart';
+import '../../features/patient/data/repositories/patient_addresses_repository_impl.dart';
+import '../../features/patient/data/repositories/patient_inquiries_repository_impl.dart';
+import '../../features/patient/data/repositories/patient_ratings_repository_impl.dart';
+import '../../features/patient/data/repositories/pharmacies_repository_impl.dart';
 import '../../features/patient/data/repositories/patient_profile_repository_impl.dart';
 import '../../features/patient/data/repositories/patient_notifications_repository_impl.dart';
 import '../../features/patient/domain/repositories/avatar_repository.dart';
 import '../../features/patient/domain/repositories/app_info_repository.dart';
+import '../../features/patient/domain/repositories/cart_repository.dart';
 import '../../features/patient/domain/entities/category.dart';
 import '../../features/patient/domain/repositories/category_repository.dart';
 import '../../features/patient/domain/repositories/device_permissions_repository.dart';
 import '../../features/patient/domain/repositories/favorites_repository.dart';
 import '../../features/patient/domain/repositories/location_repository.dart';
+import '../../features/patient/domain/repositories/medicine_detail_repository.dart';
 import '../../features/patient/domain/repositories/medicine_search_repository.dart';
+import '../../features/patient/domain/repositories/orders_repository.dart';
+import '../../features/patient/domain/repositories/patient_addresses_repository.dart';
+import '../../features/patient/domain/repositories/patient_inquiries_repository.dart';
+import '../../features/patient/domain/repositories/patient_ratings_repository.dart';
+import '../../features/patient/domain/repositories/pharmacies_repository.dart';
 import '../../features/patient/domain/repositories/patient_profile_repository.dart';
 import '../../features/patient/domain/repositories/patient_notifications_repository.dart';
+import '../../features/patient/domain/usecases/add_cart_item_usecase.dart';
+import '../../features/patient/domain/usecases/add_favorite_medicine_usecase.dart';
+import '../../features/patient/domain/usecases/checkout_usecase.dart';
+import '../../features/patient/domain/usecases/create_patient_address_usecase.dart';
+import '../../features/patient/domain/usecases/create_patient_inquiry_usecase.dart';
+import '../../features/patient/data/datasources/availability_alerts_remote_data_source.dart';
+import '../../features/patient/data/repositories/availability_alerts_repository_impl.dart';
+import '../../features/patient/domain/repositories/availability_alerts_repository.dart';
+import '../../features/patient/domain/usecases/subscribe_availability_alert_usecase.dart';
+import '../../features/patient/presentation/cubit/availability_alert_cubit.dart';
+import '../../features/patient/data/datasources/health_profile_remote_data_source.dart';
+import '../../features/patient/data/repositories/health_profile_repository_impl.dart';
+import '../../features/patient/domain/repositories/health_profile_repository.dart';
+import '../../features/patient/domain/usecases/health_profile_usecases.dart';
+import '../../features/patient/presentation/cubit/health_profile_cubit.dart';
+import '../../features/chat/data/datasources/chat_remote_data_source.dart';
+import '../../features/chat/data/repositories/chat_repository_impl.dart';
+import '../../features/chat/data/repositories/cloudinary_chat_image_uploader.dart';
+import '../../features/chat/domain/repositories/chat_image_uploader.dart';
+import '../../features/chat/domain/repositories/chat_repository.dart';
+import '../../features/chat/domain/repositories/inquiry_thread_resolver.dart';
+import '../../features/chat/domain/usecases/chat_usecases.dart';
+import '../../features/chat/presentation/cubit/chat_cubit.dart';
+import '../../features/chat/presentation/cubit/conversations_cubit.dart';
+import '../../features/pharmacy/domain/usecases/get_patient_conversations_usecase.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../../features/patient/domain/usecases/patient_inquiry_thread_resolver.dart';
+import '../../features/patient/domain/usecases/cancel_order_usecase.dart';
+import '../../features/patient/domain/usecases/delete_patient_address_usecase.dart';
+import '../../features/patient/domain/usecases/clear_cart_usecase.dart';
+import '../../features/patient/domain/usecases/delete_cart_item_usecase.dart';
+import '../../features/patient/domain/usecases/get_cart_items_usecase.dart';
 import '../../features/patient/domain/usecases/get_categories_usecase.dart';
 import '../../features/patient/domain/usecases/get_account_settings_usecase.dart';
 import '../../features/patient/domain/usecases/get_category_medicines_usecase.dart';
 import '../../features/patient/domain/usecases/get_current_location_usecase.dart';
 import '../../features/patient/domain/usecases/get_dosage_forms_usecase.dart';
 import '../../features/patient/domain/usecases/get_favorite_medicines_usecase.dart';
+import '../../features/patient/domain/usecases/get_medicine_detail_usecase.dart';
+import '../../features/patient/domain/usecases/get_medicine_pharmacies_usecase.dart';
+import '../../features/patient/domain/usecases/get_nearby_pharmacies_usecase.dart';
+import '../../features/patient/domain/usecases/get_orders_usecase.dart';
+import '../../features/patient/domain/usecases/get_patient_addresses_usecase.dart';
+import '../../features/patient/domain/usecases/get_patient_inquiries_usecase.dart';
 import '../../features/patient/domain/usecases/get_patient_profile_usecase.dart';
+import '../../features/patient/domain/usecases/update_patient_address_usecase.dart';
 import '../../features/patient/domain/usecases/get_patient_notifications_usecase.dart';
+import '../../features/patient/domain/usecases/get_pharmacy_conversations_usecase.dart';
+import '../../features/patient/domain/usecases/get_pharmacy_working_hours_usecase.dart';
 import '../../features/patient/domain/usecases/open_device_settings_usecase.dart';
+import '../../features/patient/domain/usecases/remove_favorite_medicine_usecase.dart';
 import '../../features/patient/domain/usecases/reverse_geocode_usecase.dart';
 import '../../features/patient/domain/usecases/search_address_usecase.dart';
 import '../../features/patient/domain/usecases/search_medicines_usecase.dart';
+import '../../features/patient/domain/usecases/submit_pharmacy_rating_usecase.dart';
+import '../../features/patient/domain/usecases/update_cart_item_quantity_usecase.dart';
 import '../../features/patient/domain/usecases/update_patient_profile_usecase.dart';
 import '../../features/patient/domain/usecases/upload_avatar_usecase.dart';
 import '../../features/patient/presentation/cubit/categories_cubit.dart';
 import '../../features/patient/presentation/cubit/account_settings_cubit.dart';
+import '../../features/patient/presentation/cubit/cart_cubit.dart';
 import '../../features/patient/presentation/cubit/category_medicines_cubit.dart';
+import '../../features/patient/presentation/cubit/checkout_cubit.dart';
 import '../../features/patient/presentation/cubit/favorite_medicines_cubit.dart';
 import '../../features/patient/presentation/cubit/location_picker_cubit.dart';
+import '../../features/patient/presentation/cubit/medicine_detail_cubit.dart';
 import '../../features/patient/presentation/cubit/medicine_search_cubit.dart';
+import '../../features/patient/presentation/cubit/nearby_pharmacies_cubit.dart';
+import '../../features/patient/presentation/cubit/orders_cubit.dart';
+import '../../features/patient/presentation/cubit/patient_addresses_cubit.dart';
+import '../../features/patient/presentation/cubit/rate_experience_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
+import '../../features/patient/presentation/cubit/home_location_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_notifications_cubit.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_dashboard_remote_data_source.dart';
@@ -230,6 +303,7 @@ Future<void> setupGetIt() async {
 
   // ---------------- Patient Dashboard ----------------
   getIt.registerFactory(() => PatientProfileCubit(getIt(), getIt(), getIt()));
+  getIt.registerFactory(() => HomeLocationCubit(getIt()));
 
   // ---------------- Categories ----------------
   getIt.registerLazySingleton(() => CategoryRemoteDataSource(getIt()));
@@ -258,7 +332,136 @@ Future<void> setupGetIt() async {
     () => FavoritesRepositoryImpl(getIt()),
   );
   getIt.registerLazySingleton(() => GetFavoriteMedicinesUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AddFavoriteMedicineUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => RemoveFavoriteMedicineUseCase(getIt(), getIt()));
   getIt.registerFactory(() => FavoriteMedicinesCubit(getIt()));
+
+  // ---------------- Cart ----------------
+  getIt.registerLazySingleton(() => CartRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<CartRepository>(() => CartRepositoryImpl(getIt()));
+  getIt.registerLazySingleton(() => GetCartItemsUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => UpdateCartItemQuantityUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AddCartItemUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => DeleteCartItemUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => ClearCartUseCase(getIt(), getIt()));
+  getIt.registerFactory(() => CartCubit(getIt(), getIt(), getIt(), getIt()));
+
+  // ---------------- Patient Addresses ----------------
+  getIt.registerLazySingleton(() => PatientAddressesRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PatientAddressesRepository>(
+    () => PatientAddressesRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetPatientAddressesUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => CreatePatientAddressUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => UpdatePatientAddressUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => DeletePatientAddressUseCase(getIt(), getIt()));
+  getIt.registerFactory(
+    () => PatientAddressesCubit(getIt(), getIt(), getIt(), getIt(), getIt()),
+  );
+
+  // ---------------- Orders / Checkout ----------------
+  getIt.registerLazySingleton(() => OrdersRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<OrdersRepository>(() => OrdersRepositoryImpl(getIt()));
+  getIt.registerLazySingleton(() => GetOrdersUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => CheckoutUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => CancelOrderUseCase(getIt(), getIt()));
+  getIt.registerFactory(() => OrdersCubit(getIt(), getIt()));
+  getIt.registerFactory(
+    () => CheckoutCubit(getIt(), getIt(), getIt(), getIt()),
+  );
+
+  // ---------------- Medicine Detail ----------------
+  getIt.registerLazySingleton(() => MedicineDetailRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<MedicineDetailRepository>(
+    () => MedicineDetailRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetMedicineDetailUseCase(getIt()));
+  getIt.registerLazySingleton(() => GetMedicinePharmaciesUseCase(getIt()));
+  getIt.registerFactoryParam<MedicineDetailCubit, int, void>(
+    (medicineId, _) => MedicineDetailCubit(
+      medicineId,
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+      getIt(),
+    ),
+  );
+
+  // ---------------- Health profile ----------------
+  getIt.registerLazySingleton(() => HealthProfileRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<HealthProfileRepository>(
+    () => HealthProfileRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetHealthProfileUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => UpdateHealthProfileUseCase(getIt(), getIt()));
+  getIt.registerFactory(() => HealthProfileCubit(getIt(), getIt()));
+
+  // ---------------- Availability alerts ----------------
+  getIt.registerLazySingleton(() => AvailabilityAlertsRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<AvailabilityAlertsRepository>(
+    () => AvailabilityAlertsRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => SubscribeAvailabilityAlertUseCase(getIt(), getIt()));
+  getIt.registerFactoryParam<AvailabilityAlertCubit, int, void>(
+    (medicineId, _) => AvailabilityAlertCubit(medicineId, getIt()),
+  );
+
+  // ---------------- Chat (patient <-> pharmacy) ----------------
+  getIt.registerLazySingleton(() => ChatRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(getIt()));
+  getIt.registerLazySingleton(() => GetChatMessagesUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => SendChatMessageUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton<ChatImageUploader>(() => CloudinaryChatImageUploader(getIt()));
+  getIt.registerLazySingleton(() => UploadChatImageUseCase(getIt()));
+  getIt.registerLazySingleton<InquiryThreadResolver>(
+    () => PatientInquiryThreadResolver(getIt(), getIt()),
+  );
+  getIt.registerFactoryParam<ChatCubit, ChatArgs, void>(
+    (args, _) => ChatCubit(
+      inquiryIds: args.inquiryIds,
+      pharmacyId: args.pharmacyId,
+      medicineId: args.medicineId,
+      getMessagesUseCase: getIt(),
+      sendMessageUseCase: getIt(),
+      uploadImageUseCase: getIt(),
+      resolver: getIt(),
+    ),
+  );
+
+  // ---------------- Pharmacy Inquiries (patient side) ----------------
+  getIt.registerLazySingleton(() => PatientInquiriesRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PatientInquiriesRepository>(
+    () => PatientInquiriesRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetPatientInquiriesUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => CreatePatientInquiryUseCase(getIt(), getIt()));
+  getIt.registerLazySingleton(() => GetPharmacyConversationsUseCase(getIt()));
+  getIt.registerFactory<ConversationsCubit>(
+    () => ConversationsCubit(getIt<GetPharmacyConversationsUseCase>()),
+    instanceName: 'patient',
+  );
+
+  // ---------------- Pharmacies Map ----------------
+  getIt.registerLazySingleton(() => PharmaciesRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PharmaciesRepository>(
+    () => PharmaciesRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => GetNearbyPharmaciesUseCase(getIt()));
+  getIt.registerLazySingleton(() => GetPharmacyWorkingHoursUseCase(getIt()));
+  getIt.registerFactory(() => NearbyPharmaciesCubit(getIt(), getIt(), getIt()));
+
+  // ---------------- Rate Experience ----------------
+  getIt.registerLazySingleton(() => PatientRatingsRemoteDataSource(getIt()));
+  getIt.registerLazySingleton<PatientRatingsRepository>(
+    () => PatientRatingsRepositoryImpl(getIt()),
+  );
+  getIt.registerLazySingleton(() => SubmitPharmacyRatingUseCase(getIt(), getIt()));
+  getIt.registerFactoryParam<RateExperienceCubit, int, void>(
+    (pharmacyId, _) => RateExperienceCubit(pharmacyId, getIt()),
+  );
 
   // ---------------- Patient Notifications ----------------
   getIt.registerLazySingleton(() => PatientNotificationsRemoteDataSource(getIt()));
@@ -367,6 +570,11 @@ Future<void> setupGetIt() async {
     () => UpdateInquiryStatusUseCase(getIt(), getIt()),
   );
   getIt.registerFactory(() => PharmacyInquiriesCubit(getIt(), getIt()));
+  getIt.registerLazySingleton(() => GetPatientConversationsUseCase(getIt()));
+  getIt.registerFactory<ConversationsCubit>(
+    () => ConversationsCubit(getIt<GetPatientConversationsUseCase>()),
+    instanceName: 'pharmacy',
+  );
 
   // ---------------- Pharmacy Alternatives ----------------
   getIt.registerLazySingleton(

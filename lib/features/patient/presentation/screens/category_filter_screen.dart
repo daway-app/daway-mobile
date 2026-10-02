@@ -35,9 +35,19 @@ Future<CategoryFilterResult?> showCategoryFilterScreen(
   required String? initialDosageForm,
   required int initialTotal,
 }) {
-  return Navigator.of(context).push<CategoryFilterResult>(
-    MaterialPageRoute(
-      builder: (_) => CategoryFilterScreen(
+  // A sheet rising from the bottom, not a new page.
+  return showModalBottomSheet<CategoryFilterResult>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.white,
+    clipBehavior: Clip.antiAlias,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+    ),
+    builder: (_) => FractionallySizedBox(
+      heightFactor: 0.9,
+      child: CategoryFilterScreen(
         cubit: cubit,
         subcategories: subcategories,
         dosageForms: dosageForms,
@@ -118,10 +128,11 @@ class _CategoryFilterScreenState extends State<CategoryFilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return Material(
+      color: Colors.white,
+      child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 32.h, bottom: 40.h),
+          padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 24.h, bottom: 24.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

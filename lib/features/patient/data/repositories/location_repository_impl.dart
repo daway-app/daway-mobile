@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -38,8 +40,15 @@ class LocationRepositoryImpl implements LocationRepository {
     }
 
     try {
+      // Without a time limit this can hang forever on a weak/no GPS fix
+      // (e.g. indoors) — the "السماح بالوصول لموقعك" button then spins with
+      // no way out but leaving the screen. 15s is enough for a normal fix;
+      // past that, fail with a message the user can act on instead.
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
       );
       final addressResult = await reverseGeocode(
         latitude: position.latitude,
@@ -54,6 +63,10 @@ class LocationRepositoryImpl implements LocationRepository {
         longitude: position.longitude,
         address: address,
       ));
+    } on TimeoutException {
+      return const ApiError(
+        PermissionFailure('تعذر تحديد موقعك، تأكد من تفعيل GPS وحاول مرة أخرى'),
+      );
     } catch (e) {
       return ApiError(mapExceptionToFailure(e));
     }

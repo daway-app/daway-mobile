@@ -24,6 +24,11 @@ class PatientAuthState {
   final bool isFetchingLocation;
   final String? locationError;
 
+  /// TEMPORARY: the OTP the backend echoes back, shown on the verification
+  /// screen only because SMS delivery is not built yet. Remove together with
+  /// the box in OtpVerificationForm once real SMS is live.
+  final String? tempOtp;
+
   const PatientAuthState({
     this.phone = '',
     this.otpSent = false,
@@ -38,6 +43,7 @@ class PatientAuthState {
     this.needsLocation = false,
     this.isFetchingLocation = false,
     this.locationError,
+    this.tempOtp,
   });
 
   bool get isSignUp => name != null;
@@ -58,6 +64,7 @@ class PatientAuthState {
     bool? isFetchingLocation,
     String? locationError,
     bool clearLocationError = false,
+    String? tempOtp,
   }) {
     return PatientAuthState(
       phone: phone ?? this.phone,
@@ -73,6 +80,7 @@ class PatientAuthState {
       needsLocation: needsLocation ?? this.needsLocation,
       isFetchingLocation: isFetchingLocation ?? this.isFetchingLocation,
       locationError: clearLocationError ? null : (locationError ?? this.locationError),
+      tempOtp: tempOtp ?? this.tempOtp,
     );
   }
 }

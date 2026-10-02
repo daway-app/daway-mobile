@@ -25,6 +25,33 @@ class _OtpVerificationFormState extends State<OtpVerificationForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // TEMPORARY: SMS delivery is not built yet, so the code the backend
+        // returns is shown here. Delete this block once real SMS is live.
+        BlocBuilder<PatientAuthCubit, PatientAuthState>(
+          buildWhen: (previous, current) => previous.tempOtp != current.tempOtp,
+          builder: (context, state) {
+            final code = state.tempOtp;
+            if (code == null) return const SizedBox.shrink();
+            return Container(
+              margin: EdgeInsets.only(bottom: 16.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: AppColors.permissionIconBg,
+                border: Border.all(color: AppColors.iconBlueBorder),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Text(
+                'رمز التحقق (مؤقت): $code',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.mainTeal,
+                ),
+              ),
+            );
+          },
+        ),
         BlocBuilder<PatientAuthCubit, PatientAuthState>(
           buildWhen: (previous, current) => previous.errorMessage != current.errorMessage,
           builder: (context, state) {

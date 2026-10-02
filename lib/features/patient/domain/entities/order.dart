@@ -1,9 +1,31 @@
-enum OrderStatus { completed, inProgress, cancelled }
+enum OrderStatus {
+  pending,
+  confirmed,
+  preparing,
+  delivered,
+  cancelled;
 
-/// A patient's order. There is no checkout/orders backend yet (no cart, no
-/// orders API), so nothing currently constructs a real one — this exists so
-/// the "طلباتي" screen's populated-state UI (status tabs, order cards) is
-/// fully built and tested ahead of that backend landing.
+  static OrderStatus fromApi(String value) => switch (value) {
+        'pending' => OrderStatus.pending,
+        'confirmed' => OrderStatus.confirmed,
+        'preparing' => OrderStatus.preparing,
+        'delivered' => OrderStatus.delivered,
+        'cancelled' => OrderStatus.cancelled,
+        _ => OrderStatus.pending,
+      };
+
+  bool get isCancelled => this == OrderStatus.cancelled;
+  bool get isCompleted => this == OrderStatus.delivered;
+  bool get isInProgress => !isCancelled && !isCompleted;
+
+  /// The server only cancels these three (see `POST /patient/orders/{id}/cancel`).
+  bool get canCancel =>
+      this == OrderStatus.pending ||
+      this == OrderStatus.confirmed ||
+      this == OrderStatus.preparing;
+}
+
+/// A patient's order, as returned by `GET /patient/orders`.
 class Order {
   final String orderNumber;
   final String pharmacyName;

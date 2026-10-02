@@ -16,3 +16,15 @@ DateTime parseServerTimestamp(String raw) {
   if (parsed.isUtc) return parsed.toLocal();
   return DateTime.parse('${raw}Z').toLocal();
 }
+
+/// [parseServerTimestamp], but tolerating a missing or malformed [raw]
+/// instead of throwing — for a list response where one record's bad
+/// timestamp shouldn't fail parsing of every other record in it.
+DateTime? tryParseServerTimestamp(String? raw) {
+  if (raw == null) return null;
+  try {
+    return parseServerTimestamp(raw);
+  } on FormatException {
+    return null;
+  }
+}

@@ -6,6 +6,7 @@ import '../../domain/repositories/session_repository.dart';
 class SessionRepositoryImpl implements SessionRepository {
   static const String _tokenKey = 'session_token';
   static const String _accountTypeKey = 'session_account_type';
+  static const String _userIdKey = 'session_user_id';
 
   final SecureStorageService _storage;
 
@@ -15,6 +16,12 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<void> saveSession(UserSession session) async {
     await _storage.write(key: _tokenKey, value: session.token);
     await _storage.write(key: _accountTypeKey, value: session.accountType.name);
+    final userId = session.userId;
+    if (userId == null) {
+      await _storage.delete(key: _userIdKey);
+    } else {
+      await _storage.write(key: _userIdKey, value: '$userId');
+    }
   }
 
   @override
@@ -22,10 +29,11 @@ class SessionRepositoryImpl implements SessionRepository {
     final token = await _storage.read(key: _tokenKey);
     final accountTypeName = await _storage.read(key: _accountTypeKey);
     if (token == null || accountTypeName == null) return null;
+    final userId = int.tryParse(await _storage.read(key: _userIdKey) ?? '');
 
     for (final type in AccountType.values) {
       if (type.name == accountTypeName) {
-        return UserSession(accountType: type, token: token);
+        return UserSession(accountType: type, token: token, userId: userId);
       }
     }
     return null;
@@ -35,5 +43,6 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<void> clearSession() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _accountTypeKey);
+    await _storage.delete(key: _userIdKey);
   }
 }

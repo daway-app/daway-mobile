@@ -6,7 +6,15 @@ abstract class AuthRepository {
   /// Returns the OTP code when the backend echoes it back in the response
   /// (used while the SMS provider isn't wired up yet); null once real SMS
   /// delivery is active and the backend stops including it.
-  Future<ApiResult<String?>> sendOtp({required String phone});
+  ///
+  /// When [name] and [birthDate] are given this is the sign-up request
+  /// (`POST /register/patient`, which takes an age derived from the birth
+  /// date); otherwise it is the plain login OTP request.
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  });
 
   Future<ApiResult<PatientAuthResult>> verifyOtp({
     required String phone,

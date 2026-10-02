@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../cubit/pharmacy_dashboard_cubit.dart';
-import '../cubit/pharmacy_inquiries_cubit.dart';
 import '../cubit/pharmacy_inventory_cubit.dart';
 import '../cubit/pharmacy_medicines_cubit.dart';
 import '../cubit/pharmacy_profile_cubit.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
 import 'pharmacy_home_screen.dart';
-import 'pharmacy_inquiries_screen.dart';
+import 'pharmacy_conversations_screen.dart';
 import 'pharmacy_inventory_screen.dart';
 import 'pharmacy_medicines_screen.dart';
 import 'pharmacy_profile_screen.dart';
@@ -50,10 +49,7 @@ class _PharmacyDashboardShellScreenState
         create: (_) => getIt<PharmacyInventoryCubit>(),
         child: const PharmacyInventoryScreen(),
       ),
-      BlocProvider(
-        create: (_) => getIt<PharmacyInquiriesCubit>(),
-        child: const PharmacyInquiriesScreen(),
-      ),
+      const PharmacyConversationsScreen(),
       BlocProvider(
         create: (_) => getIt<PharmacyProfileCubit>(),
         child: const PharmacyProfileScreen(),

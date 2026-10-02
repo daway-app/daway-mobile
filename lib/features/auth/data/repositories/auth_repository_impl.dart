@@ -1,4 +1,6 @@
 import '../../../../core/erroring/error_handler.dart';
+import '../../../../core/erroring/failure.dart';
+import '../../../../core/helpers/age_calculator.dart';
 import '../../../../core/helpers/api_result.dart';
 import '../../domain/entities/patient_auth_result.dart';
 import '../../domain/entities/pharmacy_auth_result.dart';
@@ -13,10 +15,27 @@ class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<ApiResult<String?>> sendOtp({required String phone}) async {
+  Future<ApiResult<String?>> sendOtp({
+    required String phone,
+    String? name,
+    String? birthDate,
+  }) async {
     try {
-      final response = await _remoteDataSource.sendOtp(phone: phone);
+      final age = birthDate == null ? null : ageFromBirthDate(birthDate);
+      final response = (name != null && age != null)
+          ? await _remoteDataSource.registerPatient(phone: phone, name: name, age: age)
+          : await _remoteDataSource.sendOtp(phone: phone);
       final data = response.data as Map<String, dynamic>;
+      // Plain login for a phone with no account: the OTP would only lead to
+      // a "no account" error after the code is typed, so stop here instead.
+      if (name == null && data['is_registered'] == false) {
+        return const ApiError(
+          ApiFailure(
+            message: 'لا يوجد حساب بهذا الرقم، يرجى إنشاء حساب جديد',
+            registrationRequired: true,
+          ),
+        );
+      }
       return Success(data['otp'] as String?);
     } catch (e) {
       return ApiError(mapExceptionToFailure(e));
@@ -38,7 +57,8 @@ class AuthRepositoryImpl implements AuthRepository {
         phone: phone,
         otp: otp,
         name: name,
-        birthDate: birthDate,
+        age: birthDate == null ? null : ageFromBirthDate(birthDate),
+        termsAccepted: name != null ? true : null,
         latitude: latitude,
         longitude: longitude,
         notificationsEnabled: notificationsEnabled,
@@ -47,7 +67,11 @@ class AuthRepositoryImpl implements AuthRepository {
         response.data as Map<String, dynamic>,
       );
       return Success(
-        PatientAuthResult(token: model.token, isNewAccount: model.isNewAccount),
+        PatientAuthResult(
+          token: model.token,
+          isNewAccount: model.isNewAccount,
+          userId: model.userId,
+        ),
       );
     } catch (e) {
       return ApiError(mapExceptionToFailure(e));
@@ -67,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final model = PharmacyAuthResponseModel.fromJson(
         response.data as Map<String, dynamic>,
       );
-      return Success(PharmacyAuthResult(token: model.token));
+      return Success(PharmacyAuthResult(token: model.token, userId: model.userId));
     } catch (e) {
       return ApiError(mapExceptionToFailure(e));
     }

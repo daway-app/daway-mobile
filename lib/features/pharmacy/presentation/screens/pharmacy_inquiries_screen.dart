@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_filter_chip.dart';
@@ -174,6 +175,14 @@ class PharmacyInquiriesScreen extends StatelessWidget {
                     return InquiryCard(
                       inquiry: inquiry,
                       isUpdating: state.updatingIds.contains(inquiry.id),
+                      onChatTap: () => Navigator.of(context).pushNamed(
+                        Routes.chatScreen,
+                        arguments: {
+                          'inquiryIds': [inquiry.id],
+                          'title': inquiry.patientName,
+                          'subtitle': inquiry.medicineName,
+                        },
+                      ),
                       onMarkAnswered: () => _updateStatus(
                         context,
                         inquiry.id,

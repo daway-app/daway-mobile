@@ -14,6 +14,7 @@ import '../cubit/patient_profile_cubit.dart';
 import '../widgets/account_row_card.dart';
 import 'patient_addresses_screen.dart';
 import 'patient_favorites_screen.dart';
+import 'patient_health_profile_screen.dart';
 import 'patient_notifications_screen.dart';
 import 'patient_orders_screen.dart';
 import 'patient_profile_screen.dart';
@@ -125,6 +126,14 @@ class PatientAccountScreen extends StatelessWidget {
                 leading: const AccountRowIcon('assets/icons/place_icon.svg'),
                 label: 'عناويني',
                 onTap: () => _openAddresses(context),
+              ),
+              SizedBox(height: 24.h),
+              AccountRowCard(
+                leading: Icon(Icons.monitor_heart_outlined, color: AppColors.mainTeal, size: 22.sp),
+                label: 'الملف الصحي',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PatientHealthProfileScreen()),
+                ),
               ),
               SizedBox(height: 24.h),
               AccountRowCard(

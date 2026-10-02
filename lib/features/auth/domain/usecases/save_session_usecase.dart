@@ -7,9 +7,9 @@ class SaveSessionUseCase {
 
   const SaveSessionUseCase(this._repository);
 
-  Future<void> call({required AccountType accountType, required String token}) {
+  Future<void> call({required AccountType accountType, required String token, int? userId}) {
     return _repository.saveSession(
-      UserSession(accountType: accountType, token: token),
+      UserSession(accountType: accountType, token: token, userId: userId),
     );
   }
 }

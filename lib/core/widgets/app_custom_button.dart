@@ -13,6 +13,10 @@ class AppCustomButton extends StatelessWidget {
   final IconData? trailingIcon;
   final FontWeight? fontWeight;
 
+  /// Draws an outline in this colour — a secondary button (white/transparent
+  /// [backgroundColor], bordered) instead of the default filled one.
+  final Color? borderColor;
+
   const AppCustomButton({
     super.key,
     required this.text,
@@ -24,6 +28,7 @@ class AppCustomButton extends StatelessWidget {
     this.textColor,
     this.trailingIcon,
     this.fontWeight,
+    this.borderColor,
   });
 
   @override
@@ -39,6 +44,7 @@ class AppCustomButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
+            side: borderColor == null ? BorderSide.none : BorderSide(color: borderColor!),
           ),
           elevation: 0,
         ),
