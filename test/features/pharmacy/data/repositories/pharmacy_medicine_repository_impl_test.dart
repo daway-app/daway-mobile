@@ -1,6 +1,7 @@
 import 'package:daway_app/core/helpers/api_result.dart';
 import 'package:daway_app/features/pharmacy/data/datasources/pharmacy_medicine_remote_data_source.dart';
 import 'package:daway_app/features/pharmacy/data/repositories/pharmacy_medicine_repository_impl.dart';
+import 'package:daway_app/features/pharmacy/domain/entities/medicine.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,6 +14,11 @@ class _CapturingRemoteDataSource extends PharmacyMedicineRemoteDataSource {
   Map<String, dynamic>? lastBody;
   int? lastPharmacyMedicineId;
   Object? nextListResponse;
+
+  /// The pages `getMedicines` answers with, keyed by page number; a page not
+  /// in here gets [nextListResponse].
+  Map<int, Object?>? nextPages;
+  final List<int> requestedPages = [];
 
   _CapturingRemoteDataSource() : super(Dio());
 
@@ -46,8 +52,13 @@ class _CapturingRemoteDataSource extends PharmacyMedicineRemoteDataSource {
   }
 
   @override
-  Future<Response<dynamic>> getMedicines({required String token}) async {
-    return Response(requestOptions: RequestOptions(), data: nextListResponse, statusCode: 200);
+  Future<Response<dynamic>> getMedicines({required String token, int page = 1}) async {
+    requestedPages.add(page);
+    return Response(
+      requestOptions: RequestOptions(),
+      data: nextPages?[page] ?? nextListResponse,
+      statusCode: 200,
+    );
   }
 
   @override
@@ -165,6 +176,58 @@ void main() {
       final result = await repository.getMedicines(token: 'tok-1');
 
       expect(result, isA<ApiError<Object?>>());
+    });
+  });
+
+  group('getMedicines reads every page', () {
+    Map<String, dynamic> page(int number, List<int> ids, {required int lastPage}) => {
+          'data': [
+            for (final id in ids)
+              {
+                'id': id,
+                'price': '10.00',
+                'quantity': id,
+                'medicine': {'id': id, 'trade_name': 'Medicine $id'},
+              },
+          ],
+          'pagination': {'current_page': number, 'last_page': lastPage},
+        };
+
+    test('asks for page 2 and 3 when the first page says there are three', () async {
+      remoteDataSource.nextPages = {
+        1: page(1, [1, 2], lastPage: 3),
+        2: page(2, [3, 4], lastPage: 3),
+        3: page(3, [5], lastPage: 3),
+      };
+
+      final result = await repository.getMedicines(token: 'tok-1');
+
+      expect(remoteDataSource.requestedPages, [1, 2, 3]);
+      final medicines = (result as Success<List<Medicine>>).data;
+      expect(medicines.map((medicine) => medicine.id), [1, 2, 3, 4, 5]);
+    });
+
+    test('is a single request when the response has no page count', () async {
+      remoteDataSource.nextListResponse = {
+        'data': [
+          {'id': 1, 'price': '10.00', 'quantity': 4},
+        ],
+      };
+
+      await repository.getMedicines(token: 'tok-1');
+
+      expect(remoteDataSource.requestedPages, [1]);
+    });
+
+    test('a failure on a later page is an ApiError, not a partial list', () async {
+      remoteDataSource.nextPages = {
+        1: page(1, [1], lastPage: 2),
+        2: {'unexpected': 'shape'},
+      };
+
+      final result = await repository.getMedicines(token: 'tok-1');
+
+      expect(result, isA<ApiError<List<Medicine>>>());
     });
   });
 

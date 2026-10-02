@@ -101,7 +101,17 @@ class _PharmacyLoginFormState extends State<PharmacyLoginForm> {
             },
           ),
 
-          SizedBox(height: 24.h),
+          SizedBox(height: 6.h),
+
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: GestureDetector(
+              onTap: () => Navigator.pushNamed(context, Routes.pharmacyForgotPasswordScreen),
+              child: Text('نسيت كلمة المرور؟', style: AppTextStyles.authForgotPasswordLink),
+            ),
+          ),
+
+          SizedBox(height: 22.h),
 
           BlocBuilder<PharmacyAuthCubit, PharmacyAuthState>(
             buildWhen: (previous, current) => previous.isLoggingIn != current.isLoggingIn,

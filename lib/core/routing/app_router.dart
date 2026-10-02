@@ -1,5 +1,6 @@
 import 'package:daway_app/features/auth/presentation/screens/account_type_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/logout_farewell_screen.dart';
+import 'package:daway_app/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/patient_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_auth_screen.dart';
 import 'package:daway_app/features/auth/presentation/screens/pharmacy_sign_up_screen.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../features/auth/presentation/cubit/account_type_cubit.dart';
 import '../../features/auth/presentation/cubit/logout_cubit.dart';
+import '../../features/auth/presentation/cubit/password_reset_cubit.dart';
 import '../../features/auth/presentation/cubit/patient_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_auth_cubit.dart';
 import '../../features/auth/presentation/cubit/pharmacy_sign_up_cubit.dart';
@@ -83,6 +85,15 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<PharmacySignUpCubit>(),
             child: const PharmacySignUpScreen(),
+          ),
+        );
+
+      case Routes.pharmacyForgotPasswordScreen:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<PasswordResetCubit>(),
+            child: const ForgotPasswordScreen(),
           ),
         );
 

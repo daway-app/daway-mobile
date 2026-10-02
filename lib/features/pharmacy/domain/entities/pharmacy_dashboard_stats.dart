@@ -41,4 +41,8 @@ class PharmacyDashboardStats {
     required this.lowStockItems,
     required this.recentInquiries,
   });
+
+  /// False for a pharmacy that has not added any medicine yet — the home
+  /// screen then asks it to add its medicines file.
+  bool get hasMedicines => totalMedicines > 0;
 }

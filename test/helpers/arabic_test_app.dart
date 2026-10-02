@@ -3,20 +3,33 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Wraps [child] the same way `DawayApp` does (see lib/app.dart): Arabic
-/// locale + the actual localization delegates, inside `ScreenUtilInit` at
-/// this app's 440x956 design size.
+/// The frame the app is designed in (see `app.dart`) — a phone-sized test
+/// viewport makes one logical pixel one design pixel.
+const testDesignSize = Size(440, 956);
+
+/// This app's design frame (440x956) as the test viewport, so a screenshot
+/// pixel and a `.w`/`.h` logical pixel line up 1:1.
+Future<void> setDesignViewport(WidgetTester tester) async {
+  tester.view.physicalSize = testDesignSize;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+/// Wraps the screen the way `DawayApp` does (see lib/app.dart): Arabic locale +
+/// the actual localization delegates, inside `ScreenUtilInit` at the design
+/// size. 
 ///
-/// A bare `MaterialApp(locale: Locale('ar'))` without the delegates below
-/// still lays out left-to-right — [RenderFlex]/`Row` child order ("first
-/// child = rightmost", the convention this codebase's RTL rows rely on,
-/// e.g. FavoriteMedicineCard) only flips under real RTL `Directionality`,
-/// which only these delegates establish. A test that skips this can pass
-/// while the same row renders mirrored in the real (RTL) app — exactly
-/// what happened with the reminder screen's frequency chips (2026-09-29).
-Widget buildArabicTestApp(Widget child) {
+/// A bare `MaterialApp(locale: Locale('ar'))` without the delegates still lays
+/// out left-to-right — `Row` child order ("first child = rightmost", the
+/// convention this codebase's RTL rows rely on) only flips under real RTL
+/// `Directionality`, which only these delegates establish.
+Widget buildArabicTestApp({
+  required Widget home,
+  RouteFactory? onGenerateRoute,
+}) {
   return ScreenUtilInit(
-    designSize: const Size(440, 956),
+    designSize: testDesignSize,
     builder: (context, _) => MaterialApp(
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar')],
@@ -25,17 +38,8 @@ Widget buildArabicTestApp(Widget child) {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: child,
+      onGenerateRoute: onGenerateRoute,
+      home: home,
     ),
   );
-}
-
-/// This app's design frame (440x956) as the test viewport, so a screenshot
-/// pixel and a `.w`/`.h` logical pixel line up 1:1 — same sizing
-/// [buildArabicTestApp]'s `ScreenUtilInit` assumes.
-Future<void> setDesignViewport(WidgetTester tester) async {
-  tester.view.physicalSize = const Size(440, 956);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.resetPhysicalSize);
-  addTearDown(tester.view.resetDevicePixelRatio);
 }

@@ -6,7 +6,7 @@ import 'app_card.dart';
 import 'icon_badge.dart';
 
 /// A compact "icon + number + label" tile used for the stat rows on the
-/// pharmacy home and الاستفسارات screens — read-only unless [onTap] is
+/// pharmacy's الاستفسارات and البدائل screens — read-only unless [onTap] is
 /// given, in which case it routes to wherever that stat is managed.
 class StatCard extends StatelessWidget {
   final IconData icon;

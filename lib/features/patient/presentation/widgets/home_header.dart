@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../cubit/home_location_cubit.dart';
+import '../../../../core/widgets/header_icon_button.dart';
 import '../cubit/patient_profile_cubit.dart';
 import '../cubit/patient_profile_state.dart';
 
@@ -57,9 +57,9 @@ class HomeHeader extends StatelessWidget {
               ),
             ),
             SizedBox(width: 16.w),
-            _IconButton(assetName: 'assets/icons/notification_icon.svg', onTap: onNotificationsTap),
+            HeaderIconButton(assetName: 'assets/icons/notification_icon.svg', onTap: onNotificationsTap),
             SizedBox(width: 16.w),
-            _IconButton(
+            HeaderIconButton(
               key: const ValueKey('homeCartIconButton'),
               assetName: 'assets/icons/cart_icon.svg',
               onTap: onCartTap,
@@ -96,32 +96,6 @@ class HomeHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _IconButton extends StatelessWidget {
-  final String assetName;
-  final VoidCallback onTap;
-
-  const _IconButton({super.key, required this.assetName, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 42.w,
-        height: 42.w,
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: AppColors.iconBlueBorder),
-        ),
-        child: SvgPicture.asset(assetName, width: 22.w, height: 22.w),
-      ),
     );
   }
 }

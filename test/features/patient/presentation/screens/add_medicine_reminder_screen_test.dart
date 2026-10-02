@@ -58,7 +58,7 @@ void main() {
 
   Widget buildTestableScreen({MedicineReminder? existing}) {
     return buildArabicTestApp(
-      BlocProvider.value(
+      home: BlocProvider.value(
         value: cubit,
         child: AddMedicineReminderScreen(existing: existing),
       ),

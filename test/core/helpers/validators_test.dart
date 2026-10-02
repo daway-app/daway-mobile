@@ -23,4 +23,26 @@ void main() {
       expect(Validators.isValidLocalPhone(''), isFalse);
     });
   });
+
+  group('Validators.isValidPassword', () {
+    test('accepts a password of the minimum length', () {
+      expect(Validators.isValidPassword('12345678'), isTrue);
+    });
+
+    test('accepts a longer one', () {
+      expect(Validators.isValidPassword('a much longer password'), isTrue);
+    });
+
+    test('rejects one character short of the minimum', () {
+      expect(Validators.isValidPassword('1234567'), isFalse);
+    });
+
+    test('rejects an empty string', () {
+      expect(Validators.isValidPassword(''), isFalse);
+    });
+
+    test('the minimum is 8, as the pharmacy sign-up asks', () {
+      expect(Validators.minPasswordLength, 8);
+    });
+  });
 }

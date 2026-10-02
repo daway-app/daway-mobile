@@ -55,6 +55,22 @@ abstract class AppColors {
   static const Color orderInProgressColor = Color(0xFFFF9000);
   static const Color orderCancelledColor = Color(0xFFFF0000);
 
+  // Pharmacy Home Screen — stat tiles: the colour is the tile's figure and
+  // caption, and the same colour at 5% is its fill
+  static const Color statAvailable = Color(0xFF22C55E);
+  static const Color statLowStock = Color(0xFFFF9000);
+  static const Color statOutOfStock = Color(0xFFFF0000);
+  static const Color statRatings = Color(0xFFCAC842);
+
+  // Pharmacy Products Screen — the stock badges (the low / out-of-stock text
+  // is statLowStock / statOutOfStock; each text colour has its tint behind it)
+  // and the ingredient line
+  static const Color productAvailableText = Color(0xFF16A34A);
+  static const Color productAvailableTint = Color(0xFFF0FDF4);
+  static const Color productLowStockTint = Color(0x1AFF9000);
+  static const Color productOutOfStockTint = Color(0x1AFF0000);
+  static const Color productSecondaryText = Color(0xFF9CA3AF);
+
   // Patient Favorites Screen — medicine thumbnail placeholder
   static const Color thumbnailBackground = Color(0xFFF8FAFA);
   static const Color thumbnailBorder = Color(0xFFE4EAEB);

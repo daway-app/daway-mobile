@@ -21,8 +21,11 @@ const _arabicMonths = [
 /// (year/month/day), not a Duration subtracted between two DateTimes, so a
 /// DST transition day (a real 23h or 25h gap between two local midnights)
 /// can't misclassify "today" as "yesterday" or vice versa.
-String smartDate(DateTime dateTime) {
-  final now = DateTime.now();
+///
+/// [now] is the clock to compare against (the current time by default); it
+/// exists so a test can pin it.
+String smartDate(DateTime dateTime, {DateTime? now}) {
+  now ??= DateTime.now();
   final time = _formatTime(dateTime);
 
   if (_isSameDate(dateTime, now)) return 'اليوم، $time';
@@ -39,19 +42,46 @@ bool _isSameDate(DateTime a, DateTime b) {
 /// for anything older — used where a feed reads more naturally as relative
 /// time (notifications) than the "اليوم، H:MM" style [smartDate] renders for
 /// cards where the exact time of day matters (inquiries, ratings).
-String relativeTimeAr(DateTime dateTime) {
-  final now = DateTime.now();
+String relativeTimeAr(DateTime dateTime, {DateTime? now}) {
+  return _relativeTime(
+    dateTime,
+    now: now,
+    minutesAgo: (minutes) =>
+        'منذ ${arabicCountedNoun(minutes, singular: 'دقيقة', dual: 'دقيقتين', plural: 'دقائق')}',
+    hoursAgo: (hours) =>
+        'منذ ${arabicCountedNoun(hours, singular: 'ساعة', dual: 'ساعتين', plural: 'ساعات')}',
+  );
+}
+
+/// [relativeTimeAr] with the minutes and hours abbreviated ("منذ 5 د" /
+/// "منذ 3 س") — for the tight spot on a card where the full words don't fit
+/// (the pharmacy's order cards). Everything older than an hour reads the same
+/// as in [relativeTimeAr].
+String compactRelativeTimeAr(DateTime dateTime, {DateTime? now}) {
+  return _relativeTime(
+    dateTime,
+    now: now,
+    minutesAgo: (minutes) => 'منذ $minutes د',
+    hoursAgo: (hours) => 'منذ $hours س',
+  );
+}
+
+String _relativeTime(
+  DateTime dateTime, {
+  required DateTime? now,
+  required String Function(int minutes) minutesAgo,
+  required String Function(int hours) hoursAgo,
+}) {
+  now ??= DateTime.now();
   if (_isSameDate(dateTime, now)) {
     final diff = now.difference(dateTime);
     if (diff.inMinutes < 1) return 'الآن';
-    if (diff.inMinutes < 60) {
-      return 'منذ ${arabicCountedNoun(diff.inMinutes, singular: 'دقيقة', dual: 'دقيقتين', plural: 'دقائق')}';
-    }
-    return 'منذ ${arabicCountedNoun(diff.inHours, singular: 'ساعة', dual: 'ساعتين', plural: 'ساعات')}';
+    if (diff.inMinutes < 60) return minutesAgo(diff.inMinutes);
+    return hoursAgo(diff.inHours);
   }
   final yesterday = DateTime(now.year, now.month, now.day - 1);
   if (_isSameDate(dateTime, yesterday)) return 'أمس';
-  return smartDate(dateTime);
+  return smartDate(dateTime, now: now);
 }
 
 String _formatTime(DateTime dateTime) {
