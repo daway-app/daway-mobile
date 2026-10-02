@@ -156,6 +156,7 @@ import '../../features/patient/presentation/cubit/patient_addresses_cubit.dart';
 import '../../features/patient/presentation/cubit/rate_experience_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_profile_cubit.dart';
 import '../../features/patient/presentation/cubit/home_location_cubit.dart';
+import '../../features/patient/presentation/cubit/medicine_images_cubit.dart';
 import '../../features/patient/presentation/cubit/patient_notifications_cubit.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_alternatives_remote_data_source.dart';
 import '../../features/pharmacy/data/datasources/pharmacy_dashboard_remote_data_source.dart';
@@ -330,6 +331,7 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => GetCategoryMedicinesUseCase(getIt()));
   getIt.registerLazySingleton(() => GetDosageFormsUseCase(getIt()));
   getIt.registerFactory(() => CategoriesCubit(getIt()));
+  getIt.registerFactory(() => MedicineImagesCubit(getIt()));
   getIt.registerFactoryParam<CategoryMedicinesCubit, Category, void>(
     (category, _) => CategoryMedicinesCubit(category, getIt(), getIt()),
   );

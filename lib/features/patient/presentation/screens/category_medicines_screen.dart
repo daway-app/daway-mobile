@@ -15,6 +15,7 @@ import '../../domain/entities/category_medicine.dart';
 import '../../domain/entities/category_subcategory.dart';
 import '../cubit/category_medicines_cubit.dart';
 import '../cubit/category_medicines_state.dart';
+import '../cubit/medicine_images_cubit.dart';
 import 'category_filter_screen.dart';
 import '../widgets/category_medicine_card.dart';
 import '../widgets/category_symptom_grid.dart';
@@ -28,8 +29,11 @@ class CategoryMedicinesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<CategoryMedicinesCubit>(param1: category),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<CategoryMedicinesCubit>(param1: category)),
+        BlocProvider(create: (_) => getIt<MedicineImagesCubit>()),
+      ],
       child: _CategoryMedicinesView(category: category),
     );
   }
@@ -312,10 +316,7 @@ class _SymptomLandingView extends StatelessWidget {
                 mainAxisSpacing: 24.h,
                 childAspectRatio: 184 / 201,
               ),
-              itemBuilder: (context, index) => CategoryMedicineCard(
-                medicine: medicines[index],
-                onDetailsTap: () => _openDetails(context, medicines[index]),
-              ),
+              itemBuilder: (context, index) => _MedicineTile(medicine: medicines[index]),
             ),
           ],
           SizedBox(height: 16.h),
@@ -346,10 +347,7 @@ class _MedicinesGrid extends StatelessWidget {
         if (index >= state.medicines.length) {
           return const Center(child: CircularProgressIndicator());
         }
-        return CategoryMedicineCard(
-          medicine: state.medicines[index],
-          onDetailsTap: () => _openDetails(context, state.medicines[index]),
-        );
+        return _MedicineTile(medicine: state.medicines[index]);
       },
     );
   }
@@ -365,4 +363,39 @@ void _openDetails(BuildContext context, CategoryMedicine medicine) {
     return;
   }
   Navigator.of(context).pushNamed(Routes.medicineDetailScreen, arguments: medicineId);
+}
+
+/// A category card that fetches its own image (see [MedicineImagesCubit]) the
+/// first time it is built.
+class _MedicineTile extends StatefulWidget {
+  final CategoryMedicine medicine;
+
+  const _MedicineTile({required this.medicine});
+
+  @override
+  State<_MedicineTile> createState() => _MedicineTileState();
+}
+
+class _MedicineTileState extends State<_MedicineTile> {
+  @override
+  void initState() {
+    super.initState();
+    final medicineId = widget.medicine.medicineId;
+    if (medicineId != null && widget.medicine.imageUrl == null) {
+      context.read<MedicineImagesCubit>().request(medicineId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final medicineId = widget.medicine.medicineId;
+    return BlocSelector<MedicineImagesCubit, Map<int, String?>, String?>(
+      selector: (images) => medicineId == null ? null : images[medicineId],
+      builder: (context, imageUrl) => CategoryMedicineCard(
+        medicine: widget.medicine,
+        resolvedImageUrl: imageUrl,
+        onDetailsTap: () => _openDetails(context, widget.medicine),
+      ),
+    );
+  }
 }

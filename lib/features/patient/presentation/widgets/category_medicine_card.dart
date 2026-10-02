@@ -10,10 +10,15 @@ class CategoryMedicineCard extends StatelessWidget {
   final CategoryMedicine medicine;
   final VoidCallback onDetailsTap;
 
+  /// An image resolved elsewhere (the listing itself has none); used when the
+  /// medicine carries no image of its own.
+  final String? resolvedImageUrl;
+
   const CategoryMedicineCard({
     super.key,
     required this.medicine,
     required this.onDetailsTap,
+    this.resolvedImageUrl,
   });
 
   @override
@@ -21,7 +26,7 @@ class CategoryMedicineCard extends StatelessWidget {
     final secondaryLine = medicine.genericName?.isNotEmpty == true
         ? medicine.genericName
         : medicine.dosageForm;
-    final imageUrl = medicine.imageUrl;
+    final imageUrl = medicine.imageUrl ?? resolvedImageUrl;
 
     return MedicineGridCard(
       media: (imageUrl != null && imageUrl.isNotEmpty)

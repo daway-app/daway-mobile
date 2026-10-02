@@ -42,7 +42,15 @@ class PatientInquiriesRepositoryImpl implements PatientInquiriesRepository {
         medicineId: medicineId,
         message: message,
       );
-      final data = (response.data as Map<String, dynamic>)['data'] as Map<String, dynamic>;
+      final body = response.data;
+      var data = body is Map<String, dynamic> ? body['data'] : null;
+      // The created inquiry may come wrapped as `data.inquiry`.
+      if (data is Map<String, dynamic> && data['inquiry'] is Map<String, dynamic>) {
+        data = data['inquiry'];
+      }
+      if (data is! Map<String, dynamic>) {
+        throw FormatException('Unexpected POST /patient/inquiries response shape: $body');
+      }
       return Success(PharmacyInquiryModel.fromJson(data).toEntity());
     } catch (e) {
       return ApiError(mapExceptionToFailure(e));

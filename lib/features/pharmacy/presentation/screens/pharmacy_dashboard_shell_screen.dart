@@ -10,6 +10,7 @@ import '../cubit/pharmacy_profile_cubit.dart';
 import '../widgets/pharmacy_bottom_nav_bar.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
 import '../widgets/pharmacy_side_menu.dart';
+import '../../domain/entities/pharmacy_order.dart';
 import 'pharmacy_home_screen.dart';
 import 'pharmacy_conversations_screen.dart';
 import 'pharmacy_inventory_screen.dart';
@@ -38,7 +39,8 @@ class _PharmacyDashboardShellScreenState
 
   // Owned here rather than by the home tab's own provider, so that coming back
   // to الرئيسية can refresh it (see [_selectTab]).
-  final PharmacyDashboardCubit _dashboardCubit = getIt<PharmacyDashboardCubit>();
+  final PharmacyDashboardCubit _dashboardCubit =
+      getIt<PharmacyDashboardCubit>();
 
   // The products page's list, made the first time the page is opened (which
   // starts its load) rather than at launch, and owned here so that every later
@@ -50,6 +52,22 @@ class _PharmacyDashboardShellScreenState
     _dashboardCubit.close();
     _productsCubit?.close();
     super.dispose();
+  }
+
+  // TODO: design preview only — there is no pharmacy orders API yet. Replace
+  // with the real orders (and drop this) once the backend delivers.
+  static List<PharmacyOrder> _previewOrders() {
+    final now = DateTime.now();
+    return [
+      for (final minutes in const [5, 30])
+        PharmacyOrder(
+          orderNumber: 'DW-1021',
+          createdAt: now.subtract(Duration(minutes: minutes)),
+          itemsCount: 2,
+          total: 80,
+          area: 'غزة - النصر',
+        ),
+    ];
   }
 
   void _selectTab(PharmacyDashboardTab tab) {
@@ -82,7 +100,7 @@ class _PharmacyDashboardShellScreenState
     final tabs = <PharmacyDashboardTab, Widget>{
       PharmacyDashboardTab.home: BlocProvider.value(
         value: _dashboardCubit,
-        child: const PharmacyHomeScreen(),
+        child: PharmacyHomeScreen(orders: _previewOrders()),
       ),
       PharmacyDashboardTab.products: switch (_productsCubit) {
         final cubit? => BlocProvider.value(
@@ -126,7 +144,9 @@ class _PharmacyDashboardShellScreenState
           child: Scaffold(
             body: IndexedStack(
               index: _selectedTab.index,
-              children: [for (final tab in PharmacyDashboardTab.values) tabs[tab]!],
+              children: [
+                for (final tab in PharmacyDashboardTab.values) tabs[tab]!,
+              ],
             ),
             bottomNavigationBar: PharmacyBottomNavBar(
               selectedTab: _selectedTab,

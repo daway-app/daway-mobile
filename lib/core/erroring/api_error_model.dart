@@ -12,10 +12,23 @@ class ApiErrorModel {
           _stringOrNull(json['errorCode']),
       message: _stringOrNull(json['message']) ??
           _stringOrNull(json['error']) ??
-          _stringOrNull(json['msg']),
+          _stringOrNull(json['msg']) ??
+          _firstValidationError(json['errors']),
       registrationRequired: _flagOrFalse(json['registration_required']),
     );
   }
+}
+
+/// A Laravel validation response carries `errors: {field: [message, ...]}`;
+/// when it has no top-level message, the first field message is the best
+/// thing to tell the user (instead of a generic "something went wrong").
+String? _firstValidationError(Object? errors) {
+  if (errors is! Map) return null;
+  for (final value in errors.values) {
+    if (value is List && value.isNotEmpty && value.first is String) return value.first as String;
+    if (value is String) return value;
+  }
+  return null;
 }
 
 /// Some error responses (e.g. Cloudinary's unsigned-upload errors, shaped
