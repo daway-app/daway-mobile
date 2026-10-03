@@ -32,8 +32,8 @@ class OrdersRemoteDataSource {
       ApiConstants.patientCheckout,
       data: {
         'address_id': addressId,
-        if (couponCode != null) 'coupon_code': couponCode,
-        if (notes != null) 'notes': notes,
+        'coupon_code': ?couponCode,
+        'notes': ?notes,
       },
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
