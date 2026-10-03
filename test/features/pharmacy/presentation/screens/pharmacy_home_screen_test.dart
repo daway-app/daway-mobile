@@ -365,16 +365,17 @@ void main() {
       expect(switchedTabs, [PharmacyDashboardTab.orders]);
     });
 
-    testWidgets('عرض الطلب says the order screen is coming soon', (tester) async {
+    testWidgets('عرض الطلب opens the order details', (tester) async {
       await setDesignViewport(tester);
       await tester.pumpWidget(buildTestableScreen(orders: [_order]));
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('عرض الطلب'));
       await tester.tap(find.text('عرض الطلب'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('قريباً'), findsOneWidget);
+      expect(find.text('تفاصيل الطلب'), findsOneWidget);
+      expect(find.text('#DW-1021'), findsOneWidget);
     });
   });
 

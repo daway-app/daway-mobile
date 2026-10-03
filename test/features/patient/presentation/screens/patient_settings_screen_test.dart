@@ -14,7 +14,7 @@ import 'package:daway_app/features/patient/domain/usecases/get_account_settings_
 import 'package:daway_app/features/patient/domain/usecases/open_device_settings_usecase.dart';
 import 'package:daway_app/features/patient/presentation/cubit/account_settings_cubit.dart';
 import 'package:daway_app/features/patient/presentation/screens/patient_settings_screen.dart';
-import 'package:daway_app/features/patient/presentation/widgets/account_row_card.dart';
+import 'package:daway_app/core/widgets/account_row_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

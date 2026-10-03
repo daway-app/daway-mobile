@@ -66,6 +66,28 @@ class PharmacyProfileLoaded extends PharmacyProfileState {
   /// finish setting up their profile.
   bool get isIncomplete => !hasLocation;
 
+  /// Whether anything on screen differs from the saved [profile] — what
+  /// lets the account-info screen keep its save button off until there is
+  /// something to save.
+  bool get hasChanges {
+    if (name.trim() != profile.name) return true;
+    if (logoUrl != profile.logoUrl) return true;
+    if (latitude != profile.latitude || longitude != profile.longitude) {
+      return true;
+    }
+    if (address != profile.address) return true;
+    for (final entry in workingHours) {
+      final saved = profile.workingHours.where((e) => e.day == entry.day);
+      if (saved.isEmpty) {
+        if (entry.isOpen) return true;
+      } else if (saved.first.open != entry.open ||
+          saved.first.close != entry.close) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool get canSave => name.trim().isNotEmpty && hasLocation && !isUploadingLogo;
 
   PharmacyProfileLoaded copyWith({

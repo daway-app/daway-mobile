@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theming/app_text_styles.dart';
+import '../theming/app_text_styles.dart';
 
 /// A group title on the account-settings screen ("التفضيلات").
 class SettingsSectionLabel extends StatelessWidget {

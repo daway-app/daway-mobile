@@ -30,7 +30,7 @@ void main() {
 
     await tester.pumpWidget(buildTestable(selected: PharmacyDashboardTab.home));
 
-    const labels = ['الرئيسية', 'المنتجات', 'الطلبات', 'المراسلات', 'الملف الشخصي'];
+    const labels = ['الرئيسية', 'المنتجات', 'الطلبات', 'المراسلات', 'الإعدادات'];
     for (final label in labels) {
       expect(find.text(label), findsOneWidget);
     }
@@ -49,14 +49,14 @@ void main() {
     await tester.tap(find.text('المنتجات'));
     await tester.tap(find.text('الطلبات'));
     await tester.tap(find.text('المراسلات'));
-    await tester.tap(find.text('الملف الشخصي'));
+    await tester.tap(find.text('الإعدادات'));
     await tester.tap(find.text('الرئيسية'));
 
     expect(tapped, [
       PharmacyDashboardTab.medicines,
       PharmacyDashboardTab.orders,
       PharmacyDashboardTab.inquiries,
-      PharmacyDashboardTab.profile,
+      PharmacyDashboardTab.settings,
       PharmacyDashboardTab.home,
     ]);
   });
@@ -67,7 +67,7 @@ void main() {
     await tester.pumpWidget(buildTestable(selected: PharmacyDashboardTab.inquiries));
 
     expect(labelColor(tester, 'المراسلات'), AppColors.onboardingText);
-    for (final other in ['الرئيسية', 'المنتجات', 'الطلبات', 'الملف الشخصي']) {
+    for (final other in ['الرئيسية', 'المنتجات', 'الطلبات', 'الإعدادات']) {
       expect(labelColor(tester, other), AppColors.authInputBorder);
     }
   });
@@ -77,7 +77,7 @@ void main() {
 
     await tester.pumpWidget(buildTestable(selected: PharmacyDashboardTab.home));
 
-    for (final label in ['الرئيسية', 'المنتجات', 'الطلبات', 'المراسلات', 'الملف الشخصي']) {
+    for (final label in ['الرئيسية', 'المنتجات', 'الطلبات', 'المراسلات', 'الإعدادات']) {
       expect(tester.widget<Text>(find.text(label)).style!.fontWeight, FontWeight.w400, reason: label);
     }
   });
@@ -122,7 +122,7 @@ void main() {
     await tester.pumpWidget(buildTestable(selected: PharmacyDashboardTab.products));
 
     expect(labelColor(tester, 'الرئيسية'), AppColors.onboardingText);
-    for (final other in ['المنتجات', 'الطلبات', 'المراسلات', 'الملف الشخصي']) {
+    for (final other in ['المنتجات', 'الطلبات', 'المراسلات', 'الإعدادات']) {
       expect(labelColor(tester, other), AppColors.authInputBorder);
     }
   });

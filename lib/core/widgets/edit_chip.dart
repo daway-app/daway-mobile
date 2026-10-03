@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theming/app_colors.dart';
+import '../theming/app_colors.dart';
 
 /// Small pill button labelled "تعديل" — used on the account-info and
 /// addresses screens to enter edit mode for a field or a saved address.

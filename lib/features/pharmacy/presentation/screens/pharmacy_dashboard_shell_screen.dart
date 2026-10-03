@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/dependency_injection.dart';
-import '../../../../core/widgets/coming_soon_tab_screen.dart';
 import '../cubit/pharmacy_dashboard_cubit.dart';
 import '../cubit/pharmacy_inventory_cubit.dart';
 import '../cubit/pharmacy_medicines_cubit.dart';
@@ -13,9 +12,9 @@ import '../widgets/pharmacy_side_menu.dart';
 import 'pharmacy_home_screen.dart';
 import 'pharmacy_conversations_screen.dart';
 import 'pharmacy_inventory_screen.dart';
-import 'pharmacy_medicines_screen.dart';
+import 'pharmacy_orders_screen.dart';
 import 'pharmacy_products_screen.dart';
-import 'pharmacy_profile_screen.dart';
+import 'pharmacy_settings_screen.dart';
 
 /// Bottom-nav shell for the logged-in pharmacy area. Each tab keeps its own
 /// Scaffold/AppBar/Drawer (see [PharmacySideMenu]'s doc comment) — this
@@ -34,16 +33,17 @@ class PharmacyDashboardShellScreen extends StatefulWidget {
 
 class _PharmacyDashboardShellScreenState
     extends State<PharmacyDashboardShellScreen> {
-  PharmacyDashboardTab _selectedTab = PharmacyDashboardTab.profile;
+  PharmacyDashboardTab _selectedTab = PharmacyDashboardTab.settings;
 
   // Owned here rather than by the home tab's own provider, so that coming back
   // to الرئيسية can refresh it (see [_selectTab]).
   final PharmacyDashboardCubit _dashboardCubit =
       getIt<PharmacyDashboardCubit>();
 
-  // The products page's list, made the first time the page is opened (which
-  // starts its load) rather than at launch, and owned here so that every later
-  // visit can refresh it (see [_selectTab]).
+  // The products list, shared by the المنتجات tab and the "اجمالي المنتجات"
+  // page: made the first time either is opened (which starts its load) rather
+  // than at launch, and owned here so that every later visit can refresh it
+  // (see [_selectTab]).
   PharmacyMedicinesCubit? _productsCubit;
 
   @override
@@ -61,9 +61,8 @@ class _PharmacyDashboardShellScreenState
         // fetched again on the way back.
         case PharmacyDashboardTab.home:
           _dashboardCubit.refresh();
-        // Likewise the products page: stock is also edited from the inventory
-        // and medicines tabs.
-        case PharmacyDashboardTab.products:
+        // Likewise the products list: stock is also edited from the inventory.
+        case PharmacyDashboardTab.products || PharmacyDashboardTab.medicines:
           final productsCubit = _productsCubit;
           if (productsCubit == null) {
             _productsCubit = getIt<PharmacyMedicinesCubit>();
@@ -92,22 +91,24 @@ class _PharmacyDashboardShellScreenState
         ),
         null => const SizedBox.shrink(),
       },
-      PharmacyDashboardTab.medicines: BlocProvider(
-        create: (_) => getIt<PharmacyMedicinesCubit>(),
-        child: const PharmacyMedicinesScreen(),
-      ),
-      // There is no orders API yet, so the tab is a placeholder.
-      PharmacyDashboardTab.orders: const ComingSoonTabScreen(
-        title: 'الطلبات',
-        icon: Icons.shopping_bag_outlined,
-        drawer: PharmacySideMenu(),
-      ),
+      PharmacyDashboardTab.medicines: switch (_productsCubit) {
+        final cubit? => BlocProvider.value(
+          value: cubit,
+          child: const PharmacyProductsScreen(
+            title: 'المنتجات',
+            showBackButton: false,
+          ),
+        ),
+        null => const SizedBox.shrink(),
+      },
+      // There is no orders API yet, so the tab has no orders to show.
+      PharmacyDashboardTab.orders: const PharmacyOrdersScreen(),
       PharmacyDashboardTab.inventory: BlocProvider(
         create: (_) => getIt<PharmacyInventoryCubit>(),
         child: const PharmacyInventoryScreen(),
       ),
       PharmacyDashboardTab.inquiries: const PharmacyConversationsScreen(),
-      PharmacyDashboardTab.profile: const PharmacyProfileScreen(),
+      PharmacyDashboardTab.settings: const PharmacySettingsScreen(),
     };
 
     // One profile cubit for the whole shell: the home header shows the same

@@ -11,7 +11,7 @@ import '../../../../core/widgets/app_snackbar.dart';
 /// reached from the side menu and from a notification, and [products] — the
 /// "اجمالي المنتجات" page — from the الرئيسية card of that name; while it shows,
 /// the bar keeps الرئيسية marked.
-enum PharmacyDashboardTab { home, products, medicines, orders, inventory, inquiries, profile }
+enum PharmacyDashboardTab { home, products, medicines, orders, inventory, inquiries, settings }
 
 /// Lets a widget nested anywhere inside a dashboard tab (e.g. the side menu,
 /// which is instantiated separately per tab) switch the shell's active tab

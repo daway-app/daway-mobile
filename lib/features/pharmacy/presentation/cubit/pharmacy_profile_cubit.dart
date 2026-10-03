@@ -81,6 +81,23 @@ class PharmacyProfileCubit extends Cubit<PharmacyProfileState> {
     emit(current.copyWith(workingHours: updated, clearSaveError: true));
   }
 
+  /// Replaces every day's hours at once — what the working-hours dialog
+  /// hands back after the pharmacy edits the whole week.
+  void workingHoursReplaced(List<WorkingHoursEntry> entries) {
+    final current = state;
+    if (current is! PharmacyProfileLoaded) return;
+    emit(current.copyWith(workingHours: entries, clearSaveError: true));
+  }
+
+  /// Drops the unsaved edits and goes back to the last saved profile — for a
+  /// screen that is left without saving.
+  void discardEdits() {
+    final current = state;
+    if (current is! PharmacyProfileLoaded) return;
+    _editSession++;
+    emit(PharmacyProfileLoaded.fromProfile(current.profile));
+  }
+
   Future<void> logoSelected(File imageFile) async {
     final current = state;
     if (current is! PharmacyProfileLoaded) return;

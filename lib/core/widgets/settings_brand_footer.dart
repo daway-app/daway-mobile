@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
+import '../theming/app_colors.dart';
+import '../theming/app_text_styles.dart';
 
 /// The centered "دواك" mark and wordmark with the app version under it, at
 /// the foot of the account-settings screen. The version line is left out

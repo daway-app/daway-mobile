@@ -11,7 +11,7 @@ import '../../../auth/presentation/cubit/logout_cubit.dart';
 import '../cubit/favorite_medicines_cubit.dart';
 import '../cubit/patient_notifications_cubit.dart';
 import '../cubit/patient_profile_cubit.dart';
-import '../widgets/account_row_card.dart';
+import '../../../../core/widgets/account_row_card.dart';
 import 'patient_addresses_screen.dart';
 import 'patient_favorites_screen.dart';
 import 'patient_health_profile_screen.dart';

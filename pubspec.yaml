@@ -97,6 +97,12 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/logo.png"
+  # Adaptive icon (Android 8+): the mark alone on white, so every launcher
+  # shape (circle, squircle, ...) crops it cleanly instead of showing the old
+  # square logo.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo_foreground.png"
+  remove_alpha_ios: true
   min_sdk_android: 21
 
   # An image asset can refer to one or more resolution-specific "variants", see

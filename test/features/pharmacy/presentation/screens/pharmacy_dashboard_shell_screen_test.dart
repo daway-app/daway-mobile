@@ -10,6 +10,8 @@ import 'package:daway_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:daway_app/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:daway_app/features/chat/presentation/cubit/conversations_cubit.dart';
 import 'package:daway_app/features/chat/presentation/cubit/conversations_state.dart';
+import 'package:daway_app/features/patient/presentation/cubit/account_settings_cubit.dart';
+import 'package:daway_app/features/patient/presentation/cubit/account_settings_state.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_dashboard_cubit.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_dashboard_state.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_inventory_cubit.dart';
@@ -19,6 +21,7 @@ import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_medicine
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_profile_cubit.dart';
 import 'package:daway_app/features/pharmacy/presentation/cubit/pharmacy_profile_state.dart';
 import 'package:daway_app/core/widgets/header_icon_button.dart';
+import 'package:daway_app/features/pharmacy/presentation/widgets/pharmacy_bottom_nav_bar.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_dashboard_shell_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_home_screen.dart';
 import 'package:daway_app/features/pharmacy/presentation/screens/pharmacy_products_screen.dart';
@@ -77,6 +80,14 @@ class _FakeConversationsCubit extends Cubit<ConversationsState>
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _FakeAccountSettingsCubit extends Cubit<AccountSettingsState>
+    implements AccountSettingsCubit {
+  _FakeAccountSettingsCubit() : super(const AccountSettingsLoading());
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _FakeProfileCubit extends Cubit<PharmacyProfileState>
     implements PharmacyProfileCubit {
   _FakeProfileCubit() : super(const PharmacyProfileLoading());
@@ -130,6 +141,9 @@ class _FakeSessionRepository implements SessionRepository {
   Future<void> clearSession() async {}
 }
 
+/// The settings tab's header line — the tab has no AppBar to find by title.
+const _settingsDescription = 'إدارة معلوماتك الشخصية وتفاصيل حسابك';
+
 void main() {
   late _FakeDashboardCubit dashboardCubit;
   // In the order the shell asks for them: the medicines tab's own first, at
@@ -153,7 +167,8 @@ void main() {
         _FakeConversationsCubit.new,
         instanceName: 'pharmacy',
       )
-      ..registerFactory<PharmacyProfileCubit>(_FakeProfileCubit.new);
+      ..registerFactory<PharmacyProfileCubit>(_FakeProfileCubit.new)
+      ..registerFactory<AccountSettingsCubit>(_FakeAccountSettingsCubit.new);
   });
 
   tearDown(() async {
@@ -182,10 +197,10 @@ void main() {
     return find.descendant(of: find.byType(AppBar), matching: find.text(title));
   }
 
-  testWidgets('lands on the profile tab', (tester) async {
+  testWidgets('lands on the settings tab', (tester) async {
     await pumpShell(tester);
 
-    expect(appBarTitle('حسابي'), findsOneWidget);
+    expect(find.text(_settingsDescription), findsOneWidget);
   });
 
   testWidgets('each nav item shows its own screen', (tester) async {
@@ -193,38 +208,20 @@ void main() {
     final semantics = tester.ensureSemantics();
 
     await tapNavItem(tester, 'المنتجات');
-    expect(appBarTitle('الأدوية'), findsOneWidget);
+    expect(find.text('أدر المنتجات الخاصة بك'), findsOneWidget);
 
     await tapNavItem(tester, 'الطلبات');
-    expect(appBarTitle('الطلبات'), findsOneWidget);
+    expect(find.text('لا توجد طلبات بعد.'), findsOneWidget);
 
     await tapNavItem(tester, 'المراسلات');
     expect(find.text('الاستفسارات'), findsOneWidget);
 
-    await tapNavItem(tester, 'الملف الشخصي');
-    expect(appBarTitle('حسابي'), findsOneWidget);
+    await tapNavItem(tester, 'الإعدادات');
+    expect(find.text(_settingsDescription), findsOneWidget);
 
     await tapNavItem(tester, 'الرئيسية');
     expect(find.textContaining('أهلا بك'), findsOneWidget);
 
-    semantics.dispose();
-  });
-
-  testWidgets('the inventory tab, which has no nav item, is reached from the side menu', (
-    tester,
-  ) async {
-    await pumpShell(tester);
-    final semantics = tester.ensureSemantics();
-    await tapNavItem(tester, 'المنتجات');
-
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400)); // the drawer opens
-    await tester.tap(find.text('المخزون'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400)); // and closes again
-
-    expect(appBarTitle('إدارة المخزون'), findsOneWidget);
     semantics.dispose();
   });
 
@@ -266,10 +263,52 @@ void main() {
     });
   });
 
+  group('the المنتجات tab', () {
+    testWidgets('shows the products page as "المنتجات", with no back chip', (tester) async {
+      await pumpShell(tester);
+      final semantics = tester.ensureSemantics();
+
+      await tapNavItem(tester, 'المنتجات');
+
+      expect(find.byType(PharmacyProductsScreen), findsOneWidget);
+      expect(find.text('اجمالي المنتجات'), findsNothing);
+      expect(find.byType(HeaderIconButton), findsNothing);
+      // The page's own title reads the same, so look inside the bar.
+      final navItem = find.descendant(
+        of: find.byType(PharmacyBottomNavBar),
+        matching: find.bySemanticsLabel('المنتجات'),
+      );
+      expect(
+        tester.getSemantics(navItem),
+        isSemantics(label: 'المنتجات', isButton: true, isSelected: true, hasTapAction: true),
+      );
+      semantics.dispose();
+    });
+
+    testWidgets('loads its list when first opened, and refreshes it on later visits', (
+      tester,
+    ) async {
+      await pumpShell(tester);
+      final semantics = tester.ensureSemantics();
+      expect(medicinesCubits, isEmpty);
+
+      await tapNavItem(tester, 'المنتجات');
+      expect(medicinesCubits.length, 1);
+      expect(medicinesCubits.last.refreshes, 0);
+
+      await tapNavItem(tester, 'المراسلات');
+      await tapNavItem(tester, 'المنتجات');
+
+      expect(medicinesCubits.length, 1);
+      expect(medicinesCubits.last.refreshes, 1);
+      semantics.dispose();
+    });
+  });
+
   group('the products page', () {
     // What the home card does: ask the shell for the page.
     Future<void> openProductsPage(WidgetTester tester) async {
-      // The shell lands on حسابي, so the home tab is offstage.
+      // The shell lands on الإعدادات, so the home tab is offstage.
       final scope = PharmacyDashboardTabScope.maybeOf(
         tester.element(find.byType(PharmacyHomeScreen, skipOffstage: false)),
       )!;
@@ -281,7 +320,7 @@ void main() {
       await pumpShell(tester);
 
       expect(find.byType(PharmacyProductsScreen), findsNothing);
-      expect(medicinesCubits.length, 1);
+      expect(medicinesCubits, isEmpty);
     });
 
     testWidgets('opens on the home card, with the bar still marking الرئيسية', (tester) async {
@@ -308,13 +347,13 @@ void main() {
       final semantics = tester.ensureSemantics();
 
       await openProductsPage(tester);
-      expect(medicinesCubits.length, 2);
+      expect(medicinesCubits.length, 1);
       expect(medicinesCubits.last.refreshes, 0);
 
       await tapNavItem(tester, 'المراسلات');
       await openProductsPage(tester);
 
-      expect(medicinesCubits.length, 2);
+      expect(medicinesCubits.length, 1);
       expect(medicinesCubits.last.refreshes, 1);
       semantics.dispose();
     });

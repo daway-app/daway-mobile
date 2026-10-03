@@ -20,11 +20,21 @@ import '../widgets/product_search_field.dart';
 /// of the same name. A search box, stock filters, the two actions for adding
 /// and updating, and a card per medicine whose stepper changes its stock.
 ///
-/// Expects a [PharmacyMedicinesCubit] above it. It is a page of the shell, not
-/// a tab of its own: the bottom bar keeps الرئيسية marked, and the back chip
-/// returns there.
+/// Expects a [PharmacyMedicinesCubit] above it. Opened from that card it is a
+/// page of the shell, not a tab of its own: the bottom bar keeps الرئيسية
+/// marked, and the back chip returns there. The same page is also the root of
+/// the المنتجات tab, as "المنتجات" and without the back chip.
 class PharmacyProductsScreen extends StatelessWidget {
-  const PharmacyProductsScreen({super.key});
+  final String title;
+
+  /// False for the المنتجات tab, which has nothing to go back to.
+  final bool showBackButton;
+
+  const PharmacyProductsScreen({
+    super.key,
+    this.title = 'اجمالي المنتجات',
+    this.showBackButton = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +55,13 @@ class PharmacyProductsScreen extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 0),
                 sliver: SliverToBoxAdapter(
                   child: PharmacyProductsHeader(
-                    onBack: () => PharmacyDashboardTabScope.switchToTabOrShowComingSoon(
-                      context,
-                      PharmacyDashboardTab.home,
-                    ),
+                    title: title,
+                    onBack: showBackButton
+                        ? () => PharmacyDashboardTabScope.switchToTabOrShowComingSoon(
+                            context,
+                            PharmacyDashboardTab.home,
+                          )
+                        : null,
                   ),
                 ),
               ),

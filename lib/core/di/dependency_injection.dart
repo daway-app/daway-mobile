@@ -99,6 +99,7 @@ import '../../features/patient/domain/repositories/health_profile_repository.dar
 import '../../features/patient/domain/usecases/health_profile_usecases.dart';
 import '../../features/patient/presentation/cubit/health_profile_cubit.dart';
 import '../../features/chat/data/datasources/chat_remote_data_source.dart';
+import '../../features/chat/domain/chat_activity.dart';
 import '../../features/chat/data/repositories/chat_repository_impl.dart';
 import '../../features/chat/data/repositories/cloudinary_chat_image_uploader.dart';
 import '../../features/chat/domain/repositories/chat_image_uploader.dart';
@@ -428,6 +429,7 @@ Future<void> setupGetIt() async {
   );
 
   // ---------------- Chat (patient <-> pharmacy) ----------------
+  getIt.registerLazySingleton(() => ChatActivity());
   getIt.registerLazySingleton(() => ChatRemoteDataSource(getIt()));
   getIt.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(getIt()));
   getIt.registerLazySingleton(() => GetChatMessagesUseCase(getIt(), getIt()));
@@ -446,6 +448,7 @@ Future<void> setupGetIt() async {
       sendMessageUseCase: getIt(),
       uploadImageUseCase: getIt(),
       resolver: getIt(),
+      activity: getIt(),
     ),
   );
 
@@ -458,7 +461,7 @@ Future<void> setupGetIt() async {
   getIt.registerLazySingleton(() => CreatePatientInquiryUseCase(getIt(), getIt()));
   getIt.registerLazySingleton(() => GetPharmacyConversationsUseCase(getIt()));
   getIt.registerFactory<ConversationsCubit>(
-    () => ConversationsCubit(getIt<GetPharmacyConversationsUseCase>()),
+    () => ConversationsCubit(getIt<GetPharmacyConversationsUseCase>(), activity: getIt()),
     instanceName: 'patient',
   );
 
@@ -590,7 +593,7 @@ Future<void> setupGetIt() async {
   getIt.registerFactory(() => PharmacyInquiriesCubit(getIt(), getIt()));
   getIt.registerLazySingleton(() => GetPatientConversationsUseCase(getIt()));
   getIt.registerFactory<ConversationsCubit>(
-    () => ConversationsCubit(getIt<GetPatientConversationsUseCase>()),
+    () => ConversationsCubit(getIt<GetPatientConversationsUseCase>(), activity: getIt()),
     instanceName: 'pharmacy',
   );
 

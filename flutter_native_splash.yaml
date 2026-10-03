@@ -16,3 +16,8 @@ flutter_native_splash:
     color: "#ffffff"
   android: true
   ios: true
+
+# NOTE: the app has no dark theme. After `dart run flutter_native_splash:create`
+# change `Theme.Black.NoTitleBar` back to `Theme.Light.NoTitleBar` in
+# android/app/src/main/res/values-night/styles.xml and values-night-v31/styles.xml,
+# otherwise phones in dark mode show a black screen at startup.

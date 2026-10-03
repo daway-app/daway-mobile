@@ -49,4 +49,16 @@ void main() {
     expect(model.medicineId, isNull);
     expect(model.imageUrl, isNull);
   });
+
+  test('reads the number of pharmacies stocking it', () {
+    final model = CategoryMedicineModel.fromJson({
+      'id': 15706,
+      'trade_name': 'ACAMOL',
+      'medicine_id': 18,
+      'pharmacies_count': 2,
+    });
+
+    expect(model.pharmaciesCount, 2);
+    expect(CategoryMedicineModel.fromJson({'id': 1, 'trade_name': 'X'}).pharmaciesCount, isNull);
+  });
 }
