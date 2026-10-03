@@ -4,6 +4,7 @@ import 'package:daway_app/features/auth/domain/entities/account_type.dart';
 import 'package:daway_app/features/auth/domain/entities/user_session.dart';
 import 'package:daway_app/features/auth/domain/repositories/session_repository.dart';
 import 'package:daway_app/features/chat/data/models/chat_message_model.dart';
+import 'package:daway_app/features/chat/domain/chat_activity.dart';
 import 'package:daway_app/features/chat/domain/entities/chat_message.dart';
 import 'package:daway_app/features/chat/domain/repositories/chat_image_uploader.dart';
 import 'package:daway_app/features/chat/domain/repositories/chat_repository.dart';
@@ -311,6 +312,63 @@ void main() {
     expect(error, isNull);
     expect(resolver.startCalls, 1);
     expect(resolver.startedMessage, 'مرحبا');
+  });
+
+  test('the first question stays visible even if the thread comes back empty', () async {
+    final cubit = build(pharmacyId: 3);
+    await Future<void>.delayed(Duration.zero);
+
+    await cubit.send(text: 'مرحبا');
+
+    final messages = (cubit.state as ChatLoaded).messages;
+    expect(messages, hasLength(1));
+    expect(messages.single.text, 'مرحبا');
+    expect(messages.single.isMine, isTrue);
+  });
+
+  test('sending a message tells the conversations lists to reload', () async {
+    final activity = ChatActivity();
+    var changes = 0;
+    final subscription = activity.changes.listen((_) => changes++);
+    addTearDown(subscription.cancel);
+    final session = _FakeSession();
+    final cubit = ChatCubit(
+      inquiryIds: const [5],
+      getMessagesUseCase: GetChatMessagesUseCase(repository, session),
+      sendMessageUseCase: SendChatMessageUseCase(repository, session),
+      uploadImageUseCase: UploadChatImageUseCase(uploader),
+      activity: activity,
+    );
+    addTearDown(cubit.close);
+    await Future<void>.delayed(Duration.zero);
+
+    await cubit.send(text: 'مرحبا');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(changes, 1);
+  });
+
+  test('starting a conversation also notifies, so a new chat shows up in the list', () async {
+    final activity = ChatActivity();
+    var changes = 0;
+    final subscription = activity.changes.listen((_) => changes++);
+    addTearDown(subscription.cancel);
+    final session = _FakeSession();
+    final cubit = ChatCubit(
+      pharmacyId: 3,
+      getMessagesUseCase: GetChatMessagesUseCase(repository, session),
+      sendMessageUseCase: SendChatMessageUseCase(repository, session),
+      uploadImageUseCase: UploadChatImageUseCase(uploader),
+      resolver: resolver,
+      activity: activity,
+    );
+    addTearDown(cubit.close);
+    await Future<void>.delayed(Duration.zero);
+
+    await cubit.send(text: 'مرحبا');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(changes, 1);
   });
 
   test('without a pharmacy to write to the composer is disabled', () async {

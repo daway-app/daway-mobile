@@ -123,6 +123,39 @@ void main() {
     });
   });
 
+  group('CategoryMedicineCard availability', () {
+    Widget category(CategoryMedicine medicine) =>
+        buildTestable(CategoryMedicineCard(medicine: medicine, onDetailsTap: () {}));
+
+    testWidgets('shows how many pharmacies stock it when the API says so', (tester) async {
+      await setViewport(tester);
+
+      await tester.pumpWidget(
+        category(
+          const CategoryMedicine(
+            id: 1,
+            tradeName: 'Panadol',
+            genericName: 'Paracetamol',
+            pharmaciesCount: 2,
+          ),
+        ),
+      );
+
+      expect(find.text('متوفر في صيدليتين'), findsOneWidget);
+      expect(find.text('Paracetamol'), findsNothing);
+    });
+
+    testWidgets('a medicine no pharmacy stocks says so', (tester) async {
+      await setViewport(tester);
+
+      await tester.pumpWidget(
+        category(const CategoryMedicine(id: 1, tradeName: 'Panadol', pharmaciesCount: 0)),
+      );
+
+      expect(find.text('غير متوفر حالياً'), findsOneWidget);
+    });
+  });
+
   group('SearchedMedicineCard', () {
     Widget searched(SearchedMedicine medicine) =>
         buildTestable(SearchedMedicineCard(medicine: medicine, onDetailsTap: () {}));

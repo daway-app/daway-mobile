@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theming/app_colors.dart';
 import '../../domain/entities/category_medicine.dart';
+import '../helpers/pharmacy_availability_label.dart';
 import 'medicine_grid_card.dart';
 
 /// A medicine card for a category's results grid: the medicine's image when
-/// the backend sends one (a stand-in icon otherwise), its name, and its
-/// generic name / dosage form.
+/// there is one (a stand-in icon otherwise), its name, and how many pharmacies
+/// stock it (or its generic name / dosage form when that isn't known).
 class CategoryMedicineCard extends StatelessWidget {
   final CategoryMedicine medicine;
   final VoidCallback onDetailsTap;
@@ -27,6 +29,7 @@ class CategoryMedicineCard extends StatelessWidget {
         ? medicine.genericName
         : medicine.dosageForm;
     final imageUrl = medicine.imageUrl ?? resolvedImageUrl;
+    final pharmaciesCount = medicine.pharmaciesCount;
 
     return MedicineGridCard(
       media: (imageUrl != null && imageUrl.isNotEmpty)
@@ -37,7 +40,16 @@ class CategoryMedicineCard extends StatelessWidget {
             )
           : const MedicinePlaceholderIcon(),
       title: medicine.tradeName,
-      subtitle: secondaryLine,
+      // The availability line like the search cards when the API says how
+      // many pharmacies stock it; otherwise the generic name / dosage form.
+      subtitle: pharmaciesCount == null
+          ? secondaryLine
+          : (pharmaciesCount > 0
+              ? pharmaciesAvailabilityLabel(pharmaciesCount)
+              : 'غير متوفر حالياً'),
+      subtitleColor: pharmaciesCount == null
+          ? null
+          : (pharmaciesCount > 0 ? AppColors.success : AppColors.grey),
       detailsLabel: 'عرض تفاصيل',
       onDetailsTap: onDetailsTap,
     );

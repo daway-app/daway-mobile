@@ -14,7 +14,7 @@ import '../../domain/entities/patient_address.dart';
 import '../cubit/patient_addresses_cubit.dart';
 import '../cubit/patient_addresses_state.dart';
 import '../widgets/address_sheets.dart';
-import '../widgets/edit_chip.dart';
+import '../../../../core/widgets/edit_chip.dart';
 import '../widgets/patient_sub_screen_header.dart';
 
 /// "عناويني" — backed by the real `/patient/addresses` endpoints. The screen

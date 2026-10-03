@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
+import '../../domain/chat_activity.dart';
 import '../../domain/entities/chat_message.dart';
 import '../../domain/repositories/inquiry_thread_resolver.dart';
 import '../../domain/usecases/chat_usecases.dart';
@@ -28,6 +29,7 @@ class ChatCubit extends Cubit<ChatState> {
   final SendChatMessageUseCase _sendMessageUseCase;
   final UploadChatImageUseCase _uploadImageUseCase;
   final InquiryThreadResolver? _resolver;
+  final ChatActivity? _activity;
 
   Timer? _poll;
 
@@ -39,12 +41,14 @@ class ChatCubit extends Cubit<ChatState> {
     required SendChatMessageUseCase sendMessageUseCase,
     required UploadChatImageUseCase uploadImageUseCase,
     InquiryThreadResolver? resolver,
+    ChatActivity? activity,
   })  : _inquiryIds = List.of(inquiryIds),
         _targetId = inquiryIds.isEmpty ? null : inquiryIds.first,
         _getMessagesUseCase = getMessagesUseCase,
         _sendMessageUseCase = sendMessageUseCase,
         _uploadImageUseCase = uploadImageUseCase,
         _resolver = resolver,
+        _activity = activity,
         super(const ChatLoading()) {
     load();
   }
@@ -184,7 +188,29 @@ class ChatCubit extends Cubit<ChatState> {
         case Success(:final data):
           _targetId = data;
           _inquiryIds = [data, ..._inquiryIds];
+          _activity?.notifyChanged();
           await load();
+          // The question that opened the inquiry may be stored on the
+          // inquiry itself rather than as a chat message; if the thread
+          // comes back empty, show the question just sent so it doesn't
+          // look like it vanished.
+          final loaded = state;
+          if (loaded is ChatLoaded && loaded.messages.isEmpty) {
+            emit(
+              loaded.copyWith(
+                messages: [
+                  ChatMessage(
+                    id: -data,
+                    senderUserId: 0,
+                    text: trimmed,
+                    isRead: false,
+                    createdAt: DateTime.now(),
+                    isMine: true,
+                  ),
+                ],
+              ),
+            );
+          }
           return null;
         case ApiError(:final failure):
           emit(current.copyWith(isSending: false));
@@ -200,6 +226,7 @@ class ChatCubit extends Cubit<ChatState> {
     switch (result) {
       case Success(:final data):
         emit(latest.copyWith(messages: _withMessage(latest.messages, data), isSending: false));
+        _activity?.notifyChanged();
         return null;
       case ApiError(:final failure):
         emit(latest.copyWith(isSending: false));

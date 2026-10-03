@@ -4,33 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../domain/entities/working_hours_entry.dart';
-
-const _dayLabels = {
-  WeekDay.sat: 'السبت',
-  WeekDay.sun: 'الأحد',
-  WeekDay.mon: 'الاثنين',
-  WeekDay.tue: 'الثلاثاء',
-  WeekDay.wed: 'الأربعاء',
-  WeekDay.thu: 'الخميس',
-  WeekDay.fri: 'الجمعة',
-};
+import '../helpers/working_hours_format.dart';
 
 const _defaultOpen = '09:00';
 const _defaultClose = '22:00';
-
-TimeOfDay? _parseTime(String? value) {
-  if (value == null) return null;
-  final parts = value.split(':');
-  if (parts.length != 2) return null;
-  final hour = int.tryParse(parts[0]);
-  final minute = int.tryParse(parts[1]);
-  if (hour == null || minute == null) return null;
-  return TimeOfDay(hour: hour, minute: minute);
-}
-
-String _formatTime(TimeOfDay time) {
-  return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-}
 
 class WorkingHoursRow extends StatelessWidget {
   final WorkingHoursEntry entry;
@@ -46,10 +23,10 @@ class WorkingHoursRow extends StatelessWidget {
 
   Future<void> _pickTime(BuildContext context, {required bool isOpenTime}) async {
     final initial =
-        _parseTime(isOpenTime ? entry.open : entry.close) ?? const TimeOfDay(hour: 9, minute: 0);
+        parseWorkingTime(isOpenTime ? entry.open : entry.close) ?? const TimeOfDay(hour: 9, minute: 0);
     final picked = await showTimePicker(context: context, initialTime: initial);
     if (picked == null) return;
-    final formatted = _formatTime(picked);
+    final formatted = formatWorkingTime(picked);
     onChanged(
       isOpenTime ? formatted : entry.open,
       isOpenTime ? entry.close : formatted,
@@ -64,7 +41,7 @@ class WorkingHoursRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 60.w,
-            child: Text(_dayLabels[entry.day]!, style: AppTextStyles.cardDescription),
+            child: Text(weekDayLabels[entry.day]!, style: AppTextStyles.cardDescription),
           ),
           Expanded(
             child: entry.isOpen

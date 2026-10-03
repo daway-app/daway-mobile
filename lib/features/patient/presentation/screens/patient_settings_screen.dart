@@ -15,11 +15,11 @@ import '../../domain/entities/account_settings.dart';
 import '../../domain/entities/device_setting.dart';
 import '../cubit/account_settings_cubit.dart';
 import '../cubit/account_settings_state.dart';
-import '../widgets/account_row_card.dart';
+import '../../../../core/widgets/account_row_card.dart';
 import '../widgets/language_bottom_sheet.dart';
 import '../widgets/patient_sub_screen_header.dart';
-import '../widgets/settings_brand_footer.dart';
-import '../widgets/settings_section_label.dart';
+import '../../../../core/widgets/settings_brand_footer.dart';
+import '../../../../core/widgets/settings_section_label.dart';
 
 /// The account-settings screen (opened from the account hub's "الإعدادات"
 /// row): preferences, privacy links, logout, and the app version.

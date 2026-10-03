@@ -258,4 +258,72 @@ void main() {
       expect(state.saveError, 'فشل الحفظ');
     });
   });
+
+  group('hasChanges', () {
+    PharmacyProfileLoaded loaded() => cubit.state as PharmacyProfileLoaded;
+
+    test('is false right after loading', () {
+      expect(loaded().hasChanges, isFalse);
+    });
+
+    test(
+      'is true once the name differs, and false again when it is put back',
+      () {
+        cubit.nameChanged('اسم مختلف');
+        expect(loaded().hasChanges, isTrue);
+
+        cubit.nameChanged('صيدلية الأمل');
+        expect(loaded().hasChanges, isFalse);
+      },
+    );
+
+    test('ignores whitespace around the saved name', () {
+      cubit.nameChanged('  صيدلية الأمل  ');
+      expect(loaded().hasChanges, isFalse);
+    });
+
+    test('is true once the location changes', () {
+      cubit.locationSelected(
+        const PickedLocation(
+          latitude: 31.4,
+          longitude: 34.3,
+          address: 'خان يونس',
+        ),
+      );
+      expect(loaded().hasChanges, isTrue);
+    });
+
+    test('is true once one day has different hours', () {
+      cubit.workingHoursChanged(WeekDay.sat, open: '10:00', close: '20:00');
+      expect(loaded().hasChanges, isTrue);
+    });
+  });
+
+  group('workingHoursReplaced', () {
+    test('swaps the whole week at once', () {
+      cubit.workingHoursReplaced(const [
+        WorkingHoursEntry(day: WeekDay.sat, open: '08:00', close: '16:00'),
+        WorkingHoursEntry(day: WeekDay.sun),
+      ]);
+
+      final state = cubit.state as PharmacyProfileLoaded;
+      expect(state.workingHours, hasLength(2));
+      expect(state.workingHours.first.open, '08:00');
+      expect(state.hasChanges, isTrue);
+    });
+  });
+
+  group('discardEdits', () {
+    test('goes back to the saved profile', () {
+      cubit.nameChanged('اسم مختلف');
+      cubit.workingHoursChanged(WeekDay.sat, open: '10:00', close: '20:00');
+
+      cubit.discardEdits();
+
+      final state = cubit.state as PharmacyProfileLoaded;
+      expect(state.name, 'صيدلية الأمل');
+      expect(state.workingHours.first.open, '09:00');
+      expect(state.hasChanges, isFalse);
+    });
+  });
 }

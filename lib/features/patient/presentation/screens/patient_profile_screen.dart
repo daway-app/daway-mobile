@@ -6,10 +6,10 @@ import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/app_custom_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
+import '../../../../core/widgets/profile_field_row.dart';
 import '../../../../core/widgets/profile_load_error.dart';
 import '../cubit/patient_profile_cubit.dart';
 import '../cubit/patient_profile_state.dart';
-import '../widgets/edit_chip.dart';
 import '../widgets/patient_profile_avatar.dart';
 import '../widgets/patient_sub_screen_header.dart';
 
@@ -117,7 +117,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           SizedBox(height: 24.h),
           Text('الاسم', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
           SizedBox(height: 8.h),
-          _ProfileFieldRow(
+          ProfileFieldRow(
             onEditTap: () => cubit.toggleEdit(),
             child: state.isEditing
                 ? TextField(
@@ -140,7 +140,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           SizedBox(height: 24.h),
           Text('رقم الهاتف', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
           SizedBox(height: 8.h),
-          _ProfileFieldRow(
+          ProfileFieldRow(
             onEditTap: () => cubit.toggleEdit(),
             child: Text(
               state.profile.phone,
@@ -151,7 +151,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
           SizedBox(height: 24.h),
           Text('تاريخ الميلاد', textAlign: TextAlign.right, style: AppTextStyles.profileFieldLabel),
           SizedBox(height: 8.h),
-          _ProfileFieldRow(
+          ProfileFieldRow(
             onEditTap: () => cubit.toggleEdit(),
             child: GestureDetector(
               onTap: state.isEditing ? () => _pickBirthDate(context, state.birthDate) : null,
@@ -170,32 +170,6 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
             onPressed: state.canSave ? () => cubit.save() : () {},
           ),
           SizedBox(height: 24.h),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileFieldRow extends StatelessWidget {
-  final Widget child;
-  final VoidCallback onEditTap;
-
-  const _ProfileFieldRow({required this.child, required this.onEditTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 62.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.cardBorder),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: child),
-          SizedBox(width: 8.w),
-          EditChip(onTap: onEditTap),
         ],
       ),
     );

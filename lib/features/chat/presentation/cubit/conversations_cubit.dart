@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/helpers/api_result.dart';
+import '../../domain/chat_activity.dart';
 import '../../domain/entities/chat_conversation.dart';
 import 'conversations_state.dart';
 
@@ -8,8 +11,11 @@ import 'conversations_state.dart';
 /// side's [ConversationsSource] and filters them by the search text.
 class ConversationsCubit extends Cubit<ConversationsState> {
   final ConversationsSource _source;
+  StreamSubscription<void>? _activitySubscription;
 
-  ConversationsCubit(this._source) : super(const ConversationsLoading()) {
+  ConversationsCubit(this._source, {ChatActivity? activity})
+      : super(const ConversationsLoading()) {
+    _activitySubscription = activity?.changes.listen((_) => refresh());
     load();
   }
 
@@ -39,5 +45,11 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     final current = state;
     if (current is! ConversationsLoaded) return;
     emit(ConversationsLoaded(current.conversations, query: query));
+  }
+
+  @override
+  Future<void> close() {
+    _activitySubscription?.cancel();
+    return super.close();
   }
 }

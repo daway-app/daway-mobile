@@ -11,10 +11,15 @@ class PatientSubScreenHeader extends StatelessWidget {
   final String title;
   final String description;
 
+  /// False for a tab's root screen (the pharmacy's الإعدادات), which has
+  /// nothing to go back to.
+  final bool showBackButton;
+
   const PatientSubScreenHeader({
     super.key,
     required this.title,
     required this.description,
+    this.showBackButton = true,
   });
 
   @override
@@ -23,8 +28,10 @@ class PatientSubScreenHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(height: 32.h),
-        AppBackButton(onTap: () => Navigator.of(context).pop()),
-        SizedBox(height: 16.h),
+        if (showBackButton) ...[
+          AppBackButton(onTap: () => Navigator.of(context).pop()),
+          SizedBox(height: 16.h),
+        ],
         Text(title, textAlign: TextAlign.right, style: AppTextStyles.authScreenTitle),
         SizedBox(height: 8.h),
         Text(description, textAlign: TextAlign.right, style: AppTextStyles.authScreenSubtitle),

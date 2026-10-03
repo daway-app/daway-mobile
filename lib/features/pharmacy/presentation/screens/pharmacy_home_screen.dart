@@ -11,6 +11,7 @@ import '../../domain/entities/pharmacy_dashboard_stats.dart';
 import '../../domain/entities/pharmacy_order.dart';
 import '../cubit/pharmacy_dashboard_cubit.dart';
 import '../cubit/pharmacy_dashboard_state.dart';
+import 'pharmacy_order_details_screen.dart';
 import '../helpers/notifications_navigation.dart';
 import '../widgets/add_medicines_file_card.dart';
 import '../widgets/pharmacy_dashboard_tab_scope.dart';
@@ -129,7 +130,7 @@ class _HomeContent extends StatelessWidget {
           PharmacyOrdersSection(
             orders: orders,
             onViewAllTap: () => _goToTab(context, PharmacyDashboardTab.orders),
-            onOrderTap: (_) => _comingSoon(context),
+            onOrderTap: (order) => PharmacyOrderDetailsScreen.open(context, order),
           ),
         ],
       ],

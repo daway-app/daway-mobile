@@ -7,6 +7,7 @@ class CategoryMedicineModel {
   final String? dosageForm;
   final int? medicineId;
   final String? imageUrl;
+  final int? pharmaciesCount;
 
   const CategoryMedicineModel({
     required this.id,
@@ -15,6 +16,7 @@ class CategoryMedicineModel {
     this.dosageForm,
     this.medicineId,
     this.imageUrl,
+    this.pharmaciesCount,
   });
 
   factory CategoryMedicineModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class CategoryMedicineModel {
       dosageForm: json['dosage_form'] as String?,
       medicineId: (json['medicine_id'] as num?)?.toInt(),
       imageUrl: (json['image_url'] ?? json['image']) as String?,
+      pharmaciesCount: (json['pharmacies_count'] as num?)?.toInt(),
     );
   }
 
@@ -35,5 +38,6 @@ class CategoryMedicineModel {
         dosageForm: dosageForm,
         medicineId: medicineId,
         imageUrl: imageUrl,
+        pharmaciesCount: pharmaciesCount,
       );
 }

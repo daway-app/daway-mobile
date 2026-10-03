@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
+import '../theming/app_colors.dart';
+import '../theming/app_text_styles.dart';
 
 /// One tappable card on the account hub and the account-settings screen: an
 /// optional [leading] icon, the [label], and an optional [trailing] widget (a

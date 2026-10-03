@@ -10,6 +10,10 @@ class CategoryMedicine {
   final int? medicineId;
   final String? imageUrl;
 
+  /// How many pharmacies stock it (`pharmacies_count`); null when the API
+  /// doesn't say.
+  final int? pharmaciesCount;
+
   const CategoryMedicine({
     required this.id,
     required this.tradeName,
@@ -17,5 +21,6 @@ class CategoryMedicine {
     this.dosageForm,
     this.medicineId,
     this.imageUrl,
+    this.pharmaciesCount,
   });
 }

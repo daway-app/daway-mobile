@@ -32,7 +32,7 @@ class PharmacyBottomNavBar extends StatelessWidget {
     _NavEntry(PharmacyDashboardTab.medicines, 'المنتجات', 'assets/icons/Search_icon.svg', 24),
     _NavEntry(PharmacyDashboardTab.orders, 'الطلبات', 'assets/icons/Search_icon.svg', 24),
     _NavEntry(PharmacyDashboardTab.inquiries, 'المراسلات', 'assets/icons/massage_icon.svg', 24),
-    _NavEntry(PharmacyDashboardTab.profile, 'الملف الشخصي', 'assets/icons/user_icon.svg', 20),
+    _NavEntry(PharmacyDashboardTab.settings, 'الإعدادات', 'assets/icons/settings_icon.svg', 24),
   ];
 
   /// The item marked while [selectedTab] shows.
